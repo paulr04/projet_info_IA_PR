@@ -9,6 +9,12 @@ def generer_id_unique():
     # Fonction pour générer un ID unique (par exemple, un ID numérique ou aléatoire)
     return str(100000000 + len(open(USER_FILE).readlines()))  # Exemple basique pour générer un ID unique
 
+def convertir_date(date):
+    """
+    Convertit une date sous forme de chaîne (MM-DD-YYYY) en objet datetime.
+    """
+    format_date = "%m-%d-%Y"  # Format MM-DD-YYYY
+    return datetime.strptime(date, format_date)
 
 def verifier_dates(date_debut, date_fin):
     """
