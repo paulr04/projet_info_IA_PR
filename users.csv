@@ -1,3 +1,5 @@
-id,nom,prenom,email,telephone,role,mot_de_passe
+id_user,nom,prenom,email,telephone,role,mot_de_passe
 123456789,Doe,John,john.doe@example.com,0123456789,C,mdp_client
 987654321,Smith,Jane,jane.smith@example.com,0987654321,V,mdp_vendeur
+100000003,Zelensky,Volodymyr,slava.ukraine@gmail.com,0102030405,C,mdp_ua
+706410595,RENAUD,Paul,paul@mail.com,0203010405,C,mdp_paul
