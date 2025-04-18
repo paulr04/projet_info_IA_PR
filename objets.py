@@ -6,13 +6,22 @@ class Vehicule:
     Représente un véhicule disponible à la location.
 
     Attributs :
-        id (str)            : Identifiant unique du véhicule.
-        marque (str)        : Marque du véhicule.
-        modele (str)        : Modèle du véhicule.
-        annee (int)         : Année de mise en circulation.
-        kilometrage (int)   : Kilométrage du véhicule.
-        prix_par_jour (float) : Tarif de location par jour en euros.
-        disponible (bool)   : Indique si le véhicule est disponible à la location.
+        id_vehicule (str)     : Identifiant unique du véhicule (généré automatiquement).
+        marque (str)          : Marque du véhicule.
+        modele (str)          : Modèle du véhicule.
+        prix_jour (float)     : Prix de la location par jour en euros.
+        masse (float)         : Masse du véhicule en kg.
+        vitesse_max (float)   : Vitesse maximale du véhicule en km/h.
+        puissance (float)     : Puissance du véhicule en chevaux.
+        volume_utile (float)  : Volume utile du véhicule en m³.
+        nb_places (int)       : Nombre de places assises dans le véhicule.
+        type_moteur (str)     : Type de moteur du véhicule (ex : "essence", "diesel", "électrique",...).
+        dimensions (tuple)    : Dimensions du véhicule sous forme de tuple (longueur, largeur, hauteur) en m.
+        type_vehicule (str)   : Type du véhicule (ex : "berline", "citadine", "avion", "tank").
+        boite_vitesse (str)   : Type de boîte de vitesse du véhicule ("manuelle" ou "automatique").
+        entretien_annuel (float) : Prix en euros de l'entretien annuel du véhicule.
+        dispo (bool)          : Disponibilité du véhicule (True si disponible, False sinon).
+        description (str)     : Description textuelle du véhicule.
 
     Méthodes :
         to_dict()           : Renvoie une représentation dictionnaire du véhicule.
@@ -20,11 +29,11 @@ class Vehicule:
     """
 
     def __init__(
-        self, id, marque, modele, prix_jour, masse, vitesse_max, puissance,
+        self, id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,
         volume_utile, nb_places, type_moteur, dimensions, type_vehicule,
         boite_vitesse, entretien_annuel, dispo, description
     ):
-        self.id = id
+        self.id_vehicule = id_vehicule
         self.marque = marque
         self.modele = modele
         self.prix_jour = float(prix_jour)
@@ -57,7 +66,7 @@ class Vehicule:
         Retour :
             str : Quelques caractéristiques du véhicule.
         """
-        return (f"{self.marque} {self.modele} ({self.type_vehicule}) - {self.id} - "
+        return (f"{self.marque} {self.modele} ({self.type_vehicule}) - {self.id_vehicule} - "
                 f"{self.prix_jour:.2f}€/jour - {self.nb_places} places - {self.dispo}")
 
 class Reservation:
@@ -67,24 +76,26 @@ class Reservation:
     Représente une réservation de véhicule effectuée par un client.
 
     Attributs :
-        id (str)              : Identifiant unique de la réservation.
-        id_client (str)       : Identifiant de l'utilisateur client.
+        id_resa (str)         : Identifiant unique de la réservation.
+        id_user (str)         : Identifiant de l'utilisateur.
         id_vehicule (str)     : Identifiant du véhicule réservé.
         date_debut (str)      : Date de début de la location (format YYYY-MM-DD).
         date_fin (str)        : Date de fin de la location (format YYYY-MM-DD).
-        statut (str)          : Statut de la réservation (ex. : 'en attente', 'validée', 'annulée').
+        jours (int)           : Nombre de jour(s) (durée de la réservation)
+        prix_total (str)      : Prix total de la réservation en EUR €
 
     Méthodes :
         to_dict()             : Renvoie une représentation dictionnaire de la réservation.
         save_to_file()        : Enregistre la réservation dans le fichier CSV.
     """
 
-    def __init__(self, id_resa, client_id, vehicule_id, debut, fin, prix_total):
+    def __init__(self, id_resa, id_user, id_vehicule, date_debut, date_fin, jours, prix_total):
         self.id_resa = id_resa
-        self.client_id = client_id
-        self.vehicule_id = vehicule_id
-        self.debut = debut
-        self.fin = fin
+        self.id_user = id_user
+        self.id_vehicule = id_vehicule
+        self.date_debut = date_debut
+        self.date_fin = date_fin
+        self.jours = jours
         self.prix_total = prix_total
 
     def to_dict(self):
@@ -104,8 +115,8 @@ class Reservation:
             str : Détails de la réservation incluant l'ID du client, l'ID du véhicule,
                   les dates de début et de fin, et le prix total.
         """
-        return (f"Réservation ID {self.id_resa} - Client {self.client_id} - "
-                f"Véhicule {self.vehicule_id} - Du {self.debut} au {self.fin} - "
+        return (f"Réservation ID {self.id_resa} - Client {self.id_user} - "
+                f"Véhicule {self.id_vehicule} - Du {self.date_debut} au {self.date_fin} - ({self.jours} jour(s)) - "
                 f"Prix total : {self.prix_total:.2f}€")
 
 class User:
@@ -117,7 +128,7 @@ class User:
     Un utilisateur peut être un client ('C') ou un vendeur ('V').
 
     Attributs :
-        id (str)            : Identifiant unique de l'utilisateur.
+        id_user (int)     : Identifiant unique de l'utilisateur.
         nom (str)           : Nom de l'utilisateur.
         prenom (str)        : Prénom de l'utilisateur.
         email (str)         : Adresse e-mail.
@@ -131,8 +142,8 @@ class User:
     """
 
 
-    def __init__(self, id, nom, prenom, email, telephone, role, mot_de_passe):
-        self.id = id
+    def __init__(self, id_user, nom, prenom, email, telephone, role, mot_de_passe):
+        self.id_user = id_user
         self.nom = nom
         self.prenom = prenom
         self.email = email
