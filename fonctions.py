@@ -331,3 +331,24 @@ def info_vehicule(id_vehicule):
                 )
             else:
                 pass
+
+def verifier_reservation(date_debut, date_fin, id_vehicule):
+    lst_date_debut = []
+    lst_date_fin = []
+    with open(RESERVATIONS_FILE, mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row['id_vehicule'] == id_vehicule and convertir_date(row['date_fin']).date() >= datetime.today().date():
+                lst_date_debut.append(row['date_debut'])
+                lst_date_fin.append(row['date_fin'])
+        if lst_date_fin == [] and lst_date_debut == [] :
+            print("OK RESERVATION")
+        for element in lst_date_debut:
+            for k in lst_date_fin:
+                if convertir_date(date_debut).date() <= convertir_date(k).date() and convertir_date(date_fin).date() >= convertir_date(element).date() and lst_date_fin.index(k) == lst_date_debut.index(element):
+                    print("CONFLIT DE RESERVATION")
+                    return True
+                    break
+                else:
+                    print("OK RESERVATION")
+                    pass
