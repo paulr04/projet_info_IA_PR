@@ -2,7 +2,8 @@ print("on enmerde l'info")
 print("SCIENCE BITCH")
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-from reportlab.lib.utils import ImageReader
+from reportlab.lib.utils import ImageReader 
+
 
 def facture ():
     id_resa = 165750512
@@ -21,3 +22,6 @@ def facture ():
     #creation du fichier PDF
     fichier_pdf = f"facture_{id_resa}.pdf"
     c = canvas.Canvas(fichier_pdf, pagesize=A4)
+    width, height = A4
+    #ajout d'une image
+    logo_path = 
