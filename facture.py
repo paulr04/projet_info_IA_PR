@@ -3,20 +3,20 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader 
 import os 
 
-def facture():
+def facture(reservation,user):
     print("Je suis dans la fonction facture")
-    id_resa = 165750512
-    id_vehicule = 'AA-123-AA'
-    date_debut = '10-05-2025'
-    date_fin = '12-05-2025'
-    jours_res = 60
-    prix = 2170.0
-    id_user = 123456789
-    nom = 'Doe'
-    prenom = 'John'
-    email = 'john.doe@example.com'
-    telephone = '0123456789'
-    
+    id_resa = reservation.id_resa
+    id_vehicule = reservation.id_vehicule
+    date_debut = reservation.date_debut
+    date_fin = reservation.date_fin
+    jours_res = reservation.jours
+    prix = reservation.prix_total
+    id_user = reservation.id_user
+    nom = user.nom
+    prenom = user.prenom
+    email = user.email
+    telephone = user.telephone
+
     fichier_pdf = f"facture_{id_resa}.pdf"
     c = canvas.Canvas(fichier_pdf, pagesize=A4)
     width, height = A4
@@ -71,6 +71,3 @@ def facture():
     c.drawString(50, 50, "Merci pour votre confiance ! OnlyDrive © 2025")
     c.save()
     print(f"Facture générée : {fichier_pdf}")
-
-facture()
-input("Appuie sur Entrée pour quitter...")

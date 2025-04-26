@@ -3,6 +3,7 @@ import os
 from dataclasses import field
 from fonctions import *
 from objects import Vehicule, Reservation, User
+from facture import facture
 
 USER_FILE = 'users.csv'
 VEHICULES_FILE = 'vehicules.csv'
@@ -217,7 +218,9 @@ class Application:
             prix = jours_res * prix_vehicule
             id_resa = generer_id_unique(RESERVATIONS_FILE, 'id_resa')
             reservation = Reservation(id_resa, id_user, id_vehicule, date_debut, date_fin, jours_res, prix)
-
+            print(id_user)
+            #facture a insérer ici1
+            facture(reservation,info_user(id_user))
             file_exists = os.path.exists(RESERVATIONS_FILE)
             with open(RESERVATIONS_FILE, mode="a", newline="", encoding="utf-8") as file:
                 writer = csv.DictWriter(file, fieldnames=reservation.to_dict().keys())

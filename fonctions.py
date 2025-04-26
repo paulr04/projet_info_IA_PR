@@ -3,6 +3,7 @@ import re
 import csv
 import os
 import random
+from objects import *
 
 USER_FILE = 'users.csv'
 VEHICULES_FILE = 'vehicules.csv'
@@ -273,3 +274,27 @@ def trouver_value(FILE, id_recherche, champ_id, champ_id_return):
 
     print(f"🔍 Valeur avec {champ_id} = {id_recherche} non trouvée.")
     return None
+def info_user(id_user):
+    """
+    Récupère les informations d'un utilisateur à partir de son ID.
+    """
+    if not os.path.exists(USER_FILE):
+        print("Fichier introuvable.")
+        return None
+
+    with open(USER_FILE, mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row["id_user"] == id_user:
+                user_id = row['id_user']
+                nom = row['nom']
+                prenom = row['prenom']
+                email = row['email']
+                telephone = row['telephone']
+                role = row['role']
+                mot_de_passe = row['mot_de_passe']
+                return User(user_id, nom, prenom, email, telephone, role, mot_de_passe)
+                break
+            else:
+                pass
+            
