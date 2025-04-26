@@ -3,8 +3,10 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader 
 import os 
 
-def facture(reservation,user):
+def facture(reservation, user, vehicule):
     print("Je suis dans la fonction facture")
+
+    # Récupération des infos
     id_resa = reservation.id_resa
     id_vehicule = reservation.id_vehicule
     date_debut = reservation.date_debut
@@ -12,16 +14,22 @@ def facture(reservation,user):
     jours_res = reservation.jours
     prix = reservation.prix_total
     id_user = reservation.id_user
+
     nom = user.nom
     prenom = user.prenom
     email = user.email
     telephone = user.telephone
 
+    modele = vehicule.modele
+    marque_vehicule = vehicule.marque
+    prix_jour = vehicule.prix_jour
+    description = vehicule.description
+
     fichier_pdf = f"facture_{id_resa}.pdf"
     c = canvas.Canvas(fichier_pdf, pagesize=A4)
     width, height = A4
 
-    # Ajout d'une image
+    # Ajout du logo
     logo_path = r"C:\Users\Utilisateur\projet_voiture\projet_info_IA_PR\onlydrive_logo.png"
     print(f"Je cherche le logo ici : {logo_path}")
 
@@ -35,12 +43,12 @@ def facture(reservation,user):
         except Exception as e:
             print(f"Erreur lors de l'ajout de l'image : {e}")
 
-    # Titre (un peu plus bas pour laisser l'image tranquille)
+    # Titre
     c.setFont("Helvetica-Bold", 20)
     c.drawCentredString(width / 2, height - 200, "Facture de Location")
 
-    # Informations du client
-    y = height - 250  # Décaler tout le texte en fonction
+    # Infos Client
+    y = height - 250
     c.setFont("Helvetica-Bold", 14)
     c.drawString(50, y, "Informations du Client :")
     c.setFont("Helvetica", 12)
@@ -49,7 +57,7 @@ def facture(reservation,user):
     c.drawString(50, y - 60, f"Téléphone : {telephone}")
     c.drawString(50, y - 80, f"ID Utilisateur : {id_user}")
 
-    # Informations de réservation
+    # Infos Réservation
     y -= 120
     c.setFont("Helvetica-Bold", 14)
     c.drawString(50, y, "Informations de la Réservation :")
@@ -60,14 +68,26 @@ def facture(reservation,user):
     c.drawString(50, y - 80, f"Date de Fin : {date_fin}")
     c.drawString(50, y - 100, f"Jours de Réservation : {jours_res}")
 
-    # Prix
+    # Infos Véhicule
+    y -= 140
     c.setFont("Helvetica-Bold", 14)
-    c.drawString(50, y - 140, "Prix Total :")
+    c.drawString(50, y, "Informations sur le Véhicule :")
     c.setFont("Helvetica", 12)
-    c.drawString(50, y - 160, f"{prix} €")
+    c.drawString(50, y - 20, f"Marque : {marque_vehicule}")
+    c.drawString(50, y - 40, f"Modèle : {modele}")
+    c.drawString(50, y - 60, f"Prix par Jour : {prix_jour} €")
+    c.drawString(50, y - 80, f"Description : {description}")
+
+    # Prix total
+    y -= 140
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(50, y, "Prix Total de la Location :")
+    c.setFont("Helvetica", 12)
+    c.drawString(50, y - 20, f"{prix} €")
 
     # Signature
     c.setFont("Helvetica-Oblique", 10)
     c.drawString(50, 50, "Merci pour votre confiance ! OnlyDrive © 2025")
+
     c.save()
     print(f"Facture générée : {fichier_pdf}")

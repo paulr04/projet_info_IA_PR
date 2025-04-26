@@ -220,7 +220,7 @@ class Application:
             reservation = Reservation(id_resa, id_user, id_vehicule, date_debut, date_fin, jours_res, prix)
             print(id_user)
             #facture a insérer ici1
-            facture(reservation,info_user(id_user))
+            facture(reservation,info_user(id_user),info_vehicule(id_vehicule))
             file_exists = os.path.exists(RESERVATIONS_FILE)
             with open(RESERVATIONS_FILE, mode="a", newline="", encoding="utf-8") as file:
                 writer = csv.DictWriter(file, fieldnames=reservation.to_dict().keys())

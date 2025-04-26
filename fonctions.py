@@ -294,7 +294,40 @@ def info_user(id_user):
                 role = row['role']
                 mot_de_passe = row['mot_de_passe']
                 return User(user_id, nom, prenom, email, telephone, role, mot_de_passe)
-                break
             else:
                 pass
-            
+def info_vehicule(id_vehicule):
+    """
+    Récupère les informations d'un véhicule à partir de son ID.
+    """
+    if not os.path.exists(VEHICULES_FILE):
+        print("Fichier introuvable.")
+        return None
+
+    with open(VEHICULES_FILE, mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row["id_vehicule"] == id_vehicule:
+                id_vehicule = row['id_vehicule']
+                marque = row['marque']
+                modele = row['modele']
+                prix_jour = float(row['prix_jour'])
+                masse = float(row['masse'])
+                vitesse_max = float(row['vitesse_max'])
+                puissance = float(row['puissance'])
+                volume_utile = float(row['volume_utile'])
+                nb_places = int(row['nb_places'])
+                type_moteur = row['type_moteur'] 
+                dimension = tuple(row['dimensions'])
+                type_vehicule = row['type_vehicule']
+                boite_vitesse = row['boite_vitesse']
+                entretien_annuel = float(row['entretien_annuel'])
+                dispo = row['dispo']
+                description = row['description']
+                return Vehicule(
+                    id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,
+                    volume_utile, nb_places, type_moteur, dimension, type_vehicule,
+                    boite_vitesse, entretien_annuel, dispo, description
+                )
+            else:
+                pass
