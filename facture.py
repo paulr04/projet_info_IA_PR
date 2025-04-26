@@ -28,9 +28,9 @@ def facture(reservation, user, vehicule):
     fichier_pdf = f"facture_{id_resa}.pdf"
     c = canvas.Canvas(fichier_pdf, pagesize=A4)
     width, height = A4
-
+    logo_name = 'onlydrive_logo.png'
     # Ajout du logo
-    logo_path = r"C:\Users\Utilisateur\projet_voiture\projet_info_IA_PR\onlydrive_logo.png"
+    logo_path = os.path.abspath(logo_name)
     print(f"Je cherche le logo ici : {logo_path}")
 
     if not os.path.exists(logo_path):
