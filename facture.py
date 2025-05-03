@@ -29,7 +29,7 @@ def facture(reservation, user, vehicule):
 
     c = canvas.Canvas(path_save, pagesize=A4)
     width, height = A4
-    logo_name = 'onlydrive_logo.png'
+    logo_name = 'logo_cargo.png'
     # Ajout du logo
     logo_path = os.path.abspath(logo_name)
     print(f"Je cherche le logo ici : {logo_path}")
@@ -88,7 +88,7 @@ def facture(reservation, user, vehicule):
 
     # Signature
     c.setFont("Helvetica-Oblique", 10)
-    c.drawString(50, 50, "Merci pour votre confiance ! OnlyDrive © 2025")
+    c.drawString(50, 50, "Merci pour votre confiance ! CarGo © 2025")
 
     c.save()
     print(f"Facture générée : {fichier_pdf}")
