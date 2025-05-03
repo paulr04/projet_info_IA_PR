@@ -4,7 +4,6 @@ from reportlab.lib.utils import ImageReader
 import os 
 
 def facture(reservation, user, vehicule):
-    print("Je suis dans la fonction facture")
 
     # Récupération des infos
     id_resa = reservation.id_resa
@@ -26,7 +25,9 @@ def facture(reservation, user, vehicule):
     description = vehicule.description
 
     fichier_pdf = f"facture_{id_resa}.pdf"
-    c = canvas.Canvas(fichier_pdf, pagesize=A4)
+    path_save = os.path.join(os.path.abspath("factures_pdf"),fichier_pdf)
+
+    c = canvas.Canvas(path_save, pagesize=A4)
     width, height = A4
     logo_name = 'onlydrive_logo.png'
     # Ajout du logo
