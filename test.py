@@ -1,43 +1,107 @@
 import csv
+import re
+import ast
 
-def modifier_champ_csv(fichier_csv, champ_id, id_val, champs_interdits):
-    # Lecture du fichier
-    with open(fichier_csv, mode='r', newline='', encoding='utf-8') as f:
+def recherche_vehicules_flexible(fichier_csv):
+    champs_recherche = [
+        "marque", "modele", "prix_jour", "masse", "vitesse_max", "puissance",
+        "volume_utile", "nb_places", "type_moteur", "dimensions",
+        "type_vehicule", "boite_vitesse"
+    ]
+
+    # Chargement du fichier
+    with open(fichier_csv, newline='', encoding='utf-8') as f:
         lecteur = csv.DictReader(f)
-        lignes = list(lecteur)
-        champs = lecteur.fieldnames
+        vehicules = []
+        for ligne in lecteur:
+            for champ in ligne:
+                if champ in ['prix_jour', 'masse', 'vitesse_max', 'puissance', 'volume_utile', 'entretien_annuel']:
+                    ligne[champ] = float(ligne[champ])
+                elif champ == 'nb_places':
+                    ligne[champ] = int(ligne[champ])
+                elif champ == 'dispo':
+                    ligne[champ] = ligne[champ] == 'True'
+                elif champ == 'dimensions':
+                    ligne[champ] = ast.literal_eval(ligne[champ])
+            vehicules.append(ligne)
 
-    if champ_id not in champs:
-        print(f"Erreur : le champ ID '{champ_id}' n'existe pas.")
-        return
+    print("\nChamps disponibles pour la recherche (ex: prix_jour <= 50):\n")
+    print(", ".join(champs_recherche))
+    print("\nTapez 'ok' quand vous avez fini d'entrer vos critères.\n")
 
-    ligne_modifiee = False
-    for ligne in lignes:
-        if ligne[champ_id] == id_val:
-            champs_modifiables = [c for c in champs if c not in champs_interdits]
-            print("Champs modifiables :", champs_modifiables)
-
-            champ_a_modifier = input("Quel champ voulez-vous modifier ? ")
-            if champ_a_modifier not in champs_modifiables:
-                print("Erreur : champ interdit ou inexistant.")
-                return
-
-            nouvelle_valeur = input(f"Nouvelle valeur pour '{champ_a_modifier}' : ")
-            ligne[champ_a_modifier] = nouvelle_valeur
-            ligne_modifiee = True
+    criteres = []
+    while True:
+        entree = input("> ").strip()
+        if entree.lower() == "ok":
             break
 
-    if not ligne_modifiee:
-        print(f"Aucune ligne trouvée avec {champ_id} = {id_val}.")
-        return
+        match = re.match(r"(\w+)\s*(<=|>=|=|<|>)\s*(.+)", entree)
+        if not match:
+            print("Format invalide. Exemple : prix_jour <= 50 , marque = toyota")
+            continue
 
-    with open(fichier_csv, mode='w', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=champs)
-        writer.writeheader()
-        writer.writerows(lignes)
+        champ, op, val = match.groups()
+        if champ not in champs_recherche:
+            print(f"Champ '{champ}' non valide.")
+            continue
 
-    print("Modification effectuée avec succès.")
+        if op in [">", "<", ">=", "<="] and champ in ["marque", "modele", "type_moteur", "type_vehicule", "boite_vitesse"]:
+            print(f"Opérateur '{op}' non valide pour le champ texte '{champ}'.")
+            continue
 
-CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'dimensions', 'type_moteur', 'type_vehicule', 'boite_vitesse']
-id_val = "FR-416-FR"
-modifier_champ_csv("data/vehicules.csv", "id_vehicule", id_val, CHAMPS_INTERDITS)
+        criteres.append((champ, op, val))
+
+    op_map = {
+        "=": lambda a, b: a == b,
+        "<": lambda a, b: a < b,
+        ">": lambda a, b: a > b,
+        "<=": lambda a, b: a <= b,
+        ">=": lambda a, b: a >= b,
+    }
+
+    resultats = []
+    for v in vehicules:
+        if not v.get("dispo", False):
+            continue
+
+        match_all = True
+        for champ, op, val in criteres:
+            val_csv = v[champ]
+            try:
+                if isinstance(val_csv, float):
+                    val = float(val)
+                elif isinstance(val_csv, int):
+                    val = int(val)
+                elif isinstance(val_csv, tuple):
+                    val = ast.literal_eval(val)
+                elif isinstance(val_csv, bool):
+                    val = val.lower() == 'true'
+            except Exception:
+                match_all = False
+                break
+            if not op_map[op](val_csv, val):
+                match_all = False
+                break
+
+        if match_all:
+            resultats.append(v)
+
+    if resultats:
+        print(f"\n {len(resultats)} véhicule(s) trouvé(s) :\n")
+        for v in resultats:
+            infos = [
+                f"ID : {v['id_vehicule']}",
+                f"Prix/jour : {v['prix_jour']} €",
+                f"Type : {v['type_vehicule']}",
+                f"Marque : {v['marque']}",
+                f"Modèle : {v['modele']}",
+                f"{v['description']}"
+            ]
+            for champ, _, _ in criteres:
+                if champ not in ['prix_jour', 'marque', 'modele']:
+                    infos.append(f"{champ}: {v[champ]}")
+            print(" - " + ", ".join(infos))
+    else:
+        print("\n Aucun véhicule ne correspond aux critères.")
+
+recherche_vehicules_flexible("data/vehicules.csv")

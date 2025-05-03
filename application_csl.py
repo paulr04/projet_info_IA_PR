@@ -161,9 +161,9 @@ class Application:
             elif choix == "13":
                 self.changer_caracteristique_compte()
             elif choix == "14":
-                print("en cour de développement")
+                self.consulter_reservations_prochaines_vehicule()
             elif choix == "15":
-                print("en cour de développement")
+                self.consulter_vehicule()
             elif choix == "16":
                 print("Déconnexion...")
                 break
@@ -175,38 +175,47 @@ class Application:
 
 
     def consulter_catalogue(self):
-        print("\nCatalogue des véhicules :")
+        print("\nCatalogue des véhicules :\n")
         # Afficher les véhicules disponibles
         with open(VEHICULES_FILE, mode='r') as file:
             reader = csv.DictReader(file)
             for row in reader:
                 print(f"ID : {row['id_vehicule']}, Marque : {row['marque']}, Modèle : {row['modele']}, Prix/jour : {row['prix_jour']}, Disponibilité : {row['dispo']}, Description : {row['description']}")
+        print("\n--- FIN ---\n")
+        input("ENTER pour continuer")
 
     def consulter_user(self):
-        print("\nUtilisateurs :")
+        print("\nUtilisateurs :\n")
         with open(USER_FILE, mode='r') as file:
             reader = csv.DictReader(file)
             for row in reader:
                 print(f"ID : {row['id_user']}, Prenom : {row['prenom']}, Nom : {row['nom']}, Email : {row['email']}, Telephone : {row['telephone']}, Role: {row['role']}")
+        print("\n--- FIN ---\n")
+        input("ENTER pour continuer")
 
     def consulter_reservations(self):
         user = self.utilisateur_connecte
         if user.role == "V":
-            print("\nRéservations :")
+            print("\nRéservations :\n")
             with open(RESERVATIONS_FILE, mode='r') as file:
                 reader = csv.DictReader(file)
                 for row in reader:
-                    if convertir_date(row['date_debut']).date() >= datetime.today().date():    
+                    if convertir_date(row['date_fin']).date() >= datetime.today().date():    
                         print(f"ID réservation : {row['id_resa']}, ID client : {row['id_user']}, ID véhicule : {row['id_vehicule']}, date de début : {row['date_debut']}, date de fin : {row['date_fin']}, prix : {row['prix_total']}")
+            print("\n--- FIN ---\n")
+            input("ENTER pour continuer")
+        
         else:
-            print("\nVos réservations :")
+            print("\nVos réservations :\n")
             with open(RESERVATIONS_FILE, mode='r') as file:
                 reader = csv.DictReader(file)
                 for row in reader:
-                    if row['id_user'] == user.id_user and convertir_date(row['date_debut']).date() >= datetime.today().date():
+                    if row['id_user'] == user.id_user and convertir_date(row['date_fin']).date() >= datetime.today().date():
                         print(f"ID réservation : {row['id_resa']}, ID client : {row['id_user']}, ID véhicule : {row['id_vehicule']}, date de début : {row['date_debut']}, date de fin : {row['date_fin']}, prix : {row['prix_total']}")
                     else:
                         pass
+            print("\n--- FIN ---\n")
+            input("ENTER pour continuer")
 
     def rechercher_vehicule_par_id(self, vehicule_id):
         # Recherche du véhicule par ID dans le fichier des véhicules
@@ -218,7 +227,7 @@ class Application:
         return None
 
     def reserver_vehicule(self):
-        print("\nFaire une réservation :")
+        print("\nFaire une réservation :\n")
         if self.utilisateur_connecte.role == "C":
             id_user = self.utilisateur_connecte.id_user
         else:
@@ -284,7 +293,7 @@ class Application:
             print("ID ou mot de passe incorrect.")
 
     def creer_compte_client(self):
-        print("\nCréer un compte client :")
+        print("\nCréer un compte client :\n")
         nom = input("Nom : ")
         prenom = input("Prénom : ")
         email = input("Email : ")
@@ -305,7 +314,7 @@ class Application:
         print(f"Compte client créé avec succès! ID : {user.id_user} Nom : {user.nom} Prenom : {user.prenom}.")
 
     def ajouter_vehicule(self):
-        print("\n--- AJOUT D'UN VÉHICULE ---")
+        print("\n--- AJOUT D'UN VÉHICULE ---\n")
 
         id_vehicule = demander_plaque_ajout("Plaque d'immatriculation (format AA-000-AA) : ",VEHICULES_FILE)
         marque = input("Marque : ").strip()
@@ -336,7 +345,7 @@ class Application:
         print(f"\nVéhicule ajouté avec succès ! ID : {vehicule.id_vehicule}")
 
     def supprimer_vehicule(self):
-        print("\nSupprimer un véhicule :")
+        print("\nSupprimer un véhicule :\n")
         user_id = self.utilisateur_connecte.id_user
         mot_de_passe = input("Mot de passe : ")
         user = self.verifier_identifiants(user_id, mot_de_passe)
@@ -347,7 +356,7 @@ class Application:
             print("ID ou mot de passe incorrect.")
 
     def supprimer_compte_client(self):
-        print("\nSupprimer un compte client :")
+        print("\nSupprimer un compte client :\n")
         user_id = self.utilisateur_connecte.id_user
         mot_de_passe = input("Mot de passe : ")
         user = self.verifier_identifiants(user_id, mot_de_passe)
@@ -363,7 +372,7 @@ class Application:
             print("ID ou mot de passe incorrect.")
 
     def changer_de_mdp(self):
-        print("\nChanger de mot de passe :")
+        print("\nChanger de mot de passe :\n")
         user_id = self.utilisateur_connecte.id_user
         mot_de_passe = input("Mot de passe : ")
         user = self.verifier_identifiants(user_id, mot_de_passe)
@@ -381,7 +390,7 @@ class Application:
             print("ID ou mot de passe incorrect.")
 
     def changer_caracteristique_vehicule(self):
-        print("\nModifier une caractéristique sur votre compte :")
+        print("\nModifier une caractéristique sur un véhicule :\n")
         user_id = self.utilisateur_connecte.id_user
         mot_de_passe = input("Mot de passe : ")
         user = self.verifier_identifiants(user_id, mot_de_passe)
@@ -392,7 +401,7 @@ class Application:
             print("ID ou mot de passe incorrect.")
 
     def changer_caracteristique_compte(self):
-        print("\nModifier une caractéristique sur votre compte :")
+        print("\nModifier une caractéristique sur votre compte :\n")
         user_id = self.utilisateur_connecte.id_user
         mot_de_passe = input("Mot de passe : ")
         user = self.verifier_identifiants(user_id, mot_de_passe)
@@ -401,6 +410,33 @@ class Application:
             modifier_champ_csv(USER_FILE, "id_user", id_user, CHAMPS_INTERDITS)
         else:
             print("ID ou mot de passe incorrect.")
+
+    def consulter_vehicule(self):
+        print("\nConsulter un véhicule :\n")
+        id_vehicule = demander_plaque("Plaque d'immatriculation du véhicule à consulter (format AA-000-AA) : ")
+        vehicule = self.rechercher_vehicule_par_id(id_vehicule)
+        if vehicule:
+            Vehicule_1 = info_vehicule(id_vehicule) 
+            vdict = Vehicule_1.to_dict()
+            print(f"\n--- {id_vehicule} ---\n")   
+            for cle, valeur in vdict.items():
+                print(f"{cle} : {valeur}")
+            print("\n--- FIN ---\n")
+            input("ENTER pour continuer")
+        else:
+            print("Véhicule non trouvé.")
+
+    def consulter_reservations_prochaines_vehicule(self):
+        print("\nConsulter les réservations prochaines d'un véhicule :\n")
+        id_vehicule = demander_plaque("Plaque d'immatriculation du véhicule (format AA-000-AA) : ")
+        print(f"\n--- Réservations du {id_vehicule} --- \n")
+        with open(RESERVATIONS_FILE, mode='r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                if row['id_vehicule'] == id_vehicule and convertir_date(row['date_fin']).date() >= datetime.today().date():
+                    print(f"ID réservation : {row['id_resa']}, ID client : {row['id_user']}, date de début : {row['date_debut']}, date de fin : {row['date_fin']}, prix : {row['prix_total']}")
+        print("\n--- FIN ---\n")
+        input("ENTER pour continuer")
 
 if __name__ == "__main__":
     # Création d'une instance de l'application et lancement du menu principal

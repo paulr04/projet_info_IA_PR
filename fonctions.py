@@ -148,26 +148,24 @@ def demander_plaque(message):
     """
         Demande une plaque au format AB-123-CD et vérifie qu'elle n'existe pas déjà.
         """
-    while True:
-        plaque = input(message).strip().upper()
+    plaque = input(message).strip().upper()
 
-        if not re.match(r"^[A-Z]{2}-\d{3}-[A-Z]{2}$", plaque):
-            print("Format invalide. Utilisez le format AB-123-CD.")
-            continue
-        # Vérification de l'existence de la plaque
-        if os.path.exists(VEHICULES_FILE):
-            with open(VEHICULES_FILE, mode="r", encoding="utf-8", newline="") as file:
-                reader = csv.DictReader(file)
-                if reader.fieldnames and "id_vehicule" in reader.fieldnames:
-                    if any(row["id_vehicule"] == plaque for row in reader):
-                        print("Véhicule trouvé ! ")
-                        return plaque
-                        continue
-                    else:
-                        print("Véhicule introuvable ! ")
+    if not re.match(r"^[A-Z]{2}-\d{3}-[A-Z]{2}$", plaque):
+        print("Format invalide. Utilisez le format AB-123-CD.")
+ 
+    # Vérification de l'existence de la plaque
+    if os.path.exists(VEHICULES_FILE):
+        with open(VEHICULES_FILE, mode="r", encoding="utf-8", newline="") as file:
+            reader = csv.DictReader(file)
+            if reader.fieldnames and "id_vehicule" in reader.fieldnames:
+                if any(row["id_vehicule"] == plaque for row in reader):
+                    print("Véhicule trouvé ! ")
+                    return plaque
                 else:
-                    print(" PROBLEME ")
-                    continue
+                    print("Véhicule introuvable ! ")
+            else:
+                print(" PROBLEME ")
+
 
 def demander_date_valide(message="Date (MM-DD-YYYY) : "):
     while True:
@@ -318,11 +316,11 @@ def info_vehicule(id_vehicule):
                 volume_utile = float(row['volume_utile'])
                 nb_places = int(row['nb_places'])
                 type_moteur = row['type_moteur'] 
-                dimension = tuple(row['dimensions'])
+                dimension = row['dimensions']
                 type_vehicule = row['type_vehicule']
                 boite_vitesse = row['boite_vitesse']
                 entretien_annuel = float(row['entretien_annuel'])
-                dispo = row['dispo']
+                dispo = bool(row['dispo'])
                 description = row['description']
                 return Vehicule(
                     id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,

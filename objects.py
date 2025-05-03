@@ -43,11 +43,11 @@ class Vehicule:
         self.volume_utile = volume_utile
         self.nb_places = nb_places
         self.type_moteur = type_moteur
-        self.dimensions = dimensions
+        self.dimensions = str(dimensions)
         self.type_vehicule = type_vehicule
         self.boite_vitesse = boite_vitesse
         self.entretien_annuel = entretien_annuel
-        self.dispo = dispo
+        self.dispo = bool(dispo)
         self.description = description
 
     def to_dict(self):
