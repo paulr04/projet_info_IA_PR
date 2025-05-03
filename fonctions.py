@@ -5,9 +5,9 @@ import os
 import random
 from objects import *
 
-USER_FILE = 'users.csv'
-VEHICULES_FILE = 'vehicules.csv'
-RESERVATIONS_FILE = 'reservations.csv'
+USER_FILE = 'data/users.csv'
+VEHICULES_FILE = 'data/vehicules.csv'
+RESERVATIONS_FILE = 'data/reservations.csv'
 TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "tank", "artillerie", "APC"]
 TYPES_MOTEUR = ["essence", "diesel", "électrique", "hybride"]
 BOITES_VITESSE = ["manuelle", "automatique"]

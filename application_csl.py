@@ -4,9 +4,9 @@ from fonctions import *
 from objects import Vehicule, Reservation, User
 from facture import facture
 
-USER_FILE = 'users.csv'
-VEHICULES_FILE = 'vehicules.csv'
-RESERVATIONS_FILE = 'reservations.csv'
+USER_FILE = 'data/users.csv'
+VEHICULES_FILE = 'data/vehicules.csv'
+RESERVATIONS_FILE = 'data/reservations.csv'
 
 class Application:
     def __init__(self):
