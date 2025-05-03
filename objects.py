@@ -16,7 +16,7 @@ class Vehicule:
         volume_utile (float)  : Volume utile du véhicule en m³.
         nb_places (int)       : Nombre de places assises dans le véhicule.
         type_moteur (str)     : Type de moteur du véhicule (ex : "essence", "diesel", "électrique",...).
-        dimensions (tuple)    : Dimensions du véhicule sous forme de tuple (longueur, largeur, hauteur) en m.
+        hauteur (float)       : Hauteur du véhicule en m.
         type_vehicule (str)   : Type du véhicule (ex : "berline", "citadine", "avion", "tank").
         boite_vitesse (str)   : Type de boîte de vitesse du véhicule ("manuelle" ou "automatique").
         entretien_annuel (float) : Prix en euros de l'entretien annuel du véhicule.
@@ -30,7 +30,7 @@ class Vehicule:
 
     def __init__(
         self, id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,
-        volume_utile, nb_places, type_moteur, dimensions, type_vehicule,
+        volume_utile, nb_places, type_moteur, hauteur, type_vehicule,
         boite_vitesse, entretien_annuel, dispo, description
     ):
         self.id_vehicule = id_vehicule
@@ -43,7 +43,7 @@ class Vehicule:
         self.volume_utile = volume_utile
         self.nb_places = nb_places
         self.type_moteur = type_moteur
-        self.dimensions = str(dimensions)
+        self.hauteur = hauteur
         self.type_vehicule = type_vehicule
         self.boite_vitesse = boite_vitesse
         self.entretien_annuel = entretien_annuel

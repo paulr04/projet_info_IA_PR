@@ -8,11 +8,12 @@ from facture import *
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
-CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'dimensions', 'type_moteur', 'type_vehicule', 'boite_vitesse']
+CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'type_moteur', 'type_vehicule', 'boite_vitesse']
 
 class Application:
     def __init__(self):
         self.utilisateur_connecte = None  # L'utilisateur connecté (client ou vendeur)
+        self.criteres = []  # Critères de recherche pour le catalogue de véhicules
         self.choisir_action()
 
     def choisir_action(self):
@@ -78,7 +79,7 @@ class Application:
         while True:
             print("\nMenu Client :")
             print("1. Consulter le catalogue de véhicules")
-            print("2. Faire une recherche de véhicule")
+            print("2. Faire une recherche de véhicule et le réserver")
             print("3. Consulter vos réservations")
             print("4. Faire une réservation")
             print("5. Supprimer le compte")
@@ -326,14 +327,14 @@ class Application:
         volume_utile = demander_input_float("Volume utile (m³) : ")
         nb_places = demander_input_int("Nombre de places : ")
         type_moteur = demander_input_choix("Type de moteur : ", TYPES_MOTEUR)
-        dimensions = demander_input_dimensions()
+        hauteur = demander_input_float("Hauteur (m) : ")
         type_vehicule = demander_input_choix("Type de véhicule : ", TYPES_VEHICULE)
         boite_vitesse = demander_input_choix("Boîte de vitesse : ", BOITES_VITESSE)
         entretien_annuel = demander_input_float("Entretien annuel (€) : ")
         dispo = demander_input_bool("Le véhicule est-il disponible ? (True/False) : ")
         description = input("Description du véhicule : ").strip()
 
-        vehicule = Vehicule(id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,volume_utile, nb_places, type_moteur, dimensions, type_vehicule, boite_vitesse, entretien_annuel, dispo, description )
+        vehicule = Vehicule(id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,volume_utile, nb_places, type_moteur, hauteur, type_vehicule, boite_vitesse, entretien_annuel, dispo, description )
 
         file_exists = os.path.exists(VEHICULES_FILE)
         with open(VEHICULES_FILE, mode="a", newline="", encoding="utf-8") as file:
@@ -437,6 +438,15 @@ class Application:
                     print(f"ID réservation : {row['id_resa']}, ID client : {row['id_user']}, date de début : {row['date_debut']}, date de fin : {row['date_fin']}, prix : {row['prix_total']}")
         print("\n--- FIN ---\n")
         input("ENTER pour continuer")
+
+    def recherche_de_véhicule_pour_reservation(self):
+        vehicules_search = load_vehicules(VEHICULES_FILE)
+        print("\nRecherche de véhicule :\n")
+        criteres = criteres("data/vehicules.csv")
+        resultats = recherche(vehicules_search, criteres)
+        self.criteres = criteres
+        if resultats:
+            self.reserver_vehicule()
 
 if __name__ == "__main__":
     # Création d'une instance de l'application et lancement du menu principal
