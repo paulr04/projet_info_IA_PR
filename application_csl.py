@@ -13,7 +13,7 @@ CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe',
 class Application:
     def __init__(self):
         self.utilisateur_connecte = None  # L'utilisateur connecté (client ou vendeur)
-        self.criteres = []  # Critères de recherche pour le catalogue de véhicules
+        self.criteres_resa = []  # Critères de recherche pour le catalogue de véhicules
         self.choisir_action()
 
     def choisir_action(self):
@@ -92,7 +92,7 @@ class Application:
             if choix == "1":
                 self.consulter_catalogue()
             elif choix == "2":
-                print("en cour de développement")
+                self.recherche_de_véhicule_pour_reservation()
             elif choix == "3":
                 self.consulter_reservations()
             elif choix == "4":
@@ -241,7 +241,9 @@ class Application:
             verifier_dates(date_debut, date_fin)
             indispo = verifier_reservation(date_debut, date_fin, id_vehicule)
             if indispo:
-                print("Le véhicule n'est pas disponible aux dates demandées.") # SURCLASSEMENT
+                print("Le véhicule n'est pas disponible aux dates demandées :( .") # SURCLASSEMENT
+                print("criteres : ", self.criteres_resa)
+                print("SURCLASSEMENT")
             else:
                 jours_res = calculer_jours_reservation(date_debut, date_fin)
                 prix_vehicule = float(trouver_value(VEHICULES_FILE, id_vehicule, 'id_vehicule', 'prix_jour'))
@@ -442,12 +444,15 @@ class Application:
     def recherche_de_véhicule_pour_reservation(self):
         vehicules_search = load_vehicules(VEHICULES_FILE)
         print("\nRecherche de véhicule :\n")
-        criteres = criteres("data/vehicules.csv")
-        resultats = recherche(vehicules_search, criteres)
-        self.criteres = criteres
+        crit = criteres(VEHICULES_FILE)
+        resultats = recherche(vehicules_search, crit)
+        self.criteres_resa = crit
         if resultats:
-            self.reserver_vehicule()
-
+            ok_resa = demander_input_bool("Souhaitez-vous réserver un véhicule ? (oui/non): ")
+            if ok_resa:    
+                self.reserver_vehicule()
+        else:
+            print("Aucun véhicule trouvé avec les critères spécifiés.")
 if __name__ == "__main__":
     # Création d'une instance de l'application et lancement du menu principal
     app = Application()

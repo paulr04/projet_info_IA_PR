@@ -1,7 +1,7 @@
 import csv
 import re
 
-TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "tank", "artillerie", "APC"]
+TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "fourgon", "militaire"]
 TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride"]
 BOITES_VITESSE = ["manuelle", "automatique"]
 

@@ -427,7 +427,7 @@ def criteres(fichier_csv):
     criteres = [("type_vehicule", "=", type_vehicule)]  # Ajouter le type de véhicule aux critères
 
     print("\nREMARQUE : Les champs texte ne peuvent pas être comparés avec <, >, <= ou >=.")
-    print("REMARQUE : Les champs texte sont en minuscule sans accent...")
+    print("REMARQUE : Les champs texte sont en minuscule sans accents...")
     print(f"OPTIONS type de moteur : {TYPES_MOTEUR}")
     print(f"OPTIONS type de véhicule : {TYPES_VEHICULE}")
     print(f"OPTIONS boîte de vitesse : {BOITES_VITESSE}")
