@@ -9,7 +9,7 @@ USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
 TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "tank", "artillerie", "APC"]
-TYPES_MOTEUR = ["essence", "diesel", "électrique", "hybride"]
+TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride"]
 BOITES_VITESSE = ["manuelle", "automatique"]
 
 def generer_id_unique(FILE, champ_id):
@@ -272,7 +272,7 @@ def trouver_value(FILE, id_recherche, champ_id, champ_id_return):
             if row[champ_id] == id_recherche:
                 return row[champ_id_return]
 
-    print(f"🔍 Valeur avec {champ_id} = {id_recherche} non trouvée.")
+    print(f"Valeur avec {champ_id} = {id_recherche} non trouvée.")
     return None
 def info_user(id_user):
     """
@@ -352,3 +352,54 @@ def verifier_reservation(date_debut, date_fin, id_vehicule):
                 else:
                     print("OK RESERVATION")
                     pass
+def supprimer_facture(id_resa):
+    """
+    Supprime la facture associée à une réservation donnée.
+    """
+    fichier_pdf = f"facture_{id_resa}.pdf"
+    path_save = os.path.join(os.path.abspath("factures_pdf"), fichier_pdf)
+
+    if os.path.exists(path_save):
+        os.remove(path_save)
+        print(f"Facture {fichier_pdf} supprimée avec succès.")
+    else:
+        print(f"Aucune facture trouvée pour l'ID de réservation {id_resa}.")
+
+
+def modifier_champ_csv(fichier_csv, champ_id, id_val, champs_interdits):
+    # Lecture du fichier
+    with open(fichier_csv, mode='r', newline='', encoding='utf-8') as f:
+        lecteur = csv.DictReader(f)
+        lignes = list(lecteur)
+        champs = lecteur.fieldnames
+
+    if champ_id not in champs:
+        print(f"Erreur : le champ ID '{champ_id}' n'existe pas.")
+        return
+
+    ligne_modifiee = False
+    for ligne in lignes:
+        if ligne[champ_id] == id_val:
+            champs_modifiables = [c for c in champs if c not in champs_interdits]
+            print("Champs modifiables :", champs_modifiables)
+
+            champ_a_modifier = input("Quel champ voulez-vous modifier ? ")
+            if champ_a_modifier not in champs_modifiables:
+                print("Erreur : champ interdit ou inexistant.")
+                return
+
+            nouvelle_valeur = input(f"Nouvelle valeur pour '{champ_a_modifier}' : ")
+            ligne[champ_a_modifier] = nouvelle_valeur
+            ligne_modifiee = True
+            break
+
+    if not ligne_modifiee:
+        print(f"Aucune ligne trouvée avec {champ_id} = {id_val}.")
+        return
+
+    with open(fichier_csv, mode='w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=champs)
+        writer.writeheader()
+        writer.writerows(lignes)
+
+    print("Modification effectuée avec succès.")

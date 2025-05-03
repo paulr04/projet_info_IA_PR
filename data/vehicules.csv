@@ -1,8 +1,8 @@
 id_vehicule,marque,modele,prix_jour,masse,vitesse_max,puissance,volume_utile,nb_places,type_moteur,dimensions,type_vehicule,boite_vitesse,entretien_annuel,dispo,description
-AA-123-AA,Renault,Clio,35.0,1100.0,180.0,90.0,0.3,5,essence,"(4.05,1.73,1.45)",citadine,manuelle,450.0,True,Petite voiture idéale pour la ville.
-BB-456-BB,Tesla,Model 3,90.0,1800.0,225.0,300.0,0.5,5,électrique,"(4.69,1.85,1.44)",berline,automatique,200.0,True,Berline électrique moderne et silencieuse.
+AA-123-AA,Renault,Clio,35.0,1100.0,180.0,90.0,0.3,5,essence,"(4.05,1.73,1.45)",citadine,manuelle,450.0,True,Petite voiture ideale pour la ville.
+BB-456-BB,Tesla,Model 3,90.0,1800.0,225.0,300.0,0.5,5,electrique,"(4.69,1.85,1.44)",berline,automatique,200.0,True,Berline electrique moderne et silencieuse.
 CC-789-CC,Peugeot,5008,65.0,1500.0,190.0,130.0,0.7,7,diesel,"(4.64,1.84,1.65)",SUV,automatique,600.0,True,Grand SUV confortable pour familles nombreuses.
-DD-321-DD,Beneteau,Antares 8,250.0,2500.0,70.0,200.0,2.0,8,essence,"(8.23,2.76,3.00)",bateau,manuelle,1200.0,True,Bateau à moteur pour croisière côtière.
-EE-654-EE,Renault,Kangoo Z.E.,50.0,1620.0,130.0,60.0,3.5,2,électrique,"(4.21,1.83,1.80)",utilitaire,automatique,300.0,True,Utilitaire électrique pratique pour livraisons.
-FR-416-FR,KNDS,CAESAr,20000.0,10.0,100.0,200.0,0.0,5,essence,"(5.0, 5.0, 5.0)",artillerie,manuelle,100000.0,True,canon de 155 mm monté sur camion
-OO-654-OO,BMW,i3,90.0,2000.0,300.0,150.0,2.0,5,électrique,"(8.0, 5.0, 2.0)",berline,automatique,5000.0,True,blabla
+DD-321-DD,Beneteau,Antares 8,250.0,2500.0,70.0,200.0,2.0,8,essence,"(8.23,2.76,3.00)",bateau,manuelle,1200.0,True,Bateau a moteur pour croisiere cotiere.
+EE-654-EE,Renault,Kangoo Z.E.,50.0,1620.0,130.0,60.0,3.5,2,electrique,"(4.21,1.83,1.80)",utilitaire,automatique,300.0,True,Utilitaire electrique pratique pour livraisons.
+FR-416-FR,KNDS,CAESAr,15000,10.0,100.0,200.0,0.0,5,essence,"(5.0, 5.0, 5.0)",artillerie,manuelle,100000.0,True,canon de 155 mm monte sur camion
+OO-654-OO,BMW,i3,90.0,2000.0,300.0,150.0,2.0,5,electrique,"(8.0, 5.0, 2.0)",berline,automatique,5000.0,False,blabla

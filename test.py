@@ -38,6 +38,6 @@ def modifier_champ_csv(fichier_csv, champ_id, id_val, champs_interdits):
 
     print("Modification effectuée avec succès.")
 
-champs_interdits = ['id_user', 'id_resa', 'id_vehicule', 'role']
-id_val = str(123456789)
-modifier_champ_csv("data/users.csv", "id_user", id_val, champs_interdits)
+CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'dimensions', 'type_moteur', 'type_vehicule', 'boite_vitesse']
+id_val = "FR-416-FR"
+modifier_champ_csv("data/vehicules.csv", "id_vehicule", id_val, CHAMPS_INTERDITS)

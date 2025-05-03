@@ -1,8 +1,9 @@
 import csv
 import os
+import datetime
 from fonctions import *
-from objects import Vehicule, Reservation, User
-from facture import facture
+from objects import *
+from facture import *
 
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
@@ -82,9 +83,10 @@ class Application:
             print("5. Supprimer le compte")
             print("6. Annuler une réservation")
             print("7. Changer de mot de passse")
-            print("8. Quitter")
+            print("8. Modifier une caractéristique sur votre compte")
+            print("9. Quitter")
 
-            choix = input("Choisissez une action (1-8): ")
+            choix = input("Choisissez une action (1-9): ")
             if choix == "1":
                 self.consulter_catalogue()
             elif choix == "2":
@@ -102,6 +104,8 @@ class Application:
                 self.changer_de_mdp()
                 break
             elif choix == "8":
+                print("en cour de développement")
+            elif choix == "9":
                 print("Déconnexion...")
                 break
             else:
@@ -121,9 +125,13 @@ class Application:
             print("9. Supprimer un compte client")
             print("10. Changer de mot de passe")
             print("11. Analyse des ventes")
-            print("12. Quitter")
+            print("12. Modifier une caractéristique sur un véhicule")
+            print("13. Modifier une caractéristique sur votre compte")
+            print("14. Consulter les réservations prochaines d'un véhicule")
+            print("15. Consulter un véhicule")
+            print("16. Quitter")
 
-            choix = input("Choisissez une action (1-12): ")
+            choix = input("Choisissez une action (1-16): ")
             if choix == "1":
                 self.consulter_catalogue()
             elif choix == "2":
@@ -148,6 +156,14 @@ class Application:
             elif choix == "11":
                 print("en cour de développement")
             elif choix == "12":
+                print("en cour de développement")
+            elif choix == "13":
+                print("en cour de développement")
+            elif choix == "14":
+                print("en cour de développement")
+            elif choix == "15":
+                print("en cour de développement")
+            elif choix == "16":
                 print("Déconnexion...")
                 break
             else:
@@ -163,7 +179,7 @@ class Application:
         with open(VEHICULES_FILE, mode='r') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                print(f"ID : {row['id_vehicule']}, Marque : {row['marque']}, Modèle : {row['modele']}, Prix/jour : {row['prix_jour']}")
+                print(f"ID : {row['id_vehicule']}, Marque : {row['marque']}, Modèle : {row['modele']}, Prix/jour : {row['prix_jour']}, Disponibilité : {row['dispo']}, Description : {row['description']}")
 
     def consulter_user(self):
         print("\nUtilisateurs :")
@@ -179,13 +195,14 @@ class Application:
             with open(RESERVATIONS_FILE, mode='r') as file:
                 reader = csv.DictReader(file)
                 for row in reader:
-                    print(f"ID réservation : {row['id_resa']}, ID client : {row['id_user']}, ID véhicule : {row['id_vehicule']}, date de début : {row['date_debut']}, date de fin : {row['date_fin']}, prix : {row['prix_total']}")
+                    if convertir_date(row['date_debut']).date() >= datetime.today().date():    
+                        print(f"ID réservation : {row['id_resa']}, ID client : {row['id_user']}, ID véhicule : {row['id_vehicule']}, date de début : {row['date_debut']}, date de fin : {row['date_fin']}, prix : {row['prix_total']}")
         else:
             print("\nVos réservations :")
             with open(RESERVATIONS_FILE, mode='r') as file:
                 reader = csv.DictReader(file)
                 for row in reader:
-                    if row['id_user'] == user.id_user:
+                    if row['id_user'] == user.id_user and convertir_date(row['date_debut']).date() >= datetime.today().date():
                         print(f"ID réservation : {row['id_resa']}, ID client : {row['id_user']}, ID véhicule : {row['id_vehicule']}, date de début : {row['date_debut']}, date de fin : {row['date_fin']}, prix : {row['prix_total']}")
                     else:
                         pass
@@ -195,7 +212,7 @@ class Application:
         with open(VEHICULES_FILE, mode='r') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                if row['id_vehicule'] == vehicule_id:
+                if row['id_vehicule'] == vehicule_id and row['dispo'] == 'True':
                     return row
         return None
 
@@ -229,20 +246,39 @@ class Application:
                     writer.writerow(reservation.to_dict())
                 print(f"Réservation n° {id_resa} confirmée pour {id_user} pour le véhicule {vehicule['marque']} {vehicule['modele']} du {date_debut} au {date_fin} total de {jours_res} jour(s), coût : {prix} €.")
         else:
-            print("Véhicule non trouvé.")
+            print("Véhicule non disponible (maintenance, entretient...)")
 
     def annuler_reservation(self):
         user = self.utilisateur_connecte
         user_id = user.id_user
+
         if user.role == "C":
             Application.consulter_reservations(self)
         else:
             pass
+        
         mot_de_passe = input("Mot de passe : ")
         user = self.verifier_identifiants(user_id, mot_de_passe)
         if user:
             id_reservation = demander_id("ID réservation à annuler (entrez 9 chiffres): ", RESERVATIONS_FILE, 'id_resa')
-            supprimer_ligne_par_id(RESERVATIONS_FILE, "id_resa",id_reservation)
+            if id_reservation:
+                date_debut = trouver_value(RESERVATIONS_FILE, id_reservation, 'id_resa', 'date_debut')
+                if user.role == "V" and convertir_date(date_debut).date() >= datetime.today().date():
+                    supprimer_ligne_par_id(RESERVATIONS_FILE, "id_resa",id_reservation)
+                    supprimer_facture(id_reservation)
+                    print(f"Réservation n° {id_reservation} annulée avec succès.")
+                if user.role == "C" and convertir_date(date_debut).date() >= datetime.today().date():
+                    id_test = trouver_value(RESERVATIONS_FILE, id_reservation, 'id_resa', 'id_user')
+                    if user.id_user == id_test:
+                        supprimer_ligne_par_id(RESERVATIONS_FILE, "id_resa",id_reservation)
+                        supprimer_facture(id_reservation)
+                        print(f"Réservation n° {id_reservation} annulée avec succès.")
+                    else:
+                        print("Vous pouvez supprimer uniquement vos réservations")
+                else:
+                    print("Vous ne pouvez pas annuler cette réservation.")   
+            else:
+                print("Aucune réservation trouvée avec cet ID.") 
         else:
             print("ID ou mot de passe incorrect.")
 
