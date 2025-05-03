@@ -8,7 +8,7 @@ from objects import *
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
-TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "tank", "artillerie", "APC"]
+TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
 TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride"]
 BOITES_VITESSE = ["manuelle", "automatique"]
 

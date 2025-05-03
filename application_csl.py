@@ -9,11 +9,12 @@ USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
 CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'type_moteur', 'type_vehicule', 'boite_vitesse']
+NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special"]
 
 class Application:
     def __init__(self):
         self.utilisateur_connecte = None  # L'utilisateur connecté (client ou vendeur)
-        self.criteres_resa = []  # Critères de recherche pour le catalogue de véhicules
+        self.criteres_resa = None  # Critères de recherche pour le catalogue de véhicules
         self.choisir_action()
 
     def choisir_action(self):
@@ -171,9 +172,40 @@ class Application:
             else:
                 print("Choix invalide. Veuillez réessayer.")
 
-    def menu_analyse_ventes(self):
-        pass
-
+    def menu_analyse_ventes(self): #à agrandir essayer de proposer 10 à 13 options
+        while True:
+            print("\nMenu Analyse des ventes :")
+            print("1. Consulter le nombre de reservations passées par mois")
+            print("2. Consulter le nombre de reservations passées par ans")
+            print("3. Calculer le chiffre d'affaires sur l'année")
+            print("4. Consulter le chiffre d'affaires par année")
+            print("5. Consulter le chiffre d'affaires total")
+            print("6. Consulter le nombre de réservation par véhicule par année")
+            print("7. Consulter le nombre de réservation par véhicule")
+            print("8. Consulter le chiffre d'affaires par véhicule")
+            print("9. Quitter")
+            choix = input("Choisissez une action (1-9): ")
+            if choix == "1":
+                print("en cour de développement")#les fonctions doivent etre ajouté dans la classe   
+            elif choix == "2":                   #Optimiser le fichier application en mettant des fonction utile dans fonctions.py
+                print("en cour de développement")# Ex : une fonction pour tracer des graphes 
+            elif choix == "3":
+                print("en cour de développement")
+            elif choix == "4":
+                print("en cour de développement")
+            elif choix == "5":
+                print("en cour de développement")
+            elif choix == "6":
+                print("en cour de développement")
+            elif choix == "7":
+                print("en cour de développement")
+            elif choix == "8":
+                print("en cour de développement")
+            elif choix == "9":
+                print("Déconnexion...")
+                break
+            else:
+                print("Choix invalide. Veuillez réessayer.")
 
     def consulter_catalogue(self):
         print("\nCatalogue des véhicules :\n")
@@ -239,11 +271,23 @@ class Application:
             date_debut = demander_date_valide("Date de début (inclus) (format MM-DD-YYYY) : ")
             date_fin = demander_date_valide("Date de fin (inclus) (format MM-DD-YYYY) : ")
             verifier_dates(date_debut, date_fin)
+            jours_res = calculer_jours_reservation(date_debut, date_fin)
+            prix_vehicule = float(trouver_value(VEHICULES_FILE, id_vehicule, 'id_vehicule', 'prix_jour'))
+            prix = jours_res * prix_vehicule
             indispo = verifier_reservation(date_debut, date_fin, id_vehicule)
+
             if indispo:
                 print("Le véhicule n'est pas disponible aux dates demandées :( .") # SURCLASSEMENT
-                print("criteres : ", self.criteres_resa)
-                print("SURCLASSEMENT")
+                surclassement = demander_input_bool("Souhaitez-vous surclasser la réservation ? (oui/non): ")
+                if surclassement and self.criteres_resa:
+                    if vehicule["type_vehicule"] in NO_SURCLASSEMENT_TYPES:
+                        print("Le véhicule ne peut pas etre surclassé avec son type.")
+                    vehicules_surclass = load_vehicules(VEHICULES_FILE)
+                    for element in self.criteres_resa:
+                        if element[0] == 'prix_jour':
+                            self.criteres_resa.remove(element)
+                
+                    resultats = recherche(vehicules_surclass, self.criteres_resa)
             else:
                 jours_res = calculer_jours_reservation(date_debut, date_fin)
                 prix_vehicule = float(trouver_value(VEHICULES_FILE, id_vehicule, 'id_vehicule', 'prix_jour'))
