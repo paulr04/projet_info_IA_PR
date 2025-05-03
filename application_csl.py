@@ -8,6 +8,7 @@ from facture import *
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
+CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'dimensions', 'type_moteur', 'type_vehicule', 'boite_vitesse']
 
 class Application:
     def __init__(self):
@@ -104,7 +105,7 @@ class Application:
                 self.changer_de_mdp()
                 break
             elif choix == "8":
-                print("en cour de développement")
+                self.changer_caracteristique_compte()
             elif choix == "9":
                 print("Déconnexion...")
                 break
@@ -156,9 +157,9 @@ class Application:
             elif choix == "11":
                 print("en cour de développement")
             elif choix == "12":
-                print("en cour de développement")
+                self.changer_caracteristique_vehicule()
             elif choix == "13":
-                print("en cour de développement")
+                self.changer_caracteristique_compte()
             elif choix == "14":
                 print("en cour de développement")
             elif choix == "15":
@@ -376,6 +377,28 @@ class Application:
                     break
                 else:
                     print(" Les mots de passes ne sont pas identiques")
+        else:
+            print("ID ou mot de passe incorrect.")
+
+    def changer_caracteristique_vehicule(self):
+        print("\nModifier une caractéristique sur votre compte :")
+        user_id = self.utilisateur_connecte.id_user
+        mot_de_passe = input("Mot de passe : ")
+        user = self.verifier_identifiants(user_id, mot_de_passe)
+        if user:
+            id_vehicule = demander_plaque("Plaque d'immatriculation du véhicule à modifier (format AA-000-AA) : ")
+            modifier_champ_csv(VEHICULES_FILE, "id_vehicule", id_vehicule, CHAMPS_INTERDITS)
+        else:
+            print("ID ou mot de passe incorrect.")
+
+    def changer_caracteristique_compte(self):
+        print("\nModifier une caractéristique sur votre compte :")
+        user_id = self.utilisateur_connecte.id_user
+        mot_de_passe = input("Mot de passe : ")
+        user = self.verifier_identifiants(user_id, mot_de_passe)
+        if user:
+            id_user = self.utilisateur_connecte.id_user
+            modifier_champ_csv(USER_FILE, "id_user", id_user, CHAMPS_INTERDITS)
         else:
             print("ID ou mot de passe incorrect.")
 
