@@ -545,7 +545,7 @@ def recherche(vehicules, criteres):
                 f"Type : {v.type_vehicule}",
                 f"Marque : {v.marque}",
                 f"Modèle : {v.modele}",
-                f"{v.description}\n"
+                f"{v.description}"
             ]
             for champ, _, _ in criteres:
                 if champ not in ['prix_jour', 'marque', 'modele', 'description', 'type_vehicule']:

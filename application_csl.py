@@ -213,7 +213,7 @@ class Application:
         with open(VEHICULES_FILE, mode='r') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                print(f"ID : {row['id_vehicule']}, Marque : {row['marque']}, Modèle : {row['modele']}, Prix/jour : {row['prix_jour']}, Disponibilité : {row['dispo']}, Description : {row['description']}")
+                print(f"ID : {row['id_vehicule']}, Marque : {row['marque']}, Modèle : {row['modele']}, Prix/jour : {row['prix_jour']} €, Disponibilité : {row['dispo']}, Description : {row['description']}")
         print("\n--- FIN ---\n")
         input("ENTER pour continuer")
 
@@ -277,7 +277,7 @@ class Application:
             indispo = verifier_reservation(date_debut, date_fin, id_vehicule)
 
             if indispo:
-                self.surclassement()
+                self.surclassement(vehicule, self.trouver_vehicule_disponible(date_debut, date_fin),date_debut, date_fin, id_user, jours_res, prix)
             else:
                 id_resa = generer_id_unique(RESERVATIONS_FILE, 'id_resa')
                 reservation = Reservation(id_resa, id_user, id_vehicule, date_debut, date_fin, jours_res, prix)
@@ -307,6 +307,11 @@ class Application:
     def surclassement(self, Vehicule, vehicules_disponibles,date_debut, date_fin, id_user, jours_res, prix):
         print("Le véhicule n'est pas disponible aux dates demandées :( .") # SURCLASSEMENT
         surclassement = demander_input_bool("Souhaitez-vous surclasser la réservation ? (oui/non): ")
+        if self.criteres_resa:
+            pass
+        else:
+            self.criteres_resa = criteres(VEHICULES_FILE)
+
         if surclassement and self.criteres_resa:
             if Vehicule.type_vehicule not in NO_SURCLASSEMENT_TYPES:
                 print("La réservation peut être surclassé.") 
@@ -322,7 +327,11 @@ class Application:
                         if vehicule_choisi in [v.id_vehicule for v in recherche_vehicule]:
                             id_resa = generer_id_unique(RESERVATIONS_FILE, 'id_resa')
                             reservation = Reservation(id_resa, id_user, vehicule_choisi, date_debut, date_fin, jours_res, prix)
-                            facture(reservation,info_user(id_user),info_vehicule(vehicule_choisi))
+                            for element in recherche_vehicule:
+                                if element.id_vehicule == vehicule_choisi:
+                                    vehicule_nouv = element
+                                    break 
+                            facture(reservation,info_user(id_user),vehicule_nouv)
                             file_exists = os.path.exists(RESERVATIONS_FILE)
                             with open(RESERVATIONS_FILE, mode="a", newline="", encoding="utf-8") as file:
                                 writer = csv.DictWriter(file, fieldnames=reservation.to_dict().keys())
