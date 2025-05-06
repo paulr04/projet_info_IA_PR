@@ -404,7 +404,7 @@ def load_vehicules(fichier_csv):
                     ligne[champ] = int(ligne[champ])
                 elif champ == 'dispo':
                     ligne[champ] = ligne[champ] == 'True'
-            vehicules.append(ligne)
+            vehicules.append(load_vehicule_POO(ligne))
     return vehicules
 
 def criteres(fichier_csv):
@@ -465,7 +465,7 @@ def recherche(vehicules, criteres):
         "<=": lambda a, b: a <= b,
         ">=": lambda a, b: a >= b,
     }
-
+    """
     resultats = []
     for v in vehicules:
         if not v.get("dispo", False):
@@ -507,8 +507,76 @@ def recherche(vehicules, criteres):
                     infos.append(f"{champ}: {v[champ]}")
             print(" - " + ", ".join(infos))
             return resultats
+    """
+    resultats = []
+    for v in vehicules:
+        if not getattr(v, "dispo", False):
+            continue
+
+        match_all = True
+        for champ, op, val in criteres:
+            val_obj = getattr(v, champ, None)
+            if val_obj is None:
+                match_all = False
+                break
+            try:
+                if isinstance(val_obj, float):
+                    val = float(val)
+                elif isinstance(val_obj, int):
+                    val = int(val)
+                elif isinstance(val_obj, bool):
+                    val = val.lower() == 'true'
+            except Exception:
+                match_all = False
+                break
+            if not op_map[op](val_obj, val):
+                match_all = False
+                break
+
+        if match_all:
+            resultats.append(v)
+
+    if resultats:
+        print(f"\n {len(resultats)} véhicule(s) trouvé(s) :\n")
+        for v in resultats:
+            infos = [
+                f"ID : {v.id_vehicule}",
+                f"Prix/jour : {v.prix_jour} €",
+                f"Type : {v.type_vehicule}",
+                f"Marque : {v.marque}",
+                f"Modèle : {v.modele}",
+                f"{v.description}\n"
+            ]
+            for champ, _, _ in criteres:
+                if champ not in ['prix_jour', 'marque', 'modele', 'description', 'type_vehicule']:
+                    infos.append(f"{champ}: {getattr(v, champ)}")
+            print(" - " + ", ".join(infos))
+        return resultats
     else:
         print("\nAucun véhicule ne correspond aux critères.\n")
         print("Essayez d'etre plus souple dans vos critères de recherche.\n")
         print("Vous pouvez consulter le catalogue des véhicules pour plus d'information.\n")
 
+def load_vehicule_POO(row):
+    """
+    Charge un véhicule à partir d'une ligne de CSV.
+    """
+    return Vehicule(
+        row['id_vehicule'], row['marque'], row['modele'], float(row['prix_jour']),
+        float(row['masse']), float(row['vitesse_max']), float(row['puissance']),
+        float(row['volume_utile']), int(row['nb_places']), row['type_moteur'],
+        float(row['hauteur']), row['type_vehicule'], row['boite_vitesse'],
+        float(row['entretien_annuel']), bool(row['dispo']), row['description']
+    )
+
+def load_vehicule_POO_id(csv,id_vehicule):
+    """
+    Charge un véhicule à partir d'une ligne de CSV.
+    """
+    with open(csv, mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row['id_vehicule'] == id_vehicule:
+                return load_vehicule_POO(row)
+            else:
+                print("Véhicule introuvable !")

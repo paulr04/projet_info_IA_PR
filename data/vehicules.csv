@@ -6,3 +6,6 @@ DD-321-DD,beneteau,antares 8,250.0,2500.0,70.0,200.0,2.0,8,essence,3.0,bateau,ma
 EE-654-EE,renault,kangoo ze,50.0,1620.0,130.0,60.0,3.5,2,electrique,1.80,utilitaire,automatique,300.0,True,Utilitaire electrique pratique pour livraisons.
 FR-416-FR,knds,caesar,15000,10000.0,100.0,200.0,0.0,4,essence,3.0,militaire,manuelle,100000.0,True,canon de 155 mm monte sur camion
 OO-654-OO,bmw,i3,90.0,2000.0,300.0,150.0,2.0,5,electrique,1.70,berline,automatique,5000.0,False,blabla
+SS-111-SS,renault,zoe,40.0,1500.0,140.0,80.0,0.3,5,electrique,1.55,citadine,automatique,300.0,True,Citadine electrique ideale pour la ville.
+SS-222-SS,renault,e-twingo,45.0,1200.0,150.0,70.0,0.2,4,electrique,1.50,citadine,automatique,250.0,True,Citadine electrique compacte et agile.
+SS-333-SS,renault,twingo,30.0,1100.0,130.0,60.0,0.2,4,essence,1.45,citadine,manuelle,200.0,True,Citadine essence economique et maniable.    

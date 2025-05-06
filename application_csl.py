@@ -256,7 +256,7 @@ class Application:
             reader = csv.DictReader(file)
             for row in reader:
                 if row['id_vehicule'] == vehicule_id and row['dispo'] == 'True':
-                    return row
+                    return Vehicule(row['id_vehicule'], row['marque'], row['modele'], row['prix_jour'], row['masse'], row['vitesse_max'], row['puissance'], row['volume_utile'], row['nb_places'], row['type_moteur'], row['hauteur'], row['type_vehicule'], row['boite_vitesse'], row['entretien_annuel'], row['dispo'], row['description'])
         return None
 
     def reserver_vehicule(self):
@@ -272,26 +272,13 @@ class Application:
             date_fin = demander_date_valide("Date de fin (inclus) (format MM-DD-YYYY) : ")
             verifier_dates(date_debut, date_fin)
             jours_res = calculer_jours_reservation(date_debut, date_fin)
-            prix_vehicule = float(trouver_value(VEHICULES_FILE, id_vehicule, 'id_vehicule', 'prix_jour'))
+            prix_vehicule = vehicule.prix_jour
             prix = jours_res * prix_vehicule
             indispo = verifier_reservation(date_debut, date_fin, id_vehicule)
 
             if indispo:
-                print("Le véhicule n'est pas disponible aux dates demandées :( .") # SURCLASSEMENT
-                surclassement = demander_input_bool("Souhaitez-vous surclasser la réservation ? (oui/non): ")
-                if surclassement and self.criteres_resa:
-                    if vehicule["type_vehicule"] in NO_SURCLASSEMENT_TYPES:
-                        print("Le véhicule ne peut pas etre surclassé avec son type.")
-                    vehicules_surclass = load_vehicules(VEHICULES_FILE)
-                    for element in self.criteres_resa:
-                        if element[0] == 'prix_jour':
-                            self.criteres_resa.remove(element)
-                
-                    resultats = recherche(vehicules_surclass, self.criteres_resa)
+                self.surclassement()
             else:
-                jours_res = calculer_jours_reservation(date_debut, date_fin)
-                prix_vehicule = float(trouver_value(VEHICULES_FILE, id_vehicule, 'id_vehicule', 'prix_jour'))
-                prix = jours_res * prix_vehicule
                 id_resa = generer_id_unique(RESERVATIONS_FILE, 'id_resa')
                 reservation = Reservation(id_resa, id_user, id_vehicule, date_debut, date_fin, jours_res, prix)
                 facture(reservation,info_user(id_user),info_vehicule(id_vehicule))
@@ -301,10 +288,57 @@ class Application:
                     if not file_exists:
                         writer.writeheader()
                     writer.writerow(reservation.to_dict())
-                print(f"Réservation n° {id_resa} confirmée pour {id_user} pour le véhicule {vehicule['marque']} {vehicule['modele']} du {date_debut} au {date_fin} total de {jours_res} jour(s), coût : {prix} €.")
+                print(f"Réservation n° {id_resa} confirmée pour {id_user} pour le véhicule {vehicule.marque} {vehicule.modele} du {date_debut} au {date_fin} total de {jours_res} jour(s), coût : {prix} €.")
         else:
             print("Véhicule non disponible (maintenance, entretient...)")
 
+    def trouver_vehicule_disponible(self, date_debut, date_fin):
+        # Recherche des véhicules disponibles dans le fichier des véhicules
+        vehicules_disponibles = []
+        with open(VEHICULES_FILE, mode='r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                if row['dispo'] == 'True' and not verifier_reservation(date_debut, date_fin, row['id_vehicule']):
+                    # Vérification de la disponibilité du véhicule
+                    vehicule = load_vehicule_POO(row)
+                    vehicules_disponibles.append(vehicule)
+        return vehicules_disponibles
+
+    def surclassement(self, Vehicule, vehicules_disponibles,date_debut, date_fin, id_user, jours_res, prix):
+        print("Le véhicule n'est pas disponible aux dates demandées :( .") # SURCLASSEMENT
+        surclassement = demander_input_bool("Souhaitez-vous surclasser la réservation ? (oui/non): ")
+        if surclassement and self.criteres_resa:
+            if Vehicule.type_vehicule not in NO_SURCLASSEMENT_TYPES:
+                print("La réservation peut être surclassé.") 
+                for element in self.criteres_resa:
+                    if element[0] == 'prix_jour':
+                        self.criteres_resa.remove(element)
+                for vehicule in vehicules_disponibles:
+                    vehicule.prix_jour = Vehicule.prix_jour
+                recherche_vehicule = recherche(vehicules_disponibles, self.criteres_resa)
+                if recherche_vehicule:
+                    while True:
+                        vehicule_choisi = demander_plaque("Plaque d'immatriculation du véhicule à réserver (format AA-000-AA) :")
+                        if vehicule_choisi in [v.id_vehicule for v in recherche_vehicule]:
+                            id_resa = generer_id_unique(RESERVATIONS_FILE, 'id_resa')
+                            reservation = Reservation(id_resa, id_user, vehicule_choisi, date_debut, date_fin, jours_res, prix)
+                            facture(reservation,info_user(id_user),info_vehicule(vehicule_choisi))
+                            file_exists = os.path.exists(RESERVATIONS_FILE)
+                            with open(RESERVATIONS_FILE, mode="a", newline="", encoding="utf-8") as file:
+                                writer = csv.DictWriter(file, fieldnames=reservation.to_dict().keys())
+                                if not file_exists:
+                                    writer.writeheader()
+                                writer.writerow(reservation.to_dict())
+                            print(f"Réservation n° {id_resa} confirmée pour {id_user} pour le véhicule {vehicule.marque} {vehicule.modele} du {date_debut} au {date_fin} total de {jours_res} jour(s), coût : {prix} €.")
+                            break
+                        else:
+                            print("ENTREZ UNE PLAQUE VALIDE")
+                else:
+                    print("Aucun véhicule trouvé avec les critères spécifiés pour le surclassement.")
+            else:
+                print("Le véhicule ne peut pas être surclassé.")
+        else:
+            print("réservation annulée")
     def annuler_reservation(self):
         user = self.utilisateur_connecte
         user_id = user.id_user
