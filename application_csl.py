@@ -173,16 +173,16 @@ class Application:
             else:
                 print("Choix invalide. Veuillez réessayer.")
 
-    def menu_analyse_ventes(self): #à agrandir essayer de proposer 10 à 13 options
+    def menu_analyse_ventes(self): #a ajouter bilan annuel 
         while True:
             print("\nMenu Analyse des ventes :")
-            print("1. Consulter le nombre de reservations passées par mois")
-            print("2. Consulter le nombre de reservations passées par ans")
+            print("1. Consulter le nombre de reservations passées par mois")#fait
+            print("2. Consulter le nombre de reservations passées par ans")#fait
             print("3. Calculer le chiffre d'affaires sur l'année")
             print("4. Consulter le chiffre d'affaires par année")
             print("5. Consulter le chiffre d'affaires total")
-            print("6. Consulter le nombre de réservation par véhicule par année")
-            print("7. Consulter le nombre de réservation par véhicule")
+            print("6. Consulter le nombre de réservation par véhicule par année")#fait
+            print("7. Consulter le nombre de réservation par véhicule")#fait
             print("8. Consulter le chiffre d'affaires par véhicule")
             print("9. Quitter")
             choix = input("Choisissez une action (1-9): ")
@@ -199,9 +199,11 @@ class Application:
             elif choix == "5":
                 chiffre_affaires_total()
             elif choix == "6":
-                print("en cour de développement")
+                print("\nChoisir l'année :")
+                annee = demander_input_int("Année : ")
+                reservations_par_vehicule_par_an(annee=annee)
             elif choix == "7":
-                print("en cour de développement")
+                plot_reservations_par_vehicule()
             elif choix == "8":
                 print("en cour de développement")
             elif choix == "9":

@@ -9,6 +9,7 @@ import pandas as pd
 
 from datetime import datetime
 from collections import defaultdict
+from collections import Counter
 
 
 USER_FILE = 'data/users.csv'
@@ -587,9 +588,12 @@ def load_vehicule_POO_id(csv,id_vehicule):
             else:
                 print("Véhicule introuvable !")
 
-def lire_donnees_reservations(fichier='C:\\Users\\Utilisateur\\projet_voiture\\projet_info_IA_PR\\data\\reservations.csv'):
+def lire_donnees_reservations(fichier_reservations='reservations.csv'):
+    chemin_repertoire = os.path.dirname(os.path.realpath(__file__))
+    chemin_data = os.path.join(chemin_repertoire, 'data') 
+    chemin_reservations = os.path.join(chemin_data, fichier_reservations)
     donnees = []
-    with open(fichier, mode='r', newline='', encoding='utf-8') as file:
+    with open(chemin_reservations, mode='r', newline='', encoding='utf-8') as file:
         reader = csv.DictReader(file)
         for row in reader:
             try:
@@ -600,7 +604,7 @@ def lire_donnees_reservations(fichier='C:\\Users\\Utilisateur\\projet_voiture\\p
                 print(f"Erreur sur une ligne : {e}")
     return donnees
 
-def plot_reservations_par_mois(donnees=lire_donnees_reservations(fichier='C:\\Users\\Utilisateur\\projet_voiture\\projet_info_IA_PR\\data\\reservations.csv')):
+def plot_reservations_par_mois(donnees=lire_donnees_reservations('reservations.csv')):
     stats = defaultdict(int)
     for r in donnees:
         mois = r['date_debut'].strftime("%Y-%m")
@@ -618,7 +622,7 @@ def plot_reservations_par_mois(donnees=lire_donnees_reservations(fichier='C:\\Us
     plt.tight_layout()
     plt.show()
 
-def plot_reservations_par_annee(donnees=lire_donnees_reservations(fichier='C:\\Users\\Utilisateur\\projet_voiture\\projet_info_IA_PR\\data\\reservations.csv')):
+def plot_reservations_par_annee(donnees=lire_donnees_reservations('reservations.csv')):
     stats = defaultdict(int)
     for r in donnees:
         annee = r['date_debut'].year
@@ -635,7 +639,7 @@ def plot_reservations_par_annee(donnees=lire_donnees_reservations(fichier='C:\\U
     plt.tight_layout()
     plt.show()
 
-def plot_chiffre_affaires_par_annee(donnees=lire_donnees_reservations(fichier='C:\\Users\\Utilisateur\\projet_voiture\\projet_info_IA_PR\\data\\reservations.csv')):
+def plot_chiffre_affaires_par_annee(donnees=lire_donnees_reservations('reservations.csv')):
     stats = defaultdict(float)
     for r in donnees:
         annee = r['date_debut'].year
@@ -652,15 +656,40 @@ def plot_chiffre_affaires_par_annee(donnees=lire_donnees_reservations(fichier='C
     plt.tight_layout()
     plt.show()
 
-def chiffre_affaires_pour_annee(annee_voulue,donnees=lire_donnees_reservations(fichier='C:\\Users\\Utilisateur\\projet_voiture\\projet_info_IA_PR\\data\\reservations.csv')):
-    total = 0.0
-    for r in donnees:
-        if r['date_debut'].year == annee_voulue:
-            total += r['prix_total']
-    print(f"Chiffre d'affaires pour l'année {annee_voulue} : {total}")
-    return total
+def chiffre_affaires_pour_annee(annee_voulue, fichier_reservations='reservations.csv', fichier_vehicules='vehicules.csv'):
+    chemin_script = os.path.dirname(os.path.realpath(__file__))
+    chemin_data = os.path.join(chemin_script, 'data')
 
-def chiffre_affaires_total(donnees=lire_donnees_reservations(fichier='C:\\Users\\Utilisateur\\projet_voiture\\projet_info_IA_PR\\data\\reservations.csv')):
+    chemin_reservations = os.path.join(chemin_data, fichier_reservations)
+    chemin_vehicules = os.path.join(chemin_data, fichier_vehicules)
+
+    reservations = lire_csv(chemin_reservations)
+    vehicules = lire_csv(chemin_vehicules)
+
+    dico_entretien_annuel = {}
+    for v in vehicules:
+        id_veh = v['id_vehicule']
+        entretien_annuel = float(v['entretien_annuel'])
+        dico_entretien_annuel[id_veh] = entretien_annuel
+
+    chiffre_affaires_total = 0.0
+
+    for resa in reservations:
+        date_debut = datetime.strptime(resa['date_debut'], '%m-%d-%Y')
+
+        if date_debut.year == annee_voulue:
+            id_vehicule = resa['id_vehicule']
+            prix_total = float(resa['prix_total'])
+            nb_jours = int(resa['jours'])
+
+            entretien_par_jour = dico_entretien_annuel.get(id_vehicule, 0.0) / 365
+            cout_entretien = entretien_par_jour * nb_jours
+
+            chiffre_affaires_total += prix_total - cout_entretien
+    print(f"Chiffre d'affaires net pour l'année {annee_voulue} : {round(chiffre_affaires_total, 2)} €")
+    return chiffre_affaires_total
+
+def chiffre_affaires_total(donnees=lire_donnees_reservations('reservations.csv')):
     total = sum(r['prix_total'] for r in donnees)
     print(f"Chiffre d'affaires total : {total}")
     return total
@@ -670,20 +699,53 @@ def lire_csv(fichier):
         reader = csv.DictReader(file)
         return [row for row in reader]
     
-def reservations_par_vehicule_par_annee(reservations_file, vehicules_file):
-    reservations = lire_csv(reservations_file)
-    vehicules = lire_csv(vehicules_file)
-    
+def reservations_par_vehicule_par_an(annee=2025,fichier_vehicules='vehicules.csv', fichier_reservations='reservations.csv'):
+    chemin_repertoire = os.path.dirname(os.path.realpath(__file__))
+    chemin_data = os.path.join(chemin_repertoire, 'data') 
+    chemin_vehicules = os.path.join(chemin_data, fichier_vehicules)  
+    chemin_reservations = os.path.join(chemin_data, fichier_reservations)  
 
-    reservations_vehicule_annee = defaultdict(lambda: defaultdict(int))  # Dictionnaire imbriqué pour stocker les réservations par véhicule et par année
+    vehicules = lire_csv(chemin_vehicules)
+    reservations = lire_csv(chemin_reservations)
     
-    for reservation in reservations:
-        vehicule_id = reservation['id_vehicule']
-        date_debut = datetime.strptime(reservation['date_debut'], "%m-%d-%Y")
-        annee = date_debut.year
-        reservations_vehicule_annee[vehicule_id][annee] += 1
+    reservations_annee = [resa for resa in reservations if datetime.strptime(resa['date_debut'], '%m-%d-%Y').year == annee]
     
-    for vehicule_id, reservations_annee in reservations_vehicule_annee.items():
-        print(f"Véhicule {vehicule_id}:")
-        for annee, count in reservations_annee.items():
-            print(f"  Année {annee}: {count} réservation(s)")
+    compteur_reservations = Counter(resa['id_vehicule'] for resa in reservations_annee)
+    
+    vehicules_dict = {vehicule['id_vehicule']: f"{vehicule['marque']} {vehicule['modele']}" for vehicule in vehicules}
+    
+    vehicules_noms = [vehicules_dict[id_vehicule] for id_vehicule in compteur_reservations.keys()]
+    nb_reservations = list(compteur_reservations.values())
+    
+    plt.figure(figsize=(10, 6))
+    plt.bar(vehicules_noms, nb_reservations)
+    plt.xticks(rotation=45, ha='right')
+    plt.xlabel('Véhicule')
+    plt.ylabel('Nombre de réservations')
+    plt.title(f'Nombre de réservations par véhicule pour l\'année {annee}')
+    plt.tight_layout()
+    plt.show()
+
+def plot_reservations_par_vehicule(fichier_reservations='reservations.csv'):
+
+    chemin_script = os.path.dirname(os.path.realpath(__file__))
+    chemin_data = os.path.join(chemin_script, 'data')
+    chemin_resa = os.path.join(chemin_data, fichier_reservations)
+
+    with open(chemin_resa, mode='r', encoding='utf-8') as file:
+        reader = csv.DictReader(file)
+        reservations = [row for row in reader]
+
+    compteur = Counter(resa['id_vehicule'] for resa in reservations)
+
+    vehicules = list(compteur.keys())
+    nb_reservations = list(compteur.values())
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(vehicules, nb_reservations, color='skyblue')
+    plt.xlabel('ID Véhicule')
+    plt.ylabel('Nombre de réservations')
+    plt.title('Nombre de réservations par véhicule')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
