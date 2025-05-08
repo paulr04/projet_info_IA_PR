@@ -1,17 +1,20 @@
 import csv
 import os
-from dataclasses import field
+import datetime
 from fonctions import *
-from objects import Vehicule, Reservation, User
-from facture import facture
+from objects import *
+from facture import *
 
-USER_FILE = 'users.csv'
-VEHICULES_FILE = 'vehicules.csv'
-RESERVATIONS_FILE = 'reservations.csv'
+USER_FILE = 'data/users.csv'
+VEHICULES_FILE = 'data/vehicules.csv'
+RESERVATIONS_FILE = 'data/reservations.csv'
+CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'type_moteur', 'type_vehicule', 'boite_vitesse']
+NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special"]
 
 class Application:
     def __init__(self):
         self.utilisateur_connecte = None  # L'utilisateur connecté (client ou vendeur)
+        self.criteres_resa = None  # Critères de recherche pour le catalogue de véhicules
         self.choisir_action()
 
     def choisir_action(self):
@@ -77,19 +80,20 @@ class Application:
         while True:
             print("\nMenu Client :")
             print("1. Consulter le catalogue de véhicules")
-            print("2. Faire une recherche de véhicule")
+            print("2. Faire une recherche de véhicule et le réserver")
             print("3. Consulter vos réservations")
             print("4. Faire une réservation")
             print("5. Supprimer le compte")
             print("6. Annuler une réservation")
             print("7. Changer de mot de passse")
-            print("8. Quitter")
+            print("8. Modifier une caractéristique sur votre compte")
+            print("9. Quitter")
 
-            choix = input("Choisissez une action (1-8): ")
+            choix = input("Choisissez une action (1-9): ")
             if choix == "1":
                 self.consulter_catalogue()
             elif choix == "2":
-                print("en cour de développement")
+                self.recherche_de_véhicule_pour_reservation()
             elif choix == "3":
                 self.consulter_reservations()
             elif choix == "4":
@@ -103,6 +107,8 @@ class Application:
                 self.changer_de_mdp()
                 break
             elif choix == "8":
+                self.changer_caracteristique_compte()
+            elif choix == "9":
                 print("Déconnexion...")
                 break
             else:
@@ -122,9 +128,13 @@ class Application:
             print("9. Supprimer un compte client")
             print("10. Changer de mot de passe")
             print("11. Analyse des ventes")
-            print("12. Quitter")
+            print("12. Modifier une caractéristique sur un véhicule")
+            print("13. Modifier une caractéristique sur votre compte")
+            print("14. Consulter les réservations prochaines d'un véhicule")
+            print("15. Consulter un véhicule")
+            print("16. Quitter")
 
-            choix = input("Choisissez une action (1-12): ")
+            choix = input("Choisissez une action (1-16): ")
             if choix == "1":
                 self.consulter_catalogue()
             elif choix == "2":
@@ -149,59 +159,108 @@ class Application:
             elif choix == "11":
                 print("en cour de développement")
             elif choix == "12":
+                self.changer_caracteristique_vehicule()
+            elif choix == "13":
+                self.changer_caracteristique_compte()
+            elif choix == "14":
+                self.consulter_reservations_prochaines_vehicule()
+            elif choix == "15":
+                self.consulter_vehicule()
+            elif choix == "16":
                 print("Déconnexion...")
                 break
             else:
                 print("Choix invalide. Veuillez réessayer.")
 
-    def menu_analyse_ventes(self):
-        pass
-
+    def menu_analyse_ventes(self): #à agrandir essayer de proposer 10 à 13 options
+        while True:
+            print("\nMenu Analyse des ventes :")
+            print("1. Consulter le nombre de reservations passées par mois")
+            print("2. Consulter le nombre de reservations passées par ans")
+            print("3. Calculer le chiffre d'affaires sur l'année")
+            print("4. Consulter le chiffre d'affaires par année")
+            print("5. Consulter le chiffre d'affaires total")
+            print("6. Consulter le nombre de réservation par véhicule par année")
+            print("7. Consulter le nombre de réservation par véhicule")
+            print("8. Consulter le chiffre d'affaires par véhicule")
+            print("9. Quitter")
+            choix = input("Choisissez une action (1-9): ")
+            if choix == "1":
+                print("en cour de développement")#les fonctions doivent etre ajouté dans la classe   
+            elif choix == "2":                   #Optimiser le fichier application en mettant des fonction utile dans fonctions.py
+                print("en cour de développement")# Ex : une fonction pour tracer des graphes 
+            elif choix == "3":
+                print("en cour de développement")
+            elif choix == "4":
+                print("en cour de développement")
+            elif choix == "5":
+                print("en cour de développement")
+            elif choix == "6":
+                print("en cour de développement")
+            elif choix == "7":
+                print("en cour de développement")
+            elif choix == "8":
+                print("en cour de développement")
+            elif choix == "9":
+                print("Déconnexion...")
+                break
+            else:
+                print("Choix invalide. Veuillez réessayer.")
 
     def consulter_catalogue(self):
-        print("\nCatalogue des véhicules :")
+        print("\nCatalogue des véhicules :\n")
         # Afficher les véhicules disponibles
         with open(VEHICULES_FILE, mode='r') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                print(f"ID : {row['id_vehicule']}, Marque : {row['marque']}, Modèle : {row['modele']}, Prix/jour : {row['prix_jour']}")
+                print(f"ID : {row['id_vehicule']}, Marque : {row['marque']}, Modèle : {row['modele']}, Prix/jour : {row['prix_jour']} €, Disponibilité : {row['dispo']}, Description : {row['description']}")
+        print("\n--- FIN ---\n")
+        input("ENTER pour continuer")
 
     def consulter_user(self):
-        print("\nUtilisateurs :")
+        print("\nUtilisateurs :\n")
         with open(USER_FILE, mode='r') as file:
             reader = csv.DictReader(file)
             for row in reader:
                 print(f"ID : {row['id_user']}, Prenom : {row['prenom']}, Nom : {row['nom']}, Email : {row['email']}, Telephone : {row['telephone']}, Role: {row['role']}")
+        print("\n--- FIN ---\n")
+        input("ENTER pour continuer")
 
     def consulter_reservations(self):
         user = self.utilisateur_connecte
         if user.role == "V":
-            print("\nRéservations :")
+            print("\nRéservations :\n")
             with open(RESERVATIONS_FILE, mode='r') as file:
                 reader = csv.DictReader(file)
                 for row in reader:
-                    print(f"ID réservation : {row['id_resa']}, ID client : {row['id_user']}, ID véhicule : {row['id_vehicule']}, date de début : {row['date_debut']}, date de fin : {row['date_fin']}, prix : {row['prix_total']}")
+                    if convertir_date(row['date_fin']).date() >= datetime.today().date():    
+                        print(f"ID réservation : {row['id_resa']}, ID client : {row['id_user']}, ID véhicule : {row['id_vehicule']}, date de début : {row['date_debut']}, date de fin : {row['date_fin']}, prix : {row['prix_total']}")
+            print("\n--- FIN ---\n")
+            input("ENTER pour continuer")
+        
         else:
-            print("\nVos réservations :")
+            print("\nVos réservations :\n")
             with open(RESERVATIONS_FILE, mode='r') as file:
                 reader = csv.DictReader(file)
                 for row in reader:
-                    if row['id_user'] == user.id_user:
+                    if row['id_user'] == user.id_user and convertir_date(row['date_fin']).date() >= datetime.today().date():
                         print(f"ID réservation : {row['id_resa']}, ID client : {row['id_user']}, ID véhicule : {row['id_vehicule']}, date de début : {row['date_debut']}, date de fin : {row['date_fin']}, prix : {row['prix_total']}")
                     else:
                         pass
+            print("\n--- FIN ---\n")
+            input("ENTER pour continuer")
 
     def rechercher_vehicule_par_id(self, vehicule_id):
         # Recherche du véhicule par ID dans le fichier des véhicules
         with open(VEHICULES_FILE, mode='r') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                if row['id_vehicule'] == vehicule_id:
-                    return row
+                if row['id_vehicule'] == vehicule_id and row['dispo'] == 'True':
+                    return Vehicule(row['id_vehicule'], row['marque'], row['modele'], row['prix_jour'], row['masse'], row['vitesse_max'], row['puissance'], row['volume_utile'], row['nb_places'], row['type_moteur'], row['hauteur'], row['type_vehicule'], row['boite_vitesse'], row['entretien_annuel'], row['dispo'], row['description'])
         return None
 
     def reserver_vehicule(self):
-        print("\nFaire une réservation :")
+        print("\nFaire une réservation :\n")
         if self.utilisateur_connecte.role == "C":
             id_user = self.utilisateur_connecte.id_user
         else:
@@ -212,13 +271,14 @@ class Application:
             date_debut = demander_date_valide("Date de début (inclus) (format MM-DD-YYYY) : ")
             date_fin = demander_date_valide("Date de fin (inclus) (format MM-DD-YYYY) : ")
             verifier_dates(date_debut, date_fin)
+            jours_res = calculer_jours_reservation(date_debut, date_fin)
+            prix_vehicule = vehicule.prix_jour
+            prix = jours_res * prix_vehicule
             indispo = verifier_reservation(date_debut, date_fin, id_vehicule)
+
             if indispo:
-                print("Le véhicule n'est pas disponible aux dates demandées.") # SURCLASSEMENT
+                self.surclassement(vehicule, self.trouver_vehicule_disponible(date_debut, date_fin),date_debut, date_fin, id_user, jours_res, prix)
             else:
-                jours_res = calculer_jours_reservation(date_debut, date_fin)
-                prix_vehicule = float(trouver_value(VEHICULES_FILE, id_vehicule, 'id_vehicule', 'prix_jour'))
-                prix = jours_res * prix_vehicule
                 id_resa = generer_id_unique(RESERVATIONS_FILE, 'id_resa')
                 reservation = Reservation(id_resa, id_user, id_vehicule, date_debut, date_fin, jours_res, prix)
                 facture(reservation,info_user(id_user),info_vehicule(id_vehicule))
@@ -228,27 +288,102 @@ class Application:
                     if not file_exists:
                         writer.writeheader()
                     writer.writerow(reservation.to_dict())
-                print(f"Réservation n° {id_resa} confirmée pour {id_user} pour le véhicule {vehicule['marque']} {vehicule['modele']} du {date_debut} au {date_fin} total de {jours_res} jour(s), coût : {prix} €.")
+                print(f"Réservation n° {id_resa} confirmée pour {id_user} pour le véhicule {vehicule.marque} {vehicule.modele} du {date_debut} au {date_fin} total de {jours_res} jour(s), coût : {prix} €.")
         else:
-            print("Véhicule non trouvé.")
+            print("Véhicule non disponible (maintenance, entretient...)")
 
+    def trouver_vehicule_disponible(self, date_debut, date_fin):
+        # Recherche des véhicules disponibles dans le fichier des véhicules
+        vehicules_disponibles = []
+        with open(VEHICULES_FILE, mode='r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                if row['dispo'] == 'True' and not verifier_reservation(date_debut, date_fin, row['id_vehicule']):
+                    # Vérification de la disponibilité du véhicule
+                    vehicule = load_vehicule_POO(row)
+                    vehicules_disponibles.append(vehicule)
+        return vehicules_disponibles
+
+    def surclassement(self, Vehicule, vehicules_disponibles,date_debut, date_fin, id_user, jours_res, prix):
+        print("Le véhicule n'est pas disponible aux dates demandées :( .") # SURCLASSEMENT
+        surclassement = demander_input_bool("Souhaitez-vous surclasser la réservation ? (oui/non): ")
+        if self.criteres_resa:
+            pass
+        else:
+            self.criteres_resa = criteres(VEHICULES_FILE)
+
+        if surclassement and self.criteres_resa:
+            if Vehicule.type_vehicule not in NO_SURCLASSEMENT_TYPES:
+                print("La réservation peut être surclassé.") 
+                for element in self.criteres_resa:
+                    if element[0] == 'prix_jour':
+                        self.criteres_resa.remove(element)
+                for vehicule in vehicules_disponibles:
+                    vehicule.prix_jour = Vehicule.prix_jour
+                recherche_vehicule = recherche(vehicules_disponibles, self.criteres_resa)
+                if recherche_vehicule:
+                    while True:
+                        vehicule_choisi = demander_plaque("Plaque d'immatriculation du véhicule à réserver (format AA-000-AA) :")
+                        if vehicule_choisi in [v.id_vehicule for v in recherche_vehicule]:
+                            id_resa = generer_id_unique(RESERVATIONS_FILE, 'id_resa')
+                            reservation = Reservation(id_resa, id_user, vehicule_choisi, date_debut, date_fin, jours_res, prix)
+                            for element in recherche_vehicule:
+                                if element.id_vehicule == vehicule_choisi:
+                                    vehicule_nouv = element
+                                    break 
+                            facture(reservation,info_user(id_user),vehicule_nouv)
+                            file_exists = os.path.exists(RESERVATIONS_FILE)
+                            with open(RESERVATIONS_FILE, mode="a", newline="", encoding="utf-8") as file:
+                                writer = csv.DictWriter(file, fieldnames=reservation.to_dict().keys())
+                                if not file_exists:
+                                    writer.writeheader()
+                                writer.writerow(reservation.to_dict())
+                            print(f"Réservation n° {id_resa} confirmée pour {id_user} pour le véhicule {vehicule.marque} {vehicule.modele} du {date_debut} au {date_fin} total de {jours_res} jour(s), coût : {prix} €.")
+                            break
+                        else:
+                            print("ENTREZ UNE PLAQUE VALIDE")
+                else:
+                    print("Aucun véhicule trouvé avec les critères spécifiés pour le surclassement.")
+            else:
+                print("Le véhicule ne peut pas être surclassé.")
+        else:
+            print("réservation annulée")
     def annuler_reservation(self):
         user = self.utilisateur_connecte
         user_id = user.id_user
+
         if user.role == "C":
             Application.consulter_reservations(self)
         else:
             pass
+        
         mot_de_passe = input("Mot de passe : ")
         user = self.verifier_identifiants(user_id, mot_de_passe)
         if user:
             id_reservation = demander_id("ID réservation à annuler (entrez 9 chiffres): ", RESERVATIONS_FILE, 'id_resa')
-            supprimer_ligne_par_id(RESERVATIONS_FILE, "id_resa",id_reservation)
+            if id_reservation:
+                date_debut = trouver_value(RESERVATIONS_FILE, id_reservation, 'id_resa', 'date_debut')
+                if user.role == "V" and convertir_date(date_debut).date() >= datetime.today().date():
+                    supprimer_ligne_par_id(RESERVATIONS_FILE, "id_resa",id_reservation)
+                    supprimer_facture(id_reservation)
+                    print(f"Réservation n° {id_reservation} annulée avec succès.")
+                if user.role == "C" and convertir_date(date_debut).date() >= datetime.today().date():
+                    id_test = trouver_value(RESERVATIONS_FILE, id_reservation, 'id_resa', 'id_user')
+                    if user.id_user == id_test:
+                        supprimer_ligne_par_id(RESERVATIONS_FILE, "id_resa",id_reservation)
+                        supprimer_facture(id_reservation)
+                        print(f"Réservation n° {id_reservation} annulée avec succès.")
+                    else:
+                        print("Vous pouvez supprimer uniquement vos réservations")
+                else:
+                    print("Vous ne pouvez pas annuler cette réservation.")   
+            else:
+                print("Aucune réservation trouvée avec cet ID.") 
         else:
             print("ID ou mot de passe incorrect.")
 
     def creer_compte_client(self):
-        print("\nCréer un compte client :")
+        print("\nCréer un compte client :\n")
         nom = input("Nom : ")
         prenom = input("Prénom : ")
         email = input("Email : ")
@@ -269,7 +404,7 @@ class Application:
         print(f"Compte client créé avec succès! ID : {user.id_user} Nom : {user.nom} Prenom : {user.prenom}.")
 
     def ajouter_vehicule(self):
-        print("\n--- AJOUT D'UN VÉHICULE ---")
+        print("\n--- AJOUT D'UN VÉHICULE ---\n")
 
         id_vehicule = demander_plaque_ajout("Plaque d'immatriculation (format AA-000-AA) : ",VEHICULES_FILE)
         marque = input("Marque : ").strip()
@@ -281,14 +416,14 @@ class Application:
         volume_utile = demander_input_float("Volume utile (m³) : ")
         nb_places = demander_input_int("Nombre de places : ")
         type_moteur = demander_input_choix("Type de moteur : ", TYPES_MOTEUR)
-        dimensions = demander_input_dimensions()
+        hauteur = demander_input_float("Hauteur (m) : ")
         type_vehicule = demander_input_choix("Type de véhicule : ", TYPES_VEHICULE)
         boite_vitesse = demander_input_choix("Boîte de vitesse : ", BOITES_VITESSE)
         entretien_annuel = demander_input_float("Entretien annuel (€) : ")
         dispo = demander_input_bool("Le véhicule est-il disponible ? (True/False) : ")
         description = input("Description du véhicule : ").strip()
 
-        vehicule = Vehicule(id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,volume_utile, nb_places, type_moteur, dimensions, type_vehicule, boite_vitesse, entretien_annuel, dispo, description )
+        vehicule = Vehicule(id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,volume_utile, nb_places, type_moteur, hauteur, type_vehicule, boite_vitesse, entretien_annuel, dispo, description )
 
         file_exists = os.path.exists(VEHICULES_FILE)
         with open(VEHICULES_FILE, mode="a", newline="", encoding="utf-8") as file:
@@ -300,7 +435,7 @@ class Application:
         print(f"\nVéhicule ajouté avec succès ! ID : {vehicule.id_vehicule}")
 
     def supprimer_vehicule(self):
-        print("\nSupprimer un véhicule :")
+        print("\nSupprimer un véhicule :\n")
         user_id = self.utilisateur_connecte.id_user
         mot_de_passe = input("Mot de passe : ")
         user = self.verifier_identifiants(user_id, mot_de_passe)
@@ -311,7 +446,7 @@ class Application:
             print("ID ou mot de passe incorrect.")
 
     def supprimer_compte_client(self):
-        print("\nSupprimer un compte client :")
+        print("\nSupprimer un compte client :\n")
         user_id = self.utilisateur_connecte.id_user
         mot_de_passe = input("Mot de passe : ")
         user = self.verifier_identifiants(user_id, mot_de_passe)
@@ -327,7 +462,7 @@ class Application:
             print("ID ou mot de passe incorrect.")
 
     def changer_de_mdp(self):
-        print("\nChanger de mot de passe :")
+        print("\nChanger de mot de passe :\n")
         user_id = self.utilisateur_connecte.id_user
         mot_de_passe = input("Mot de passe : ")
         user = self.verifier_identifiants(user_id, mot_de_passe)
@@ -344,6 +479,67 @@ class Application:
         else:
             print("ID ou mot de passe incorrect.")
 
+    def changer_caracteristique_vehicule(self):
+        print("\nModifier une caractéristique sur un véhicule :\n")
+        user_id = self.utilisateur_connecte.id_user
+        mot_de_passe = input("Mot de passe : ")
+        user = self.verifier_identifiants(user_id, mot_de_passe)
+        if user:
+            id_vehicule = demander_plaque("Plaque d'immatriculation du véhicule à modifier (format AA-000-AA) : ")
+            modifier_champ_csv(VEHICULES_FILE, "id_vehicule", id_vehicule, CHAMPS_INTERDITS)
+        else:
+            print("ID ou mot de passe incorrect.")
+
+    def changer_caracteristique_compte(self):
+        print("\nModifier une caractéristique sur votre compte :\n")
+        user_id = self.utilisateur_connecte.id_user
+        mot_de_passe = input("Mot de passe : ")
+        user = self.verifier_identifiants(user_id, mot_de_passe)
+        if user:
+            id_user = self.utilisateur_connecte.id_user
+            modifier_champ_csv(USER_FILE, "id_user", id_user, CHAMPS_INTERDITS)
+        else:
+            print("ID ou mot de passe incorrect.")
+
+    def consulter_vehicule(self):
+        print("\nConsulter un véhicule :\n")
+        id_vehicule = demander_plaque("Plaque d'immatriculation du véhicule à consulter (format AA-000-AA) : ")
+        vehicule = self.rechercher_vehicule_par_id(id_vehicule)
+        if vehicule:
+            Vehicule_1 = info_vehicule(id_vehicule) 
+            vdict = Vehicule_1.to_dict()
+            print(f"\n--- {id_vehicule} ---\n")   
+            for cle, valeur in vdict.items():
+                print(f"{cle} : {valeur}")
+            print("\n--- FIN ---\n")
+            input("ENTER pour continuer")
+        else:
+            print("Véhicule non trouvé.")
+
+    def consulter_reservations_prochaines_vehicule(self):
+        print("\nConsulter les réservations prochaines d'un véhicule :\n")
+        id_vehicule = demander_plaque("Plaque d'immatriculation du véhicule (format AA-000-AA) : ")
+        print(f"\n--- Réservations du {id_vehicule} --- \n")
+        with open(RESERVATIONS_FILE, mode='r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                if row['id_vehicule'] == id_vehicule and convertir_date(row['date_fin']).date() >= datetime.today().date():
+                    print(f"ID réservation : {row['id_resa']}, ID client : {row['id_user']}, date de début : {row['date_debut']}, date de fin : {row['date_fin']}, prix : {row['prix_total']}")
+        print("\n--- FIN ---\n")
+        input("ENTER pour continuer")
+
+    def recherche_de_véhicule_pour_reservation(self):
+        vehicules_search = load_vehicules(VEHICULES_FILE)
+        print("\nRecherche de véhicule :\n")
+        crit = criteres(VEHICULES_FILE)
+        resultats = recherche(vehicules_search, crit)
+        self.criteres_resa = crit
+        if resultats:
+            ok_resa = demander_input_bool("Souhaitez-vous réserver un véhicule ? (oui/non): ")
+            if ok_resa:    
+                self.reserver_vehicule()
+        else:
+            print("Aucun véhicule trouvé avec les critères spécifiés.")
 if __name__ == "__main__":
     # Création d'une instance de l'application et lancement du menu principal
     app = Application()

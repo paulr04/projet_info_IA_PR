@@ -5,11 +5,11 @@ import os
 import random
 from objects import *
 
-USER_FILE = 'users.csv'
-VEHICULES_FILE = 'vehicules.csv'
-RESERVATIONS_FILE = 'reservations.csv'
-TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "tank", "artillerie", "APC"]
-TYPES_MOTEUR = ["essence", "diesel", "électrique", "hybride"]
+USER_FILE = 'data/users.csv'
+VEHICULES_FILE = 'data/vehicules.csv'
+RESERVATIONS_FILE = 'data/reservations.csv'
+TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
+TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride"]
 BOITES_VITESSE = ["manuelle", "automatique"]
 
 def generer_id_unique(FILE, champ_id):
@@ -106,16 +106,6 @@ def demander_input_choix(message, options):
         else:
             print("Choix invalide. Veuillez choisir parmi les options données.")
 
-def demander_input_dimensions():
-    while True:
-        try:
-            dims = input("Dimensions (L l h) en mètres, séparées par des espaces : ").strip().split()
-            if len(dims) != 3:
-                raise ValueError
-            return tuple(float(x) for x in dims)
-        except ValueError:
-            print("Format invalide. Entrez 3 nombres décimaux séparés par des espaces.")
-
 def demander_input_bool(message):
     while True:
         val = input(f"{message} (oui/non) : ").strip().lower()
@@ -148,26 +138,24 @@ def demander_plaque(message):
     """
         Demande une plaque au format AB-123-CD et vérifie qu'elle n'existe pas déjà.
         """
-    while True:
-        plaque = input(message).strip().upper()
+    plaque = input(message).strip().upper()
 
-        if not re.match(r"^[A-Z]{2}-\d{3}-[A-Z]{2}$", plaque):
-            print("Format invalide. Utilisez le format AB-123-CD.")
-            continue
-        # Vérification de l'existence de la plaque
-        if os.path.exists(VEHICULES_FILE):
-            with open(VEHICULES_FILE, mode="r", encoding="utf-8", newline="") as file:
-                reader = csv.DictReader(file)
-                if reader.fieldnames and "id_vehicule" in reader.fieldnames:
-                    if any(row["id_vehicule"] == plaque for row in reader):
-                        print("Véhicule trouvé ! ")
-                        return plaque
-                        continue
-                    else:
-                        print("Véhicule introuvable ! ")
+    if not re.match(r"^[A-Z]{2}-\d{3}-[A-Z]{2}$", plaque):
+        print("Format invalide. Utilisez le format AB-123-CD.")
+ 
+    # Vérification de l'existence de la plaque
+    if os.path.exists(VEHICULES_FILE):
+        with open(VEHICULES_FILE, mode="r", encoding="utf-8", newline="") as file:
+            reader = csv.DictReader(file)
+            if reader.fieldnames and "id_vehicule" in reader.fieldnames:
+                if any(row["id_vehicule"] == plaque for row in reader):
+                    print("Véhicule trouvé ! ")
+                    return plaque
                 else:
-                    print(" PROBLEME ")
-                    continue
+                    print("Véhicule introuvable ! ")
+            else:
+                print(" PROBLEME ")
+
 
 def demander_date_valide(message="Date (MM-DD-YYYY) : "):
     while True:
@@ -272,7 +260,7 @@ def trouver_value(FILE, id_recherche, champ_id, champ_id_return):
             if row[champ_id] == id_recherche:
                 return row[champ_id_return]
 
-    print(f"🔍 Valeur avec {champ_id} = {id_recherche} non trouvée.")
+    print(f"Valeur avec {champ_id} = {id_recherche} non trouvée.")
     return None
 def info_user(id_user):
     """
@@ -318,15 +306,15 @@ def info_vehicule(id_vehicule):
                 volume_utile = float(row['volume_utile'])
                 nb_places = int(row['nb_places'])
                 type_moteur = row['type_moteur'] 
-                dimension = tuple(row['dimensions'])
+                hauteur = row['hauteur']
                 type_vehicule = row['type_vehicule']
                 boite_vitesse = row['boite_vitesse']
                 entretien_annuel = float(row['entretien_annuel'])
-                dispo = row['dispo']
+                dispo = bool(row['dispo'])
                 description = row['description']
                 return Vehicule(
                     id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,
-                    volume_utile, nb_places, type_moteur, dimension, type_vehicule,
+                    volume_utile, nb_places, type_moteur, hauteur, type_vehicule,
                     boite_vitesse, entretien_annuel, dispo, description
                 )
             else:
@@ -352,3 +340,243 @@ def verifier_reservation(date_debut, date_fin, id_vehicule):
                 else:
                     print("OK RESERVATION")
                     pass
+def supprimer_facture(id_resa):
+    """
+    Supprime la facture associée à une réservation donnée.
+    """
+    fichier_pdf = f"facture_{id_resa}.pdf"
+    path_save = os.path.join(os.path.abspath("factures_pdf"), fichier_pdf)
+
+    if os.path.exists(path_save):
+        os.remove(path_save)
+        print(f"Facture {fichier_pdf} supprimée avec succès.")
+    else:
+        print(f"Aucune facture trouvée pour l'ID de réservation {id_resa}.")
+
+
+def modifier_champ_csv(fichier_csv, champ_id, id_val, champs_interdits):
+    # Lecture du fichier
+    with open(fichier_csv, mode='r', newline='', encoding='utf-8') as f:
+        lecteur = csv.DictReader(f)
+        lignes = list(lecteur)
+        champs = lecteur.fieldnames
+
+    if champ_id not in champs:
+        print(f"Erreur : le champ ID '{champ_id}' n'existe pas.")
+        return
+
+    ligne_modifiee = False
+    for ligne in lignes:
+        if ligne[champ_id] == id_val:
+            champs_modifiables = [c for c in champs if c not in champs_interdits]
+            print("Champs modifiables :", champs_modifiables)
+
+            champ_a_modifier = input("Quel champ voulez-vous modifier ? ")
+            if champ_a_modifier not in champs_modifiables:
+                print("Erreur : champ interdit ou inexistant.")
+                return
+
+            nouvelle_valeur = input(f"Nouvelle valeur pour '{champ_a_modifier}' : ")
+            ligne[champ_a_modifier] = nouvelle_valeur
+            ligne_modifiee = True
+            break
+
+    if not ligne_modifiee:
+        print(f"Aucune ligne trouvée avec {champ_id} = {id_val}.")
+        return
+
+    with open(fichier_csv, mode='w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=champs)
+        writer.writeheader()
+        writer.writerows(lignes)
+
+    print("Modification effectuée avec succès.")
+
+def load_vehicules(fichier_csv):
+    with open(fichier_csv, newline='', encoding='utf-8') as f:
+        lecteur = csv.DictReader(f)
+        vehicules = []
+        for ligne in lecteur:
+            for champ in ligne:
+                if champ in ['prix_jour', 'masse', 'vitesse_max', 'puissance', 'volume_utile', 'entretien_annuel', 'hauteur']:
+                    ligne[champ] = float(ligne[champ])
+                elif champ == 'nb_places':
+                    ligne[champ] = int(ligne[champ])
+                elif champ == 'dispo':
+                    ligne[champ] = ligne[champ] == 'True'
+            vehicules.append(load_vehicule_POO(ligne))
+    return vehicules
+
+def criteres(fichier_csv):
+    # Liste prédéfinie des types de véhicules
+
+    champs_recherche = [
+        "marque", "modele", "prix_jour", "masse", "vitesse_max", "puissance",
+        "volume_utile", "nb_places", "type_moteur", "hauteur", "boite_vitesse"
+    ]
+    
+    # Demander à l'utilisateur de spécifier un type de véhicule parmi la liste prédéfinie
+    print("\nType de véhicule obligatoire. Veuillez entrer un type de véhicule.")
+    print("Types disponibles : " + ", ".join(TYPES_VEHICULE))
+    type_vehicule = input("> ").strip().lower()
+
+    if type_vehicule not in TYPES_VEHICULE:
+        print(f"Type de véhicule '{type_vehicule}' non valide. La recherche ne marchera pas.")
+        return []
+    
+    criteres = [("type_vehicule", "=", type_vehicule)]  # Ajouter le type de véhicule aux critères
+
+    print("\nREMARQUE : Les champs texte ne peuvent pas être comparés avec <, >, <= ou >=.")
+    print("REMARQUE : Les champs texte sont en minuscule sans accents...")
+    print(f"OPTIONS type de moteur : {TYPES_MOTEUR}")
+    print(f"OPTIONS type de véhicule : {TYPES_VEHICULE}")
+    print(f"OPTIONS boîte de vitesse : {BOITES_VITESSE}")
+    print("\nrespectez les OPTIONS sinon la recherche ne marchera pas\n")
+    print("\nChamps disponibles pour la recherche (ex: prix_jour <= 50, marque = renault):\n")
+    print(", ".join(champs_recherche))
+    print("\nTapez 'ok' quand vous avez fini d'entrer vos critères.\n")
+
+
+    while True:
+        entree = input("> ").strip()
+        if entree.lower() == "ok":
+            break
+        match = re.match(r"(\w+)\s*(<=|>=|=|<|>)\s*(.+)", entree)
+        if not match:
+            print("Format invalide. Exemple : prix_jour <= 50 , marque = toyota")
+            continue
+        champ, op, val = match.groups()
+        if champ not in champs_recherche:
+            print(f"Champ '{champ}' non valide.")
+            continue
+        if op in [">", "<", ">=", "<="] and champ in ["marque", "modele", "type_moteur", "type_vehicule", "boite_vitesse"]:
+            print(f"Opérateur '{op}' non valide pour le champ texte '{champ}'.")
+            continue
+        criteres.append((champ, op, val))
+    return criteres
+
+
+def recherche(vehicules, criteres):
+
+    op_map = {
+        "=": lambda a, b: a == b,
+        "<": lambda a, b: a < b,
+        ">": lambda a, b: a > b,
+        "<=": lambda a, b: a <= b,
+        ">=": lambda a, b: a >= b,
+    }
+    """
+    resultats = []
+    for v in vehicules:
+        if not v.get("dispo", False):
+            continue
+        
+        match_all = True
+        for champ, op, val in criteres:
+            val_csv = v[champ]
+            try:
+                if isinstance(val_csv, float):
+                    val = float(val)
+                elif isinstance(val_csv, int):
+                    val = int(val)
+                elif isinstance(val_csv, bool):
+                    val = val.lower() == 'true'
+            except Exception:
+                match_all = False
+                break
+            if not op_map[op](val_csv, val):
+                match_all = False
+                break
+
+        if match_all:
+            resultats.append(v)
+
+    if resultats:
+        print(f"\n {len(resultats)} véhicule(s) trouvé(s) :\n")
+        for v in resultats:
+            infos = [
+                f"ID : {v['id_vehicule']}",
+                f"Prix/jour : {v['prix_jour']} €",
+                f"Type : {v['type_vehicule']}",
+                f"Marque : {v['marque']}",
+                f"Modèle : {v['modele']}",
+                f"{v['description']}\n"
+            ]
+            for champ, _, _ in criteres:
+                if champ not in ['prix_jour', 'marque', 'modele', 'description', 'type_vehicule']:
+                    infos.append(f"{champ}: {v[champ]}")
+            print(" - " + ", ".join(infos))
+            return resultats
+    """
+    resultats = []
+    for v in vehicules:
+        if not getattr(v, "dispo", False):
+            continue
+
+        match_all = True
+        for champ, op, val in criteres:
+            val_obj = getattr(v, champ, None)
+            if val_obj is None:
+                match_all = False
+                break
+            try:
+                if isinstance(val_obj, float):
+                    val = float(val)
+                elif isinstance(val_obj, int):
+                    val = int(val)
+                elif isinstance(val_obj, bool):
+                    val = val.lower() == 'true'
+            except Exception:
+                match_all = False
+                break
+            if not op_map[op](val_obj, val):
+                match_all = False
+                break
+
+        if match_all:
+            resultats.append(v)
+
+    if resultats:
+        print(f"\n {len(resultats)} véhicule(s) trouvé(s) :\n")
+        for v in resultats:
+            infos = [
+                f"ID : {v.id_vehicule}",
+                f"Prix/jour : {v.prix_jour} €",
+                f"Type : {v.type_vehicule}",
+                f"Marque : {v.marque}",
+                f"Modèle : {v.modele}",
+                f"{v.description}"
+            ]
+            for champ, _, _ in criteres:
+                if champ not in ['prix_jour', 'marque', 'modele', 'description', 'type_vehicule']:
+                    infos.append(f"{champ}: {getattr(v, champ)}")
+            print(" - " + ", ".join(infos))
+        return resultats
+    else:
+        print("\nAucun véhicule ne correspond aux critères.\n")
+        print("Essayez d'etre plus souple dans vos critères de recherche.\n")
+        print("Vous pouvez consulter le catalogue des véhicules pour plus d'information.\n")
+
+def load_vehicule_POO(row):
+    """
+    Charge un véhicule à partir d'une ligne de CSV.
+    """
+    return Vehicule(
+        row['id_vehicule'], row['marque'], row['modele'], float(row['prix_jour']),
+        float(row['masse']), float(row['vitesse_max']), float(row['puissance']),
+        float(row['volume_utile']), int(row['nb_places']), row['type_moteur'],
+        float(row['hauteur']), row['type_vehicule'], row['boite_vitesse'],
+        float(row['entretien_annuel']), bool(row['dispo']), row['description']
+    )
+
+def load_vehicule_POO_id(csv,id_vehicule):
+    """
+    Charge un véhicule à partir d'une ligne de CSV.
+    """
+    with open(csv, mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row['id_vehicule'] == id_vehicule:
+                return load_vehicule_POO(row)
+            else:
+                print("Véhicule introuvable !")
