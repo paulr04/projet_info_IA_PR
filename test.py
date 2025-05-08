@@ -1,5 +1,7 @@
 import csv
 import re
+import pandas as pd
+import matplotlib.pyplot as plt
 
 TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "fourgon", "militaire"]
 TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride"]
@@ -124,7 +126,32 @@ def recherche(vehicules, criteres):
         print("\nAucun véhicule ne correspond aux critères.\n")
         print("Essayez d'etre plus souple dans vos critères de recherche.\n")
         print("Vous pouvez consulter le catalogue des véhicules pour plus d'information.\n")
+    def generer_compte_rendu_ventes(fichier='reservation.csv'):
+        df = pd.read_csv(fichier)
+        df['mois'] = df['date_debut'].dt.to_period('M') 
+        df['annee'] = df['date_debut'].dt.year
+        ca_par_mois = df.groupby('mois')['prix_total'].sum()
+        ca_par_annee = df.groupby('annee')['prix_total'].sum()
 
+        # 1. Ventes par mois
+        plt.figure(figsize=(10, 6))
+        ca_par_mois.plot(kind='bar', color='skyblue')
+        plt.title('Chiffre d\'affaires par mois')
+        plt.xlabel('Mois')
+        plt.ylabel('Chiffre d\'affaires')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()
+
+        # 2. Ventes par année
+        plt.figure(figsize=(10, 6))
+        ca_par_annee.plot(kind='bar', color='orange')
+        plt.title('Chiffre d\'affaires par année')
+        plt.xlabel('Année')
+        plt.ylabel('Chiffre d\'affaires')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()
 if __name__ == "__main__":
     vehicules = load_vehicules("data/vehicules.csv")
     criteres = criteres("data/vehicules.csv")

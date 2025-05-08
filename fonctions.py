@@ -4,6 +4,12 @@ import csv
 import os
 import random
 from objects import *
+import matplotlib.pyplot as plt
+import pandas as pd
+
+from datetime import datetime
+from collections import defaultdict
+
 
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
@@ -580,3 +586,104 @@ def load_vehicule_POO_id(csv,id_vehicule):
                 return load_vehicule_POO(row)
             else:
                 print("Véhicule introuvable !")
+
+def lire_donnees_reservations(fichier='C:\\Users\\Utilisateur\\projet_voiture\\projet_info_IA_PR\\data\\reservations.csv'):
+    donnees = []
+    with open(fichier, mode='r', newline='', encoding='utf-8') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            try:
+                row['date_debut'] = datetime.strptime(row['date_debut'], "%m-%d-%Y")
+                row['prix_total'] = float(row['prix_total'])
+                donnees.append(row)
+            except Exception as e:
+                print(f"Erreur sur une ligne : {e}")
+    return donnees
+
+def plot_reservations_par_mois(donnees=lire_donnees_reservations(fichier='C:\\Users\\Utilisateur\\projet_voiture\\projet_info_IA_PR\\data\\reservations.csv')):
+    stats = defaultdict(int)
+    for r in donnees:
+        mois = r['date_debut'].strftime("%Y-%m")
+        stats[mois] += 1
+
+    mois_tries = sorted(stats)
+    valeurs = [stats[m] for m in mois_tries]
+
+    plt.figure(figsize=(10, 5))
+    plt.bar(mois_tries, valeurs, color='teal')
+    plt.title("Nombre de réservations par mois")
+    plt.xlabel("Mois")
+    plt.ylabel("Nombre de réservations")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+def plot_reservations_par_annee(donnees=lire_donnees_reservations(fichier='C:\\Users\\Utilisateur\\projet_voiture\\projet_info_IA_PR\\data\\reservations.csv')):
+    stats = defaultdict(int)
+    for r in donnees:
+        annee = r['date_debut'].year
+        stats[annee] += 1
+
+    annees = sorted(stats)
+    valeurs = [stats[a] for a in annees]
+
+    plt.figure(figsize=(6, 5))
+    plt.bar(annees, valeurs, color='coral')
+    plt.title("Nombre de réservations par année")
+    plt.xlabel("Année")
+    plt.ylabel("Nombre de réservations")
+    plt.tight_layout()
+    plt.show()
+
+def plot_chiffre_affaires_par_annee(donnees=lire_donnees_reservations(fichier='C:\\Users\\Utilisateur\\projet_voiture\\projet_info_IA_PR\\data\\reservations.csv')):
+    stats = defaultdict(float)
+    for r in donnees:
+        annee = r['date_debut'].year
+        stats[annee] += r['prix_total']
+
+    annees = sorted(stats)
+    valeurs = [stats[a] for a in annees]
+
+    plt.figure(figsize=(6, 5))
+    plt.bar(annees, valeurs, color='green')
+    plt.title("Chiffre d'affaires par année")
+    plt.xlabel("Année")
+    plt.ylabel("Chiffre d'affaires (en unité monétaire)")
+    plt.tight_layout()
+    plt.show()
+
+def chiffre_affaires_pour_annee(annee_voulue,donnees=lire_donnees_reservations(fichier='C:\\Users\\Utilisateur\\projet_voiture\\projet_info_IA_PR\\data\\reservations.csv')):
+    total = 0.0
+    for r in donnees:
+        if r['date_debut'].year == annee_voulue:
+            total += r['prix_total']
+    print(f"Chiffre d'affaires pour l'année {annee_voulue} : {total}")
+    return total
+
+def chiffre_affaires_total(donnees=lire_donnees_reservations(fichier='C:\\Users\\Utilisateur\\projet_voiture\\projet_info_IA_PR\\data\\reservations.csv')):
+    total = sum(r['prix_total'] for r in donnees)
+    print(f"Chiffre d'affaires total : {total}")
+    return total
+
+def lire_csv(fichier):
+    with open(fichier, mode='r') as file:
+        reader = csv.DictReader(file)
+        return [row for row in reader]
+    
+def reservations_par_vehicule_par_annee(reservations_file, vehicules_file):
+    reservations = lire_csv(reservations_file)
+    vehicules = lire_csv(vehicules_file)
+    
+
+    reservations_vehicule_annee = defaultdict(lambda: defaultdict(int))  # Dictionnaire imbriqué pour stocker les réservations par véhicule et par année
+    
+    for reservation in reservations:
+        vehicule_id = reservation['id_vehicule']
+        date_debut = datetime.strptime(reservation['date_debut'], "%m-%d-%Y")
+        annee = date_debut.year
+        reservations_vehicule_annee[vehicule_id][annee] += 1
+    
+    for vehicule_id, reservations_annee in reservations_vehicule_annee.items():
+        print(f"Véhicule {vehicule_id}:")
+        for annee, count in reservations_annee.items():
+            print(f"  Année {annee}: {count} réservation(s)")

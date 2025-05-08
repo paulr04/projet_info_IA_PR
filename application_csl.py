@@ -4,6 +4,7 @@ import datetime
 from fonctions import *
 from objects import *
 from facture import *
+from fonctions import plot_reservations_par_mois
 
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
@@ -157,7 +158,7 @@ class Application:
                 self.changer_de_mdp()
                 break
             elif choix == "11":
-                print("en cour de développement")
+                self.menu_analyse_ventes()
             elif choix == "12":
                 self.changer_caracteristique_vehicule()
             elif choix == "13":
@@ -186,15 +187,17 @@ class Application:
             print("9. Quitter")
             choix = input("Choisissez une action (1-9): ")
             if choix == "1":
-                print("en cour de développement")#les fonctions doivent etre ajouté dans la classe   
-            elif choix == "2":                   #Optimiser le fichier application en mettant des fonction utile dans fonctions.py
-                print("en cour de développement")# Ex : une fonction pour tracer des graphes 
+                plot_reservations_par_mois()   
+            elif choix == "2":                   
+                plot_reservations_par_annee()
             elif choix == "3":
-                print("en cour de développement")
+                print("\nChoisir l'année :")
+                annee = demander_input_int("Année : ")
+                chiffre_affaires_pour_annee(annee)
             elif choix == "4":
-                print("en cour de développement")
+                plot_chiffre_affaires_par_annee()
             elif choix == "5":
-                print("en cour de développement")
+                chiffre_affaires_total()
             elif choix == "6":
                 print("en cour de développement")
             elif choix == "7":
@@ -540,6 +543,7 @@ class Application:
                 self.reserver_vehicule()
         else:
             print("Aucun véhicule trouvé avec les critères spécifiés.")
+    
 if __name__ == "__main__":
     # Création d'une instance de l'application et lancement du menu principal
     app = Application()
