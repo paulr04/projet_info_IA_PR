@@ -691,7 +691,7 @@ def chiffre_affaires_pour_annee(annee_voulue, fichier_reservations='reservations
 
 def chiffre_affaires_total(donnees=lire_donnees_reservations('reservations.csv')):
     total = sum(r['prix_total'] for r in donnees)
-    print(f"Chiffre d'affaires total : {total}")
+    print(f"Chiffre d'affaires total : {round(total,2)} €") 
     return total
 
 def lire_csv(fichier):
