@@ -285,10 +285,11 @@ class Application:
                 self.surclassement(vehicule, self.trouver_vehicule_disponible(date_debut, date_fin),date_debut, date_fin, id_user, jours_res, prix)
             else:
                 id_resa = generer_id_unique(RESERVATIONS_FILE, 'id_resa')
-                string = f"RESERVATION[{id_resa}] CLIENT[{id_user}] VEHICULE[{id_vehicule}] DU[{date_debut}] AU[{date_fin}] JOURS[{jours}] PRIX[{prix_total}] SURCLASSEMENT[{surclassement}]"
+                surclassement = False
+                string = string = f"RESERVATION {id_resa} CLIENT {id_user} VEHICULE {id_vehicule} DU {date_debut} AU {date_fin} JOURS {jours_res} PRIX {prix} SURCLASSEMENT {surclassement}"
                 reservation = Reservation_DSL.from_dsl(string)
                 facture(reservation,info_user(id_user),info_vehicule(id_vehicule))
-                Reservation_DSL.enregistrer()
+                Reservation_DSL.enregistrer(reservation, RESERVATIONS_FILE)
                 print(f"Réservation n° {id_resa} confirmée pour {id_user} pour le véhicule {vehicule.marque} {vehicule.modele} du {date_debut} au {date_fin} total de {jours_res} jour(s), coût : {prix} €.")
         else:
             print("Véhicule non disponible (maintenance, entretient...)")
@@ -305,7 +306,7 @@ class Application:
                     vehicules_disponibles.append(vehicule)
         return vehicules_disponibles
 
-    def surclassement(self, Vehicule, vehicules_disponibles,date_debut, date_fin, id_user, jours_res, prix):
+    def surclassement(self, Vehicule, vehicules_disponibles,date_debut, date_fin, id_user, jours, prix):
         print("Le véhicule n'est pas disponible aux dates demandées :( .") # SURCLASSEMENT
         surclassement = demander_input_bool("Souhaitez-vous surclasser la réservation ? (oui/non): ")
         if self.criteres_resa:
@@ -336,20 +337,16 @@ class Application:
                             if float(trouver_value(VEHICULES_FILE, vehicule_choisi,'id_vehicule','prix_jour')) >= Vehicule.prix_jour:
                                 surclassement = True
                             else:
-                                surclassement = False
-                            reservation = Reservation(id_resa, id_user, vehicule_choisi, date_debut, date_fin, jours_res, prix, surclassement)
-                            for element in recherche_vehicule:
-                                if element.id_vehicule == vehicule_choisi:
-                                    vehicule_nouv = element
-                                    break 
-                            facture(reservation,info_user(id_user),vehicule_nouv)
-                            file_exists = os.path.exists(RESERVATIONS_FILE)
-                            with open(RESERVATIONS_FILE, mode="a", newline="", encoding="utf-8") as file:
-                                writer = csv.DictWriter(file, fieldnames=reservation.to_dict().keys())
-                                if not file_exists:
-                                    writer.writeheader()
-                                writer.writerow(reservation.to_dict())
-                            print(f"Réservation n° {id_resa} confirmée pour {id_user} pour le véhicule {vehicule.marque} {vehicule.modele} du {date_debut} au {date_fin} total de {jours_res} jour(s), coût : {prix} €.")
+                                surclassement = False 
+                            obj_vehicule = info_vehicule(vehicule_choisi)
+                            if obj_vehicule.prix_jour >= Vehicule.prix_jour:
+                                obj_vehicule.prix_jour = Vehicule.prix_jour
+                            prix = obj_vehicule.prix_jour * jours
+                            string = string = f"RESERVATION {id_resa} CLIENT {id_user} VEHICULE {obj_vehicule.id_vehicule} DU {date_debut} AU {date_fin} JOURS {jours} PRIX {prix} SURCLASSEMENT {surclassement}"
+                            reservation = Reservation_DSL.from_dsl(string)
+                            facture(reservation,info_user(id_user),obj_vehicule)
+                            Reservation_DSL.enregistrer(reservation, RESERVATIONS_FILE)
+                            print(f"Réservation n° {id_resa} confirmée pour {id_user} pour le véhicule {obj_vehicule.marque} {obj_vehicule.modele} du {date_debut} au {date_fin} total de {jours} jour(s), coût : {prix} €.")
                             break
                         else:
                             print("ENTREZ UNE PLAQUE VALIDE")

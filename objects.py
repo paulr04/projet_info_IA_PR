@@ -1,3 +1,6 @@
+import re
+import os
+import csv
 
 class Vehicule:
     """
@@ -207,20 +210,18 @@ class Reservation_DSL:
         import re
         from datetime import datetime
 
-        pattern = (
-            r"RESERVATION\[([1-9]{9})\] CLIENT\[([1-9]{9})\] VEHICULE\[([A-Z]{2}-\d{3}-[A-Z]{2})\] "
-            r"DU\[(\d{2}-\d{2}-\d{4})\] AU\[(\d{2}-\d{2}-\d{4})\] PRIX\[(\d+(?:\.\d+)?)\] JOURS\[(\d+)\] "
-            r" SURCLASSEMENT\[(True|False)\]"
-        )
-        match = re.match(pattern, dsl.strip())
+        pattern = r"RESERVATION (\d{9}) CLIENT (\d{9}) VEHICULE ([A-Z]{2}-\d{3}-[A-Z]{2}) DU (\d{2}-\d{2}-\d{4}) AU (\d{2}-\d{2}-\d{4}) JOURS (\d+) PRIX ([\d\.]+) SURCLASSEMENT (True|False)"
+        match = re.match(pattern, dsl)
+        
         if not match:
+            print(dsl)
+            print(match)
+            print(dsl.strip)
             raise ValueError(
                 "DSL invalide. Format attendu : "
-                "RESERVATION[123456789] CLIENT[987654321] VEHICULE[AB-123-CD] "
-                "DU[MM-DD-YYYY] AU[MM-DD-YYYY] JOURS[3] PRIX[400.00] SURCLASSEMENT[True]"
-            )
-
-        id_resa, id_user, id_vehicule, date_debut, date_fin, prix_total, jours, surclassement_str = match.groups()
+                "RESERVATION 578878064 CLIENT 000000230 VEHICULE FR-416-FR DU 08-08-2025 AU 08-09-2025 JOURS 2 PRIX 30000.0 SURCLASSEMENT False")
+            
+        id_resa, id_user, id_vehicule, date_debut, date_fin, jours, prix_total , surclassement_str = match.groups()
 
         surclassement = surclassement_str == "True" if surclassement_str else False
 
