@@ -202,14 +202,14 @@ class Reservation_DSL:
     def from_dsl(cls, dsl: str):
         """
         DSL attendu :
-        "RESERVATION[id=123456789] CLIENT[987654321] VEHICULE[AB-123-CD] DU[05-01-2025] AU[05-05-2025] JOURS[3] PRIX[400.00] SURCLASSEMENT[True]"
+        "RESERVATION[123456789] CLIENT[987654321] VEHICULE[AB-123-CD] DU[05-01-2025] AU[05-05-2025] JOURS[3] PRIX[400.00] SURCLASSEMENT[True]"
 
         """
         import re
         from datetime import datetime
 
         pattern = (
-            r"RESERVATION\[id=([1-9]{9})\] CLIENT\[([1-9]{9})\] VEHICULE\[([A-Z]{2}-\d{3}-[A-Z]{2})\] "
+            r"RESERVATION\[([1-9]{9})\] CLIENT\[([1-9]{9})\] VEHICULE\[([A-Z]{2}-\d{3}-[A-Z]{2})\] "
             r"DU\[(\d{2}-\d{2}-\d{4})\] AU\[(\d{2}-\d{2}-\d{4})\] PRIX\[(\d+(?:\.\d+)?)\] JOURS\[(\d+)\] "
             r" SURCLASSEMENT\[(True|False)\]"
         )
@@ -217,7 +217,7 @@ class Reservation_DSL:
         if not match:
             raise ValueError(
                 "DSL invalide. Format attendu : "
-                "RESERVATION[id=123456789] CLIENT[987654321] VEHICULE[AB-123-CD] "
+                "RESERVATION[123456789] CLIENT[987654321] VEHICULE[AB-123-CD] "
                 "DU[MM-DD-YYYY] AU[MM-DD-YYYY] JOURS[3] PRIX[400.00] SURCLASSEMENT[True]"
             )
 
@@ -261,3 +261,7 @@ class Reservation_DSL:
             f"Du {self.date_debut} au {self.date_fin} ({self.jours} jours) | "
             f"Prix : {self.prix_total:.2f}€ | Surclassement : {'Oui' if self.surclassement else 'Non'}"
         )
+
+string = f"RESERVATION[{id_resa}] CLIENT[{id_user}] VEHICULE[{id_vehicule}] DU[{date_debut}] AU[{date_fin}] JOURS[{jours}] PRIX[{prix_total}] SURCLASSEMENT[{surclassement}]"
+reservation = Reservation_DSL.from_dsl(string)
+print(reservation)

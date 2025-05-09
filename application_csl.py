@@ -285,14 +285,10 @@ class Application:
                 self.surclassement(vehicule, self.trouver_vehicule_disponible(date_debut, date_fin),date_debut, date_fin, id_user, jours_res, prix)
             else:
                 id_resa = generer_id_unique(RESERVATIONS_FILE, 'id_resa')
-                reservation = Reservation(id_resa, id_user, id_vehicule, date_debut, date_fin, jours_res, prix, surclassement=False)
+                string = f"RESERVATION[{id_resa}] CLIENT[{id_user}] VEHICULE[{id_vehicule}] DU[{date_debut}] AU[{date_fin}] JOURS[{jours}] PRIX[{prix_total}] SURCLASSEMENT[{surclassement}]"
+                reservation = Reservation_DSL.from_dsl(string)
                 facture(reservation,info_user(id_user),info_vehicule(id_vehicule))
-                file_exists = os.path.exists(RESERVATIONS_FILE)
-                with open(RESERVATIONS_FILE, mode="a", newline="", encoding="utf-8") as file:
-                    writer = csv.DictWriter(file, fieldnames=reservation.to_dict().keys())
-                    if not file_exists:
-                        writer.writeheader()
-                    writer.writerow(reservation.to_dict())
+                Reservation_DSL.enregistrer()
                 print(f"Réservation n° {id_resa} confirmée pour {id_user} pour le véhicule {vehicule.marque} {vehicule.modele} du {date_debut} au {date_fin} total de {jours_res} jour(s), coût : {prix} €.")
         else:
             print("Véhicule non disponible (maintenance, entretient...)")
