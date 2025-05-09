@@ -1,40 +1,40 @@
-import re
+import matplotlib.pyplot as plt
 
-# La chaîne générée par ton code
-string = "RESERVATION 578878064 CLIENT 123456789 VEHICULE FR-416-FR DU 08-08-2025 AU 08-09-2025 JOURS 2 PRIX 30000.0 SURCLASSEMENT False"
+# Exemple de données (à remplacer par tes listes réelles)
+ids_vehicules = ["V1", "V2", "V3"]
+revenus = [3000, 1500, 4000]
+entretiens = [1000, 1200, 2000]
 
-# Variables dynamiques
-id_resa = 578878064
-id_user = 123456789
-id_vehicule = "FR-416-FR"
-date_debut = "08-08-2025"
-date_fin = "08-09-2025"
-jours_res = 2
-prix = 30000.0
-surclassement = False
+# Calcul des indices de rentabilité
+indices = []
+for i in range(len(ids_vehicules)):
+    revenu = revenus[i]
+    cout = entretiens[i]
+    indice = revenu / cout if cout != 0 else float('inf')
+    indices.append(indice)
+    print(f"Véhicule {ids_vehicules[i]} → Indice de rentabilité : {indice:.2f}")
 
-# Générer la chaîne avec une f-string
-string = f"RESERVATION {id_resa} CLIENT {id_user} VEHICULE {id_vehicule} DU {date_debut} AU {date_fin} JOURS {jours_res} PRIX {prix} SURCLASSEMENT {surclassement}"
+# Position des barres
+x = range(len(ids_vehicules))
+width = 0.35
 
-# Afficher la chaîne générée
-print(string)
+# Création du graphique
+fig, ax = plt.subplots()
+bar1 = ax.bar([i - width/2 for i in x], revenus, width, label="Revenus", color='green')
+bar2 = ax.bar([i + width/2 for i in x], entretiens, width, label="Entretien", color='red')
 
-# Pattern regex amélioré pour correspondre au format exact
-pattern = r"RESERVATION (\d{9}) CLIENT (\d{9}) VEHICULE ([A-Z]{2}-\d{3}-[A-Z]{2}) DU (\d{2}-\d{2}-\d{4}) AU (\d{2}-\d{2}-\d{4}) JOURS (\d+) PRIX ([\d\.]+) SURCLASSEMENT (True|False)"
+# Ajout des indices au-dessus
+for i in range(len(x)):
+    ax.text(i, max(revenus[i], entretiens[i]) + 100, f"{indices[i]:.2f}", ha='center', fontsize=9, fontweight='bold')
 
-# Recherche avec le pattern
-match = re.match(pattern, string)
+# Personnalisation
+ax.set_xlabel("ID Véhicule")
+ax.set_ylabel("Euros")
+ax.set_title("Revenus vs Entretien avec Indice de Rentabilité")
+ax.set_xticks(x)
+ax.set_xticklabels(ids_vehicules)
+ax.legend()
+plt.tight_layout()
+plt.show()
 
-# Vérification et affichage des groupes capturés
-if match:
-    print("Match trouvé !")
-    print(f"ID Réservation: {match.group(1)}")
-    print(f"ID Client: {match.group(2)}")
-    print(f"Véhicule: {match.group(3)}")
-    print(f"Date de début: {match.group(4)}")
-    print(f"Date de fin: {match.group(5)}")
-    print(f"Jours: {match.group(6)}")
-    print(f"Prix: {match.group(7)}")
-    print(f"Surclassement: {match.group(8)}")
-else:
-    print("Aucun match trouvé.")
+print ("Graphique généré avec succès !")
