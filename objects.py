@@ -1,4 +1,5 @@
 
+
 class Vehicule:
     """
     Auteur : Paul Renaud
@@ -170,7 +171,7 @@ class User:
         """
         return f"{self.prenom} {self.nom} - {self.role}"
     
-class Reservation2:
+class Reservation_DSL:
     """
     Auteur : Paul Renaud
 
@@ -203,7 +204,6 @@ class Reservation2:
         DSL attendu :
         "RESERVATION[id=123456789] CLIENT[987654321] VEHICULE[AB-123-CD] DU[05-01-2025] AU[05-05-2025] JOURS[3] PRIX[400.00] SURCLASSEMENT[True]"
 
-        Le champ SURCLASSEMENT est optionnel.
         """
         import re
         from datetime import datetime
@@ -211,7 +211,7 @@ class Reservation2:
         pattern = (
             r"RESERVATION\[id=([1-9]{9})\] CLIENT\[([1-9]{9})\] VEHICULE\[([A-Z]{2}-\d{3}-[A-Z]{2})\] "
             r"DU\[(\d{2}-\d{2}-\d{4})\] AU\[(\d{2}-\d{2}-\d{4})\] PRIX\[(\d+(?:\.\d+)?)\] JOURS\[(\d+)\] "
-            r"(?: SURCLASSEMENT\[(True|False)\])?"
+            r" SURCLASSEMENT\[(True|False)\]"
         )
         match = re.match(pattern, dsl.strip())
         if not match:
@@ -225,7 +225,7 @@ class Reservation2:
 
         surclassement = surclassement_str == "True" if surclassement_str else False
 
-        return cls(id_resa, id_user, id_vehicule, date_debut, date_fin, jours, float(prix_total), surclassement)
+        return cls(id_resa, id_user, id_vehicule, date_debut, date_fin, int(jours), float(prix_total), bool(surclassement))
 
     def enregistrer(self, chemin_fichier="data/reservations.csv"):
         """
