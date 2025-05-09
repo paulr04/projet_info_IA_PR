@@ -716,22 +716,29 @@ def lire_csv(fichier):
         reader = csv.DictReader(file)
         return [row for row in reader]
     
-def reservations_par_vehicule_par_an(annee=2025,fichier_vehicules='vehicules.csv', fichier_reservations='reservations.csv'):
+def reservations_par_vehicule_par_an(annee, fichier_vehicules='vehicules.csv', fichier_reservations='reservations.csv'):
+    # Définition des chemins
     chemin_repertoire = os.path.dirname(os.path.realpath(__file__))
     chemin_data = os.path.join(chemin_repertoire, 'data') 
     chemin_vehicules = os.path.join(chemin_data, fichier_vehicules)  
     chemin_reservations = os.path.join(chemin_data, fichier_reservations)  
 
+    # Chargement des données
     vehicules = lire_csv(chemin_vehicules)
     reservations = lire_csv(chemin_reservations)
     
-    reservations_annee = [resa for resa in reservations if datetime.strptime(resa['date_debut'], '%m-%d-%Y').year == annee]
+    # Filtrage des réservations pour l'année donnée
+    reservations_annee = [
+        resa for resa in reservations 
+        if datetime.strptime(resa['date_debut'], '%m-%d-%Y').year == annee
+    ]
     
     compteur_reservations = Counter(resa['id_vehicule'] for resa in reservations_annee)
-    
+
     vehicules_dict = {vehicule['id_vehicule']: f"{vehicule['marque']} {vehicule['modele']}" for vehicule in vehicules}
     
-    vehicules_noms = [vehicules_dict[id_vehicule] for id_vehicule in compteur_reservations.keys()]
+    vehicules_noms = [vehicules_dict.get(id_vehicule, "Inconnu") for id_vehicule in compteur_reservations.keys()]
+    
     nb_reservations = list(compteur_reservations.values())
     
     plt.figure(figsize=(10, 6))
