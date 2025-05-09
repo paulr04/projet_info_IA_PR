@@ -656,7 +656,7 @@ def plot_chiffre_affaires_par_annee(donnees=lire_donnees_reservations('reservati
     plt.tight_layout()
     plt.show()
 
-def chiffre_affaires_pour_annee(annee_voulue, fichier_reservations='reservations.csv', fichier_vehicules='vehicules.csv'):
+def benefice_pour_annee(annee_voulue, fichier_reservations='reservations.csv', fichier_vehicules='vehicules.csv'):
     chemin_script = os.path.dirname(os.path.realpath(__file__))
     chemin_data = os.path.join(chemin_script, 'data')
 
