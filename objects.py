@@ -31,11 +31,9 @@ class Vehicule:
         save_to_file()      : Enregistre le véhicule dans le fichier CSV s'il n'existe pas déjà.
     """
 
-    def __init__(
-        self, id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,
+    def __init__(self, id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,
         volume_utile, nb_places, type_moteur, hauteur, type_vehicule,
-        boite_vitesse, entretien_annuel, dispo, description
-    ):
+        boite_vitesse, entretien_annuel, dispo, description):
         self.id_vehicule = id_vehicule
         self.marque = marque
         self.modele = modele
