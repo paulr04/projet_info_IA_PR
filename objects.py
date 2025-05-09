@@ -261,6 +261,3 @@ class Reservation_DSL:
             f"Prix : {self.prix_total:.2f}€ | Surclassement : {'Oui' if self.surclassement else 'Non'}"
         )
 
-string = f"RESERVATION[{id_resa}] CLIENT[{id_user}] VEHICULE[{id_vehicule}] DU[{date_debut}] AU[{date_fin}] JOURS[{jours}] PRIX[{prix_total}] SURCLASSEMENT[{surclassement}]"
-reservation = Reservation_DSL.from_dsl(string)
-print(reservation)
