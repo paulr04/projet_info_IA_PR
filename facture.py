@@ -1,9 +1,8 @@
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-from reportlab.lib.utils import ImageReader 
-import os 
-
 def facture(reservation, user, vehicule):
+    import os
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.utils import ImageReader
 
     # Récupération des infos
     id_resa = reservation.id_resa
@@ -13,6 +12,7 @@ def facture(reservation, user, vehicule):
     jours_res = reservation.jours
     prix = reservation.prix_total
     id_user = reservation.id_user
+    surclassement = reservation.surclassement
 
     nom = user.nom
     prenom = user.prenom
@@ -25,24 +25,23 @@ def facture(reservation, user, vehicule):
     description = vehicule.description
 
     fichier_pdf = f"facture_{id_resa}.pdf"
-    path_save = os.path.join(os.path.abspath("factures_pdf"),fichier_pdf)
+    path_save = os.path.join(os.path.abspath("factures_pdf"), fichier_pdf)
 
     c = canvas.Canvas(path_save, pagesize=A4)
     width, height = A4
     logo_name = 'logo_cargo.png'
-    # Ajout du logo
     logo_path = os.path.abspath(logo_name)
-    print(f"Je cherche le logo ici : {logo_path}")
 
-    if not os.path.exists(logo_path):
-        print("ERREUR : Le fichier logo n'existe pas !")
-    else:
+    # Ajout du logo
+    if os.path.exists(logo_path):
         try:
             logo = ImageReader(logo_path)
             c.drawImage(logo, 50, height - 150, width=100, preserveAspectRatio=True, mask='auto')
             print("Logo ajouté avec succès !")
         except Exception as e:
             print(f"Erreur lors de l'ajout de l'image : {e}")
+    else:
+        print("ERREUR : Le fichier logo n'existe pas !")
 
     # Titre
     c.setFont("Helvetica-Bold", 20)
@@ -64,13 +63,14 @@ def facture(reservation, user, vehicule):
     c.drawString(50, y, "Informations de la Réservation :")
     c.setFont("Helvetica", 12)
     c.drawString(50, y - 20, f"ID Réservation : {id_resa}")
-    c.drawString(50, y - 40, f"ID Véhicule : {id_vehicule}")
-    c.drawString(50, y - 60, f"Date de Début : {date_debut}")
-    c.drawString(50, y - 80, f"Date de Fin : {date_fin}")
-    c.drawString(50, y - 100, f"Jours de Réservation : {jours_res}")
+    c.drawString(50, y - 40, f"Surclassement : {'Oui' if surclassement else 'Non'}")  # <-- Ligne ajoutée
+    c.drawString(50, y - 60, f"ID Véhicule : {id_vehicule}")
+    c.drawString(50, y - 80, f"Date de Début : {date_debut}")
+    c.drawString(50, y - 100, f"Date de Fin : {date_fin}")
+    c.drawString(50, y - 120, f"Jours de Réservation : {jours_res}")
 
     # Infos Véhicule
-    y -= 140
+    y -= 160
     c.setFont("Helvetica-Bold", 14)
     c.drawString(50, y, "Informations sur le Véhicule :")
     c.setFont("Helvetica", 12)

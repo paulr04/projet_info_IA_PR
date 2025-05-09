@@ -89,7 +89,7 @@ class Reservation:
         save_to_file()        : Enregistre la réservation dans le fichier CSV.
     """
 
-    def __init__(self, id_resa, id_user, id_vehicule, date_debut, date_fin, jours, prix_total):
+    def __init__(self, id_resa, id_user, id_vehicule, date_debut, date_fin, jours, prix_total,surclassement):
         self.id_resa = id_resa
         self.id_user = id_user
         self.id_vehicule = id_vehicule
@@ -97,6 +97,7 @@ class Reservation:
         self.date_fin = date_fin
         self.jours = jours
         self.prix_total = prix_total
+        self.surclassement = surclassement
 
     def to_dict(self):
         """
@@ -168,3 +169,95 @@ class User:
             str : Prénom, Nom et rôle de l'utilisateur.
         """
         return f"{self.prenom} {self.nom} - {self.role}"
+    
+class Reservation2:
+    """
+    Auteur : Paul Renaud
+
+    Représente une réservation de véhicule effectuée par un client.
+
+    Attributs :
+        id_resa (str)         : Identifiant unique de la réservation (9 chiffres entre 1 et 9).
+        id_user (str)         : Identifiant de l'utilisateur (9 chiffres entre 1 et 9).
+        id_vehicule (str)     : Identifiant du véhicule (format AA-123-AA).
+        date_debut (str)      : Date de début de location (format MM-DD-YYYY).
+        date_fin (str)        : Date de fin de location (format MM-DD-YYYY).
+        jours (int)           : Durée de la réservation.
+        prix_total (float)    : Prix total.
+        surclassement (bool) : True si surclassement.
+    """
+
+    def __init__(self, id_resa, id_user, id_vehicule, date_debut, date_fin, jours, prix_total, surclassement=False):
+        self.id_resa = id_resa
+        self.id_user = id_user
+        self.id_vehicule = id_vehicule
+        self.date_debut = date_debut
+        self.date_fin = date_fin
+        self.jours = jours
+        self.prix_total = prix_total
+        self.surclassement = surclassement
+
+    @classmethod
+    def from_dsl(cls, dsl: str):
+        """
+        DSL attendu :
+        "RESERVATION[id=123456789] CLIENT[987654321] VEHICULE[AB-123-CD] DU[05-01-2025] AU[05-05-2025] JOURS[3] PRIX[400.00] SURCLASSEMENT[True]"
+
+        Le champ SURCLASSEMENT est optionnel.
+        """
+        import re
+        from datetime import datetime
+
+        pattern = (
+            r"RESERVATION\[id=([1-9]{9})\] CLIENT\[([1-9]{9})\] VEHICULE\[([A-Z]{2}-\d{3}-[A-Z]{2})\] "
+            r"DU\[(\d{2}-\d{2}-\d{4})\] AU\[(\d{2}-\d{2}-\d{4})\] PRIX\[(\d+(?:\.\d+)?)\] JOURS\[(\d+)\] "
+            r"(?: SURCLASSEMENT\[(True|False)\])?"
+        )
+        match = re.match(pattern, dsl.strip())
+        if not match:
+            raise ValueError(
+                "DSL invalide. Format attendu : "
+                "RESERVATION[id=123456789] CLIENT[987654321] VEHICULE[AB-123-CD] "
+                "DU[MM-DD-YYYY] AU[MM-DD-YYYY] JOURS[3] PRIX[400.00] SURCLASSEMENT[True]"
+            )
+
+        id_resa, id_user, id_vehicule, date_debut, date_fin, prix_total, jours, surclassement_str = match.groups()
+
+        surclassement = surclassement_str == "True" if surclassement_str else False
+
+        return cls(id_resa, id_user, id_vehicule, date_debut, date_fin, jours, float(prix_total), surclassement)
+
+    def enregistrer(self, chemin_fichier="data/reservations.csv"):
+        """
+        Enregistre la réservation actuelle dans un fichier CSV.
+        Si le fichier n'existe pas, l'en-tête est ajoutée.
+        """
+        file_exists = os.path.exists(chemin_fichier)
+        with open(chemin_fichier, mode="a", newline="", encoding="utf-8") as file:
+            writer = csv.DictWriter(file, fieldnames=[
+                "id_resa", "id_user", "id_vehicule",
+                "date_debut", "date_fin", "jours",
+                "prix_total", "surclassement"
+            ])
+            if not file_exists:
+                writer.writeheader()
+            writer.writerow(self.to_dict())
+
+    def to_dict(self):
+        return {
+            "id_resa": self.id_resa,
+            "id_user": self.id_user,
+            "id_vehicule": self.id_vehicule,
+            "date_debut": self.date_debut,
+            "date_fin": self.date_fin,
+            "jours": self.jours,
+            "prix_total": self.prix_total,
+            "surclassement": self.surclassement
+        }
+
+    def __str__(self):
+        return (
+            f"Réservation {self.id_resa} | Client {self.id_user} | Véhicule {self.id_vehicule} | "
+            f"Du {self.date_debut} au {self.date_fin} ({self.jours} jours) | "
+            f"Prix : {self.prix_total:.2f}€ | Surclassement : {'Oui' if self.surclassement else 'Non'}"
+        )

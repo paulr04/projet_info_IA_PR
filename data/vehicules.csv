@@ -4,8 +4,10 @@ BB-456-BB,tesla,model 3,90.0,1800.0,225.0,300.0,0.5,5,electrique,1.44,berline,au
 CC-789-CC,peugeot,5008,65.0,1500.0,190.0,130.0,0.7,7,diesel,1.65,SUV,automatique,600.0,True,Grand SUV confortable pour familles nombreuses.
 DD-321-DD,beneteau,antares 8,250.0,2500.0,70.0,200.0,2.0,8,essence,3.0,bateau,manuelle,1200.0,True,Bateau a moteur pour croisiere cotiere.
 EE-654-EE,renault,kangoo ze,50.0,1620.0,130.0,60.0,3.5,2,electrique,1.80,utilitaire,automatique,300.0,True,Utilitaire electrique pratique pour livraisons.
-FR-416-FR,knds,caesar,15000,10000.0,100.0,200.0,0.0,4,essence,3.0,militaire,manuelle,100000.0,True,canon de 155 mm monte sur camion
-OO-654-OO,bmw,i3,90.0,2000.0,300.0,150.0,2.0,5,electrique,1.70,berline,automatique,5000.0,False,blabla
-SS-111-SS,renault,zoe,40.0,1500.0,140.0,80.0,0.3,5,electrique,1.55,citadine,automatique,300.0,True,Citadine electrique ideale pour la ville.
-SS-222-SS,renault,e-twingo,45.0,1200.0,150.0,70.0,0.2,4,electrique,1.40,citadine,automatique,250.0,True,Citadine electrique compacte et agile.
-SS-333-SS,renault,twingo,30.0,1100.0,130.0,60.0,0.2,4,essence,1.45,citadine,manuelle,200.0,True,Citadine essence economique et maniable.    
+FR-416-FR,knds,caesar,15000,18000.0,100.0,410.0.0,10.0,4,diesel,3.6,militaire,automatique,100000.0,True,canon de 155 mm monte sur camion
+OO-654-OO,bmw,i3,90.0,1300.0,150.0,150.0,2.0,5,electrique,1.70,berline,automatique,5000.0,False,blabla
+AA-111-AA,renault,zoe,40.0,1500.0,140.0,80.0,0.3,5,electrique,1.55,citadine,automatique,300.0,True,Citadine electrique ideale pour la ville.
+BB-222-BB,renault,e-twingo,45.0,1200.0,150.0,70.0,0.2,4,electrique,1.40,citadine,automatique,250.0,True,Citadine electrique compacte et agile.
+CC-333-CC,renault,twingo,30.0,1100.0,130.0,60.0,0.2,4,essence,1.45,citadine,manuelle,200.0,True,Citadine essence economique et maniable.
+DD-444-DD,citroen,c3,35.0,1100.0,160.0,75.0,0.3,5,essence,1.50,citadine,manuelle,300.0,True,Citadine essence confortable et spacieuse.
+EE-555-EE,ford,fiesta,40.0,1200.0,170.0,85.0,0.4,5,essence,1.55,citadine,automatique,400.0,True,Citadine essence dynamique et sportive.
