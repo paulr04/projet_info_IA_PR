@@ -639,60 +639,119 @@ def plot_reservations_par_annee(donnees=lire_donnees_reservations('reservations.
     plt.tight_layout()
     plt.show()
 
-def plot_chiffre_affaires_par_annee(donnees=lire_donnees_reservations('reservations.csv')):
-    stats = defaultdict(float)
-    for r in donnees:
-        annee = r['date_debut'].year
-        stats[annee] += r['prix_total']
-
-    annees = sorted(stats)
-    valeurs = [stats[a] for a in annees]
-
-    plt.figure(figsize=(6, 5))
-    plt.bar(annees, valeurs, color='green')
-    plt.title("Chiffre d'affaires par année")
-    plt.xlabel("Année")
-    plt.ylabel("Chiffre d'affaires (en unité monétaire)")
-    plt.tight_layout()
-    plt.show()
-
-def benefice_pour_annee(annee_voulue, fichier_reservations='reservations.csv', fichier_vehicules='vehicules.csv'):
+def benefice_par_annee_histogramme(fichier_reservations='reservations.csv', fichier_vehicules='vehicules.csv'):
     chemin_script = os.path.dirname(os.path.realpath(__file__))
     chemin_data = os.path.join(chemin_script, 'data')
-
     chemin_reservations = os.path.join(chemin_data, fichier_reservations)
     chemin_vehicules = os.path.join(chemin_data, fichier_vehicules)
 
     reservations = lire_csv(chemin_reservations)
     vehicules = lire_csv(chemin_vehicules)
 
-    dico_entretien_annuel = {}
-    for v in vehicules:
-        id_veh = v['id_vehicule']
-        entretien_annuel = float(v['entretien_annuel'])
-        dico_entretien_annuel[id_veh] = entretien_annuel
+    # Dictionnaire pour stocker le coût d'entretien par véhicule
+    dico_entretien_annuel = {
+        v['id_vehicule']: float(v['entretien_annuel']) for v in vehicules
+    }
 
-    chiffre_affaires_total = 0.0
+    # Stocke les bénéfices par année
+    benefices_par_annee = defaultdict(float)
 
     for resa in reservations:
-        date_debut = datetime.strptime(resa['date_debut'], '%m-%d-%Y')
+        try:
+            date_debut = datetime.strptime(resa['date_debut'], '%m-%d-%Y')
+            date_fin = datetime.strptime(resa['date_fin'], '%m-%d-%Y')
+            annee = date_debut.year
 
-        if date_debut.year == annee_voulue:
             id_vehicule = resa['id_vehicule']
             prix_total = float(resa['prix_total'])
-            nb_jours = int(resa['jours'])
+            nb_jours = (date_fin - date_debut).days + 1
 
-            entretien_par_jour = dico_entretien_annuel.get(id_vehicule, 0.0) / 365
-            cout_entretien = entretien_par_jour * nb_jours
+            entretien_annuel = dico_entretien_annuel.get(id_vehicule, 0.0)
+            cout_entretien = (entretien_annuel / 365) * nb_jours
 
-            chiffre_affaires_total += prix_total - cout_entretien
-    print(f"Chiffre d'affaires net pour l'année {annee_voulue} : {round(chiffre_affaires_total, 2)} €")
-    return chiffre_affaires_total
+            benefice = prix_total - cout_entretien
+            benefices_par_annee[annee] += benefice
 
-def chiffre_affaires_total(donnees=lire_donnees_reservations('reservations.csv')):
-    total = sum(r['prix_total'] for r in donnees)
-    print(f"Chiffre d'affaires total : {round(total,2)} €") 
-    return total
+        except Exception as e:
+            print(f"Erreur dans la ligne {resa} : {e}")
+
+    # Trie les années pour l'affichage
+    annees = sorted(benefices_par_annee.keys())
+    benefices = [round(benefices_par_annee[a], 2) for a in annees]
+
+    # Histogramme
+    plt.figure(figsize=(10, 6))
+    plt.bar(benefices_par_annee.keys(), benefices_par_annee.values())
+    plt.xlabel('Année')
+    plt.ylabel('Bénéfice (€)')
+    plt.title('Bénéfice par année')
+
+    # Forcer l'affichage des années comme entiers
+    plt.xticks(sorted(benefices_par_annee.keys()))  # assure aussi l’ordre chronologique
+
+    plt.tight_layout()
+    plt.show()
+    return dict(benefices_par_annee)
+
+
+def benefice_pour_annee(annee_voulue, fichier_reservations='reservations.csv', fichier_vehicules='vehicules.csv'):
+
+    chemin_script = os.path.dirname(os.path.realpath(__file__))
+    chemin_data = os.path.join(chemin_script, 'data')
+    chemin_reservations = os.path.join(chemin_data, fichier_reservations)
+    chemin_vehicules = os.path.join(chemin_data, fichier_vehicules)
+
+    reservations = lire_csv(chemin_reservations)
+    vehicules = lire_csv(chemin_vehicules)
+
+    dico_entretien_annuel = {
+        v['id_vehicule']: float(v['entretien_annuel']) for v in vehicules
+    }
+    total_net = 0.0
+
+    for resa in reservations:
+        try:
+            date_debut = datetime.strptime(resa['date_debut'], '%m-%d-%Y')
+            date_fin = datetime.strptime(resa['date_fin'], '%m-%d-%Y')
+            if date_debut.year != annee_voulue:
+                continue
+
+            id_vehicule = resa['id_vehicule']
+            prix_total = float(resa['prix_total'])
+            nb_jours = (date_fin - date_debut).days + 1
+
+            entretien_annuel = dico_entretien_annuel.get(id_vehicule, 0.0)
+            cout_entretien = (entretien_annuel / 365) * nb_jours
+
+            total_net += prix_total - cout_entretien
+
+        except Exception as e:
+            print(f"Erreur dans la ligne {resa} : {e}")
+
+    print(f"Bénéfice net pour {annee_voulue} : {round(total_net, 2)} €")
+    return total_net
+
+def afficher_benefice_total(fichier_reservations='reservations.csv', fichier_vehicules='vehicules.csv'):
+    # Chemins vers les fichiers
+    dossier = os.path.join(os.path.dirname(__file__), 'data')
+    reservations = lire_csv(os.path.join(dossier, fichier_reservations))
+    vehicules = lire_csv(os.path.join(dossier, fichier_vehicules))
+
+    # Récupération du coût d'entretien annuel par véhicule
+    couts_entretien = {v['id_vehicule']: float(v['entretien_annuel']) for v in vehicules}
+
+    benefice_total = 0.0
+
+    for resa in reservations:
+        id_veh = resa['id_vehicule']
+        prix = float(resa['prix_total'])
+        jours = int(resa['jours'])
+        entretien_par_jour = couts_entretien.get(id_veh, 0.0) / 365
+        cout_entretien = entretien_par_jour * jours
+        benefice_total += prix - cout_entretien
+
+    print(f"Bénéfice total toutes années confondues : {round(benefice_total, 2)} €")
+    return benefice_total
 
 def lire_csv(fichier):
     with open(fichier, mode='r') as file:

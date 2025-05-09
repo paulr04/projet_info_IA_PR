@@ -179,8 +179,8 @@ class Application:
             print("1. Consulter le nombre de reservations passées par mois")#fait
             print("2. Consulter le nombre de reservations passées par ans")#fait
             print("3. Calculer le bénéfice sur l'année")#fait
-            print("4. Consulter le chiffre d'affaires par année")
-            print("5. Consulter le chiffre d'affaires total")
+            print("4. Consulter le bénéfice par année")#fait
+            print("5. Consulter le bénéfice total")#fait
             print("6. Consulter le nombre de réservation par véhicule par année")#fait
             print("7. Consulter le nombre de réservation par véhicule")#fait
             print("8. Consulter le chiffre d'affaires par véhicule")
@@ -195,9 +195,9 @@ class Application:
                 annee = demander_input_int("Année : ")
                 benefice_pour_annee(annee)
             elif choix == "4":
-                plot_chiffre_affaires_par_annee()
+                benefice_par_annee_histogramme()
             elif choix == "5":
-                chiffre_affaires_total()
+                afficher_benefice_total()
             elif choix == "6":
                 print("\nChoisir l'année :")
                 annee = demander_input_int("Année : ")
