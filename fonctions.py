@@ -472,49 +472,7 @@ def recherche(vehicules, criteres):
         "<=": lambda a, b: a <= b,
         ">=": lambda a, b: a >= b,
     }
-    """
-    resultats = []
-    for v in vehicules:
-        if not v.get("dispo", False):
-            continue
-        
-        match_all = True
-        for champ, op, val in criteres:
-            val_csv = v[champ]
-            try:
-                if isinstance(val_csv, float):
-                    val = float(val)
-                elif isinstance(val_csv, int):
-                    val = int(val)
-                elif isinstance(val_csv, bool):
-                    val = val.lower() == 'true'
-            except Exception:
-                match_all = False
-                break
-            if not op_map[op](val_csv, val):
-                match_all = False
-                break
-
-        if match_all:
-            resultats.append(v)
-
-    if resultats:
-        print(f"\n {len(resultats)} véhicule(s) trouvé(s) :\n")
-        for v in resultats:
-            infos = [
-                f"ID : {v['id_vehicule']}",
-                f"Prix/jour : {v['prix_jour']} €",
-                f"Type : {v['type_vehicule']}",
-                f"Marque : {v['marque']}",
-                f"Modèle : {v['modele']}",
-                f"{v['description']}\n"
-            ]
-            for champ, _, _ in criteres:
-                if champ not in ['prix_jour', 'marque', 'modele', 'description', 'type_vehicule']:
-                    infos.append(f"{champ}: {v[champ]}")
-            print(" - " + ", ".join(infos))
-            return resultats
-    """
+   
     resultats = []
     for v in vehicules:
         if not getattr(v, "dispo", False):
