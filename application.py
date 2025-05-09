@@ -184,7 +184,8 @@ class Application:
             print("6. Consulter le nombre de réservation par véhicule par année")#fait
             print("7. Consulter le nombre de réservation par véhicule")#fait
             print("8. Consulter le chiffre d'affaires par véhicule")
-            print("9. Quitter")
+            print("9. Consulter la rentabolité par véhicule")
+            print("10. Quitter")
             choix = input("Choisissez une action (1-9): ")
             if choix == "1":
                 plot_reservations_par_mois()   
@@ -207,6 +208,8 @@ class Application:
             elif choix == "8":
                 print("en cour de développement")
             elif choix == "9":
+                print("en cour de développement")
+            elif choix == "10":
                 print("Déconnexion...")
                 break
             else:
