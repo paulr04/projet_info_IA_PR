@@ -178,7 +178,7 @@ class Application:
             print("\nMenu Analyse des ventes :")
             print("1. Consulter le nombre de reservations passées par mois")#fait
             print("2. Consulter le nombre de reservations passées par ans")#fait
-            print("3. Calculer le chiffre d'affaires sur l'année")
+            print("3. Calculer le bénéfice sur l'année")#fait
             print("4. Consulter le chiffre d'affaires par année")
             print("5. Consulter le chiffre d'affaires total")
             print("6. Consulter le nombre de réservation par véhicule par année")#fait
@@ -193,7 +193,7 @@ class Application:
             elif choix == "3":
                 print("\nChoisir l'année :")
                 annee = demander_input_int("Année : ")
-                chiffre_affaires_pour_annee(annee)
+                benefice_pour_annee(annee)
             elif choix == "4":
                 plot_chiffre_affaires_par_annee()
             elif choix == "5":
