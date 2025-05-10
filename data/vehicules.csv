@@ -46,3 +46,4 @@ UU-006-UU,iveco,daily,60.0,2300.0,165.0,130.0,8.0,3,diesel,2.30,utilitaire,autom
 UU-007-UU,volkswagen,crafter,62.0,2150.0,160.0,115.0,7.5,3,essence,2.20,utilitaire,manuelle,470.0,True,fourgon moderne avec grand volume de chargement
 UU-008-UU,opel,movano,54.0,2050.0,158.0,102.0,6.4,3,diesel,2.00,utilitaire,manuelle,415.0,True,utilitaire efficace pour transport urbain
 MM-456-MM,renault,espace,75.0,1700.0,200.0,160.0,0.8,7,essence,1.75,monospace,automatique,550.0,True,monospace agreable a conduire pour aller en vacance en famille
+RO-001-BA,ensta,rob1a,5.0,2.0,25.0,0.5,0.01,0,electrique,0.20,special,automatique,50.0,True,petit robot programmable en python pas du tout déterministe avec des capteurs bruités 

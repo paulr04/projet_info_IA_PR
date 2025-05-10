@@ -80,7 +80,7 @@ class Vehicule:
             print(f"Erreur lors de l'initialisation du véhicule : {e}")
             raise
         try:
-            if not isinstance(prix_jour, (float, int)) or prix_jour <= 0:
+            if not isinstance(prix_jour, (float, int)) or prix_jour < 0:
                 raise ValueError("Le prix par jour doit être un nombre positif.")
         except ValueError as e:
             print(f"Erreur lors de l'initialisation du véhicule : {e}")
@@ -92,25 +92,25 @@ class Vehicule:
             print(f"Erreur lors de l'initialisation du véhicule : {e}")
             raise
         try:
-            if not isinstance(vitesse_max, (float, int)) or vitesse_max <= 0:
+            if not isinstance(vitesse_max, (float, int)) or vitesse_max < 0:
                 raise ValueError("La vitesse maximale doit être un nombre positif.")
         except ValueError as e: 
             print(f"Erreur lors de l'initialisation du véhicule : {e}")
             raise
         try:
-            if not isinstance(puissance, (float, int)) or puissance <= 0:
+            if not isinstance(puissance, (float, int)) or puissance < 0:
                 raise ValueError("La puissance doit être un nombre positif.")
         except ValueError as e:
             print(f"Erreur lors de l'initialisation du véhicule : {e}")
             raise
         try:
-            if not isinstance(volume_utile, (float, int)) or volume_utile <= 0:
+            if not isinstance(volume_utile, (float, int)) or volume_utile < 0:
                 raise ValueError("Le volume utile doit être un nombre positif.")
         except ValueError as e:
             print(f"Erreur lors de l'initialisation du véhicule : {e}")
             raise   
         try:
-            if not isinstance(nb_places, int) or nb_places <= 0:
+            if not isinstance(nb_places, int) or nb_places < 0:
                 raise ValueError("Le nombre de places doit être un entier positif.")
         except ValueError as e:
             print(f"Erreur lors de l'initialisation du véhicule : {e}")
@@ -202,7 +202,7 @@ class Vehicule:
     @prix_jour.setter
     def prix_jour(self, value):
         try:
-            if not isinstance(value, (float, int)) or value <= 0:
+            if not isinstance(value, (float, int)) or value < 0:
                 raise ValueError("Le prix par jour doit être un nombre positif.")
             self._prix_jour = value
         except ValueError:
@@ -228,7 +228,7 @@ class Vehicule:
     @vitesse_max.setter
     def vitesse_max(self, value):
         try:
-            if not isinstance(value, (float, int)) or value <= 0:
+            if not isinstance(value, (float, int)) or value < 0:
                 raise ValueError("La vitesse maximale doit être un nombre positif.")
             self._vitesse_max = value
         except ValueError:
@@ -241,7 +241,7 @@ class Vehicule:
     @puissance.setter
     def puissance(self, value):
         try:
-            if not isinstance(value, (float, int)) or value <= 0:
+            if not isinstance(value, (float, int)) or value < 0:
                 raise ValueError("La puissance doit être un nombre positif.")
             self._puissance = value
         except ValueError:
@@ -254,7 +254,7 @@ class Vehicule:
     @volume_utile.setter
     def volume_utile(self, value):
         try:
-            if not isinstance(value, (float, int)) or value <= 0:
+            if not isinstance(value, (float, int)) or value < 0:
                 raise ValueError("Le volume utile doit être un nombre positif.")
             self._volume_utile = value
         except ValueError:
@@ -267,7 +267,7 @@ class Vehicule:
     @nb_places.setter
     def nb_places(self, value):
         try:
-            if not isinstance(value, int) or value <= 0:
+            if not isinstance(value, int) or value < 0:
                 raise ValueError("Le nombre de places doit être un entier positif.")
             self._nb_places = value
         except ValueError:
@@ -511,6 +511,55 @@ class Reservation_DSL:
         self.jours = jours
         self.prix_total = prix_total
         self.surclassement = surclassement
+        # Validation des attributs sur l'initialisation
+        try:
+            if not re.match(r"^\d{9}$", id_resa) or not isinstance(id_resa, str):
+                raise ValueError("L'ID de réservation doit être au format '123456789' et en str.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation de la réservation : {e}")
+            raise
+        try:
+            if not re.match(r"^\d{9}$", id_user) or not isinstance(id_user, str):
+                raise ValueError("L'ID de l'utilisateur doit être au format '123456789' et en str.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation de la réservation : {e}")
+            raise
+        try:
+            if not re.match(r"^[A-Z]{2}-\d{3}-[A-Z]{2}$", id_vehicule) or not isinstance(id_vehicule, str):
+                raise ValueError("L'ID du véhicule doit être au format 'AA-123-AA' et en str.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation de la réservation : {e}")
+            raise
+        try:
+            if not re.match(r"^\d{2}-\d{2}-\d{4}$", date_debut) or not isinstance(date_debut, str):
+                raise ValueError("La date de début doit être au format 'MM-DD-YYYY' et en str.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation de la réservation : {e}")
+            raise
+        try:
+            if not re.match(r"^\d{2}-\d{2}-\d{4}$", date_fin) or not isinstance(date_fin, str):
+                raise ValueError("La date de fin doit être au format 'MM-DD-YYYY' et en str.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation de la réservation : {e}")
+            raise
+        try:
+            if not isinstance(jours, int) or jours <= 0:
+                raise ValueError("Le nombre de jours doit être un entier positif.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation de la réservation : {e}")
+            raise
+        try:
+            if not isinstance(prix_total, (float, int)) or prix_total <= 0:
+                raise ValueError("Le prix total doit être un nombre positif.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation de la réservation : {e}")
+            raise
+        try:
+            if not isinstance(surclassement, bool):
+                raise ValueError("Le surclassement doit être un booléen.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation de la réservation : {e}")
+            raise
 
     @classmethod
     def from_dsl(cls, dsl: str):
@@ -526,6 +575,59 @@ class Reservation_DSL:
             match = re.match(pattern, dsl)
             if match:
                 id_resa, id_user, id_vehicule, date_debut, date_fin, jours, prix_total , surclassement_str = match.groups()
+                # Conversion des types
+                jours = int(jours)
+                prix_total = float(prix_total)
+                surclassement = surclassement_str == "True" if surclassement_str else False
+                # verification des valeurs
+                try:
+                    if not re.match(r"^\d{9}$", id_resa) or not isinstance(id_resa, str):
+                        raise ValueError("L'ID de réservation doit être au format '123456789' et en str.")
+                except ValueError as e:
+                    print(f"Erreur lors de l'initialisation de la réservation : {e}")
+                    raise
+                try:
+                    if not re.match(r"^\d{9}$", id_user) or not isinstance(id_user, str):
+                        raise ValueError("L'ID de l'utilisateur doit être au format '123456789' et en str.")
+                except ValueError as e:
+                    print(f"Erreur lors de l'initialisation de la réservation : {e}")
+                    raise
+                try:
+                    if not re.match(r"^[A-Z]{2}-\d{3}-[A-Z]{2}$", id_vehicule) or not isinstance(id_vehicule, str):
+                        raise ValueError("L'ID du véhicule doit être au format 'AA-123-AA' et en str.")
+                except ValueError as e:
+                    print(f"Erreur lors de l'initialisation de la réservation : {e}")
+                    raise
+                try:
+                    if not re.match(r"^\d{2}-\d{2}-\d{4}$", date_debut) or not isinstance(date_debut, str):
+                        raise ValueError("La date de début doit être au format 'MM-DD-YYYY' et en str.")
+                except ValueError as e:
+                    print(f"Erreur lors de l'initialisation de la réservation : {e}")
+                    raise   
+                try:
+                    if not re.match(r"^\d{2}-\d{2}-\d{4}$", date_fin) or not isinstance(date_fin, str):
+                        raise ValueError("La date de fin doit être au format 'MM-DD-YYYY' et en str.")
+                except ValueError as e:
+                    print(f"Erreur lors de l'initialisation de la réservation : {e}")
+                    raise
+                try:
+                    if not isinstance(jours, int) or jours <= 0:
+                        raise ValueError("Le nombre de jours doit être un entier positif.")
+                except ValueError as e:
+                    print(f"Erreur lors de l'initialisation de la réservation : {e}")
+                    raise
+                try:
+                    if not isinstance(prix_total, (float, int)) or prix_total <= 0:
+                        raise ValueError("Le prix total doit être un nombre positif.")
+                except ValueError as e:
+                    print(f"Erreur lors de l'initialisation de la réservation : {e}")
+                    raise
+                try:
+                    if not isinstance(surclassement_str, str) or surclassement_str not in ["True", "False"]:
+                        raise ValueError("Le surclassement doit être 'True' ou 'False'.")
+                except ValueError as e:
+                    print(f"Erreur lors de l'initialisation de la réservation : {e}")
+                    raise
                 surclassement = surclassement_str == "True" if surclassement_str else False
                 return cls(id_resa, id_user, id_vehicule, date_debut, date_fin, int(jours), float(prix_total), bool(surclassement))
             if not match:

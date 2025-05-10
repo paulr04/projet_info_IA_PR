@@ -1,5 +1,5 @@
 import unittest
-from test import Vehicule
+from objects import Vehicule, Reservation, User, Reservation_DSL
 
 class TestVehicule(unittest.TestCase):
     """Classe de test pour la classe Vehicule."""
