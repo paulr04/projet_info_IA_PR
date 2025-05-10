@@ -13,6 +13,43 @@ CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe',
 NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special"]
 
 class Application:
+    '''
+    Auteur : 
+        Paul Renaud 
+        Ilyann Aragon
+        
+    La classe Application représente le coeur du système de gestion de la location de véhicules.
+    Elle centralise la gestion des utilisateurs (client et vendeur), des résevations et du parc de véhicules.
+    Elle fournit toutes les fonctionnalités nécessaires à l'utilisation de la plateforme, quece soit du côté client (réservation, gestion du compte) ou du côté vendeur (gestion du catalogue et des clients).
+    Elle intègre également des outils d'analyse et de génération de rapports comme les factures et les bilans de ventes.
+    Attributs :
+        - utilisateur_connecte (bool) : L'utilisateur actuellement connecté (client ou vendeur).
+        - criteres_resa (bool): Les critères de recherche pour le catalogue de véhicules.
+    Méthodes :
+        - choisir_action() : Affiche le menu principal et gère les choix de l'utilisateur.
+        - se_connecter() : Gère la connexion de l'utilisateur.
+        - verifier_identifiants() : Vérifie les identifiants de l'utilisateur dans le fichier USER_FILE.
+        - afficher_menu() : Affiche le menu en fonction du rôle de l'utilisateur (client ou vendeur).
+        - menu_client() : Affiche le menu pour le client et gère ses choix.
+        - menu_vendeur() : Affiche le menu pour le vendeur et gère ses choix.
+        - menu_analyse_ventes() : Affiche le menu pour l'analyse des ventes et gère les choix de l'utilisateur.
+        - consulter_catalogue() : Affiche le catalogue des véhicules disponibles.
+        - consulter_user() : Affiche la liste des utilisateurs.
+        - consulter_reservations() : Affiche la liste des réservations.
+        - rechercher_vehicule_par_id() : Recherche un véhicule par son ID.
+        - reserver_vehicule() : Gère la réservation d'un véhicule.
+        - trouver_vehicule_disponible() : Trouve les véhicules disponibles pour réservation.
+        - surclassement() : Gère le surclassement d'un véhicule c.a.d propose un véhicule de catégorie supérieur à un client, lorsque c'est possible tout en conservant le prix initial du véhicule réservé.
+        - annuler_reservation() : Gère l'annulation d'une réservation.
+        - creer_compte_client() : Gère la création d'un compte client.
+        - ajouter_vehicule() : Gère l'ajout d'un véhicule au catalogue en fonction des paramètres fixés par le programme list(types_véhicule),list(boites_vitesse) ... .
+        - supprimer_vehicule() : Gère la suppression d'un véhicule du catalogue.
+        - changer_de_mdp() : Gère le changement de mot de passe de l'utilisateur.
+        - changer_caracteristique_vehicule() : Gère la modification d'une caractéristique d'un véhicule.
+        - changer_caracteristique_compte() : Gère la modification d'une caractéristique du compte utilisateur.
+        - consulter_reservations_prochaines_vehicule() : Gère la consultation des réservations prochaines en fonction de la plaque d'immatriculation du véhicule.
+        - recherche_de_véhicule_pour_reservation() : Gère la recherche de véhicule pour réservation.
+    '''
     def __init__(self):
         self.utilisateur_connecte = None  # L'utilisateur connecté (client ou vendeur)
         self.criteres_resa = None  # Critères de recherche pour le catalogue de véhicules
