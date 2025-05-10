@@ -303,7 +303,7 @@ class Application:
             reader = csv.DictReader(file)
             for row in reader:
                 if row['id_vehicule'] == vehicule_id and row['dispo'] == 'True':
-                    return Vehicule(row['id_vehicule'], row['marque'], row['modele'], row['prix_jour'], row['masse'], row['vitesse_max'], row['puissance'], row['volume_utile'], row['nb_places'], row['type_moteur'], row['hauteur'], row['type_vehicule'], row['boite_vitesse'], row['entretien_annuel'], row['dispo'], row['description'])
+                    return load_vehicule_POO(row)
         return None
 
     def reserver_vehicule(self):

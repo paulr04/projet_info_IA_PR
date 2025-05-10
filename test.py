@@ -6,11 +6,37 @@ BOITES_VITESSE = ["manuelle", "automatique"]
 
 class Vehicule:
     """
+    ---
     Auteur : Paul Renaud
-
+    ---
     Représente un véhicule disponible à la location.
+    ---
+    attributs :
+    - id_vehicule : str place au format 'AA-123-AA'
+    - marque : str marque du véhicule
+    - modele : str modèle du véhicule
+    - prix_jour : float prix par jour de location en euros
+    - masse : float masse du véhicule en kg
+    - vitesse_max : float vitesse maximale en km/h
+    - puissance : float puissance du moteur en chevaux
+    - volume_utile : float volume utile en m3
+    - nb_places : int nombre de places assises
+    - type_moteur : str type de moteur (essence, diesel, électrique, hybride, etc.)
+    - hauteur : float hauteur du véhicule en m
+    - type_vehicule : str type de véhicule (berline, citadine, SUV, etc.)
+    - boite_vitesse : str type de boîte de vitesse (manuelle, automatique)
+    - entretien_annuel : float coût d'entretien annuel en euros
+    - dispo : bool disponibilité du véhicule (True ou False) en cas de maintenance
+    - description : str description du véhicule
+    ---
+    méthodes :
+    - __init__ : constructeur de la classe
+    - to_dict : convertit l'objet Véhicule en dictionnaire pour une utilisation dans la base de données
+    - __str__ : retourne une chaîne de caractères représentant le véhicule
+    - set_valeur : méthode pour définir une valeur à n'importe quel attribut de l'objet
+    - getters et setters pour chaque attribut avec validation
+    ---
     """
-
     def __init__(self, id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,
                  volume_utile, nb_places, type_moteur, hauteur, type_vehicule,
                  boite_vitesse, entretien_annuel, dispo, description):
@@ -30,7 +56,7 @@ class Vehicule:
         self._entretien_annuel = float(entretien_annuel)
         self._dispo = bool(dispo)
         self._description = str(description)
-        
+        # Validation des attributs sur l'initialisation
         try:
             if not re.match(r"^[A-Z]{2}-\d{3}-[A-Z]{2}$", id_vehicule) or not isinstance(id_vehicule, str):
                 raise ValueError("L'ID du véhicule doit être au format 'AA-123-AA' et en str.")
@@ -127,8 +153,8 @@ class Vehicule:
         except ValueError as e:
             print(f"Erreur lors de l'initialisation du véhicule : {e}")
             raise
-        
-    # Properties and setters with validation
+
+    # propriétés pour chaque attribut avec validation
     @property
     def id_vehicule(self):
         return self._id_vehicule
@@ -343,7 +369,8 @@ class Vehicule:
         return (f"{self.marque} {self.modele} ({self.type_vehicule}) - {self.id_vehicule} - "
                 f"{self.prix_jour:.2f}€/jour - {self.nb_places} places - {self.dispo}")
 
-    # Method to set a value to any instance variable
+    # Méthode pour définir une valeur à n'importe quel attribut de l'objet
+    # en vérifiant si l'attribut existe et en respectant les types
     def set_valeur(self, attribut, valeur):
         try:
             if hasattr(self, attribut):
@@ -352,3 +379,72 @@ class Vehicule:
                 raise AttributeError(f"L'attribut {attribut} n'existe pas.")
         except AttributeError:
             raise AttributeError(f"Erreur : L'attribut {attribut} n'existe pas.")
+
+
+class Vehicule:
+    """
+    Auteur : Paul Renaud
+
+    Représente un véhicule disponible à la location.
+
+    Attributs :
+        id_vehicule (str)     : Identifiant unique du véhicule (généré automatiquement).
+        marque (str)          : Marque du véhicule.
+        modele (str)          : Modèle du véhicule.
+        prix_jour (float)     : Prix de la location par jour en euros.
+        masse (float)         : Masse du véhicule en kg.
+        vitesse_max (float)   : Vitesse maximale du véhicule en km/h.
+        puissance (float)     : Puissance du véhicule en chevaux.
+        volume_utile (float)  : Volume utile du véhicule en m³.
+        nb_places (int)       : Nombre de places assises dans le véhicule.
+        type_moteur (str)     : Type de moteur du véhicule (ex : "essence", "diesel", "électrique",...).
+        hauteur (float)       : Hauteur du véhicule en m.
+        type_vehicule (str)   : Type du véhicule (ex : "berline", "citadine", "avion", "tank").
+        boite_vitesse (str)   : Type de boîte de vitesse du véhicule ("manuelle" ou "automatique").
+        entretien_annuel (float) : Prix en euros de l'entretien annuel du véhicule.
+        dispo (bool)          : Disponibilité du véhicule (True si disponible, False sinon).
+        description (str)     : Description textuelle du véhicule.
+
+    Méthodes :
+        to_dict()           : Renvoie une représentation dictionnaire du véhicule.
+        save_to_file()      : Enregistre le véhicule dans le fichier CSV s'il n'existe pas déjà.
+    """
+
+    def __init__(self, id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,
+        volume_utile, nb_places, type_moteur, hauteur, type_vehicule,
+        boite_vitesse, entretien_annuel, dispo, description):
+        self.id_vehicule = id_vehicule
+        self.marque = marque
+        self.modele = modele
+        self.prix_jour = float(prix_jour)
+        self.masse = masse
+        self.vitesse_max = vitesse_max
+        self.puissance = puissance
+        self.volume_utile = volume_utile
+        self.nb_places = nb_places
+        self.type_moteur = type_moteur
+        self.hauteur = hauteur
+        self.type_vehicule = type_vehicule
+        self.boite_vitesse = boite_vitesse
+        self.entretien_annuel = entretien_annuel
+        self.dispo = bool(dispo)
+        self.description = description
+
+    def to_dict(self):
+        """
+        Convertit l'objet Véhicule en dictionnaire pour une utilisation dans la base de données.
+
+        Retour :
+            dict : Représentation de l'objet sous forme de dictionnaire.
+        """
+        return self.__dict__
+
+    def __str__(self):
+        """
+        Retourne une chaîne de caractères représentant le véhicule.
+
+        Retour :
+            str : Quelques caractéristiques du véhicule.
+        """
+        return (f"{self.marque} {self.modele} ({self.type_vehicule}) - {self.id_vehicule} - "
+                f"{self.prix_jour:.2f}€/jour - {self.nb_places} places - {self.dispo}")
