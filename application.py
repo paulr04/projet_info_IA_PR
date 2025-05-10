@@ -285,7 +285,10 @@ class Application:
             indispo = verifier_reservation(date_debut, date_fin, id_vehicule)
 
             if indispo:
-                self.surclassement(vehicule, self.trouver_vehicule_disponible(date_debut, date_fin),date_debut, date_fin, id_user, jours_res, prix)
+                type_v = vehicule.type_vehicule
+                print("Le véhicule n'est pas disponible aux dates demandées :( .") # SURCLASSEMENT
+                surcl_choix = demander_input_bool("Souhaitez-vous surclasser la réservation ? (oui/non): ")
+                self.surclassement(vehicule, self.trouver_vehicule_disponible(date_debut, date_fin),date_debut, date_fin, id_user, jours_res, prix, type_v,surcl_choix)
             else:
                 id_resa = generer_id_unique(RESERVATIONS_FILE, 'id_resa')
                 surclassement = False
@@ -309,33 +312,34 @@ class Application:
                     vehicules_disponibles.append(vehicule)
         return vehicules_disponibles
 
-    def surclassement(self, Vehicule, vehicules_disponibles,date_debut, date_fin, id_user, jours, prix):
-        print("Le véhicule n'est pas disponible aux dates demandées :( .") # SURCLASSEMENT
-        surclassement = demander_input_bool("Souhaitez-vous surclasser la réservation ? (oui/non): ")
+    def surclassement(self, Vehicule, vehicules_disponibles,date_debut, date_fin, id_user, jours, prix,type_vehicule,surclassement_choix):
+        
         if self.criteres_resa:
             pass
         else:
+            print("le type de véhicule n'est pas pris en compte dans la recherche suivante :\n")
             self.criteres_resa = criteres(VEHICULES_FILE)
 
-        if surclassement and self.criteres_resa:
+        if surclassement_choix and self.criteres_resa:
             if Vehicule.type_vehicule not in NO_SURCLASSEMENT_TYPES:
                 print("La réservation peut être surclassé.") 
                 for element in self.criteres_resa:
                     if element[0] == 'prix_jour':
                         self.criteres_resa.remove(element)
-                    if element[0] == 'type_vehicule': #surclassement avec meme type de vehicule
+                    if element[0] == 'type_vehicule': #surclassement avec meme type de vehicule si aucun surclassement trouvé on surclasse avec le type donné par le client 
                         self.criteres_resa.remove(element)
-                        self.criteres_resa.append(("type_vehicule", "=", Vehicule.type_vehicule))
-                for vehicule in vehicules_disponibles:
-                    if vehicule.prix_jour >= Vehicule.prix_jour:
-                        vehicule.prix_jour = Vehicule.prix_jour
+                        self.criteres_resa.append(("type_vehicule", "=", type_vehicule))
+                for vehicules in vehicules_disponibles:
+                    if vehicules.prix_jour >= Vehicule.prix_jour:
+                        vehicules.prix_jour = Vehicule.prix_jour
                     else:
-                        pass
+                        vehicules.prix_jour = vehicules.prix_jour
                 recherche_vehicule = recherche(vehicules_disponibles, self.criteres_resa)
                 if recherche_vehicule:
                     while True:
-                        vehicule_choisi = demander_plaque("Plaque d'immatriculation du véhicule à réserver (format AA-000-AA) :")
-                        if vehicule_choisi in [v.id_vehicule for v in recherche_vehicule]:
+                        choix = demander_input_bool("Souhaitez-vous réserver un véhicule ? (oui/non): ")
+                        vehicule_choisi = demander_plaque("Plaque d'immatriculation du véhicule à réserver (format AA-000-AA):")
+                        if vehicule_choisi in [v.id_vehicule for v in recherche_vehicule] and choix:
                             id_resa = generer_id_unique(RESERVATIONS_FILE, 'id_resa')
                             if float(trouver_value(VEHICULES_FILE, vehicule_choisi,'id_vehicule','prix_jour')) >= Vehicule.prix_jour:
                                 surclassement = True
@@ -350,16 +354,28 @@ class Application:
                             facture(reservation,info_user(id_user),obj_vehicule)
                             Reservation_DSL.enregistrer(reservation, RESERVATIONS_FILE)
                             print(f"Réservation n° {id_resa} confirmée pour {id_user} pour le véhicule {obj_vehicule.marque} {obj_vehicule.modele} du {date_debut} au {date_fin} total de {jours} jour(s), coût : {prix} €.")
+                            self.criteres_resa = None
                             break
                         else:
-                            print("ENTREZ UNE PLAQUE VALIDE")
+                            print("plaque non valide ou réservation annulée.")
+                            self.criteres_resa = None
+                            break
+                                    
                 else:
+                    self.criteres_resa = None
                     print("Aucun véhicule trouvé avec les critères spécifiés pour le surclassement.")
+                    surclassement_bis = demander_input_bool("Souhaitez-vous un autre surclassement ? (oui/non): ")
+                    if surclassement_bis:   
+                        print("Veuillez choisir un autre type de véhicule pour nouveau surclassement :")
+                        type_vehicule_failed = demander_input_choix("Type de véhicule : ", TYPES_VEHICULE)
+                        self.surclassement(Vehicule, vehicules_disponibles,date_debut, date_fin, id_user, jours, prix, type_vehicule_failed, surclassement_bis)
+                    else:
+                        print("Réservation annulée.")
+                        self.criteres_resa = None
             else:
                 print("Le véhicule ne peut pas être surclassé.")
         else:
             print("réservation annulée")
-        self.criteres_resa = None
 
     def annuler_reservation(self):
         user = self.utilisateur_connecte
