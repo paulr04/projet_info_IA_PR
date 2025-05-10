@@ -1,6 +1,6 @@
 def facture(reservation, user, vehicule):
     """
-    Auteur : Ilyann Aragon
+    Auteurs : Ilyann Aragon et Paul Renaud
     Génère une facture PDF pour une réservation de véhicule.
     Args:
         reservation (Reservation): L'objet de réservation contenant les détails de la réservation.
