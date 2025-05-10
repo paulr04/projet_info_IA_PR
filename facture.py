@@ -1,4 +1,15 @@
 def facture(reservation, user, vehicule):
+    """
+    Auteur : Ilyann Aragon
+    Génère une facture PDF pour une réservation de véhicule.
+    Args:
+        reservation (Reservation): L'objet de réservation contenant les détails de la réservation.
+        user (User): L'objet utilisateur contenant les informations de l'utilisateur.
+        vehicule (Vehicule): L'objet véhicule contenant les informations du véhicule réservé.
+    
+    Returns:
+        None
+    """
     import os
     from reportlab.lib.pagesizes import A4
     from reportlab.pdfgen import canvas
