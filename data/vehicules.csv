@@ -19,7 +19,7 @@ JJ-555-JJ,jeep,cherokee,95.0,1900.0,180.0,200.0,0.8,5,diesel,1.75,SUV,automatiqu
 KK-666-KK,dassault,rafale,60000.0,10000.0,2222.0,5800.0,2.0,1,kerosene,5.10,special,automatique,150000.0,True,chasseur multirôle de génération 4.5.
 LL-777-LL,iveco,eurcargo,200.0,7000.0,130.0,250.0,8.0,3,diesel,3.20,camion,manuelle,1000.0,True,petit camion pour transport regional.
 MM-888-MM,mercedes,sprinter,130.0,3500.0,160.0,190.0,4.5,3,essence,2.50,utilitaire,automatique,800.0,True,utilitaire haut de gamme spacieux et rapide.
-NN-999-NN,thales,barracuda,200000.0,50000.0,50.0,10000.0,20.0,12,nucleaire,10.0,militaire,automatique,2000000.0,True,sous-marin nucleaire d'attaque.
+NN-999-NN,naval group,barracuda,200000.0,50000.0,50.0,10000.0,20.0,12,nucleaire,10.0,militaire,automatique,2000000.0,True,sous-marin nucleaire d'attaque.
 OO-111-OO,toyota,hilux,85.0,1900.0,175.0,190.0,1.2,5,diesel,1.85,pick-up,manuelle,650.0,True,pick-up tout-terrain robuste et fiable.
 PP-222-PP,knds,leclerc,25000.0,57000.0,72.0,1500.0,12.0,3,diesel,3.00,militaire,automatique,120000.0,True,char de combat principal français de 3e génération puissant et blindé.
 WW-999-WW,dassault,guardian 2,12000.0,9000.0,450.0,1200.0,2.0,6,kerosene,4.30,avion,automatique,20000.0,True,hydravion de surveillance maritime à décollage court.
@@ -45,3 +45,4 @@ UU-005-UU,citroen,jumper,53.0,2000.0,155.0,98.0,6.2,3,diesel,2.10,utilitaire,man
 UU-006-UU,iveco,daily,60.0,2300.0,165.0,130.0,8.0,3,diesel,2.30,utilitaire,automatique,480.0,True,utilitaire puissant et polyvalent
 UU-007-UU,volkswagen,crafter,62.0,2150.0,160.0,115.0,7.5,3,essence,2.20,utilitaire,manuelle,470.0,True,fourgon moderne avec grand volume de chargement
 UU-008-UU,opel,movano,54.0,2050.0,158.0,102.0,6.4,3,diesel,2.00,utilitaire,manuelle,415.0,True,utilitaire efficace pour transport urbain
+MM-456-MM,renault,espace,75.0,1700.0,200.0,160.0,0.8,7,essence,1.75,monospace,automatique,550.0,True,monospace agreable a conduire pour aller en vacance en famille

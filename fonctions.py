@@ -346,7 +346,7 @@ def info_vehicule(id_vehicule):
                 volume_utile = float(row['volume_utile'])
                 nb_places = int(row['nb_places'])
                 type_moteur = row['type_moteur'] 
-                hauteur = row['hauteur']
+                hauteur = float(row['hauteur'])
                 type_vehicule = row['type_vehicule']
                 boite_vitesse = row['boite_vitesse']
                 entretien_annuel = float(row['entretien_annuel'])
