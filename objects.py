@@ -2,8 +2,6 @@ import re
 import os
 import csv
 
-import re
-
 TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
 TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire']
 BOITES_VITESSE = ["manuelle", "automatique"]
@@ -500,6 +498,9 @@ class Reservation_DSL:
         jours (int)           : Durée de la réservation.
         prix_total (float)    : Prix total.
         surclassement (bool) : True si surclassement.
+    Méthodes :
+        from_dsl(dsl: str)    : Crée une instance de Reservation à partir d'une chaîne DSL.
+        enregistrer(chemin_fichier : str)       : Enregistre la réservation dans un fichier CSV.
     """
 
     def __init__(self, id_resa, id_user, id_vehicule, date_debut, date_fin, jours, prix_total, surclassement=False):
