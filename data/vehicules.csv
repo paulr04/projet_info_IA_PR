@@ -37,3 +37,11 @@ HH-333-HH,mercedes,classe G 500,1200.0,2450.0,210.0,422.0,1.8,5,essence,1.96,4x4
 II-222-II,mercedes,classe G 63 AMG,1600.0,2560.0,250.0,585.0,1.8,5,essence,1.98,4x4,automatique,8000.0,True,version ultra-puissante du G avec confort et prestige.
 JJ-111-JJ,mercedes,classe G 350d,1000.0,2430.0,210.0,286.0,1.8,5,diesel,1.95,4x4,automatique,4500.0,True,version diesel plus sobre mais toujours luxueuse du mythique G.
 CK-000-AM,citroen,ami,15.0,485.0,45.0,8.0,0.2,2,electrique,1.52,citadine,automatique,50.0,True,pot de yaourt électrique ultra-compact idéal pour la ville.
+UU-001-UU,ford,transit,55.0,2000.0,160.0,105.0,6.5,3,diesel,2.10,utilitaire,manuelle,400.0,True,fourgon spacieux pour transport professionnel
+UU-002-UU,mercedes,sprinter,65.0,2200.0,170.0,120.0,7.0,3,diesel,2.15,utilitaire,automatique,450.0,True,utilitaire haut de gamme pour livraison
+UU-003-UU,renault,master,50.0,2100.0,160.0,110.0,6.8,3,essence,2.00,utilitaire,manuelle,420.0,True,fourgon pratique pour artisans et entreprises
+UU-004-UU,peugeot,boxer,52.0,1900.0,150.0,100.0,6.0,3,diesel,2.05,utilitaire,manuelle,410.0,True,utilitaire fiable pour usage intensif
+UU-005-UU,citroen,jumper,53.0,2000.0,155.0,98.0,6.2,3,diesel,2.10,utilitaire,manuelle,430.0,True,fourgon robuste pour logistique et chantiers
+UU-006-UU,iveco,daily,60.0,2300.0,165.0,130.0,8.0,3,diesel,2.30,utilitaire,automatique,480.0,True,utilitaire puissant et polyvalent
+UU-007-UU,volkswagen,crafter,62.0,2150.0,160.0,115.0,7.5,3,essence,2.20,utilitaire,manuelle,470.0,True,fourgon moderne avec grand volume de chargement
+UU-008-UU,opel,movano,54.0,2050.0,158.0,102.0,6.4,3,diesel,2.00,utilitaire,manuelle,415.0,True,utilitaire efficace pour transport urbain

@@ -781,7 +781,6 @@ def plot_reservations_histogram(csv_path='data/reservations.csv'):
     :param csv_path: Chemin vers le fichier CSV contenant les réservations.
                      Le fichier doit avoir au moins les colonnes : 'id_vehicule', 'surclassement'.
     """
-
     # Chargement des données
     df = pd.read_csv(csv_path)
 

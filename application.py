@@ -195,10 +195,12 @@ class Application:
                 print("\nChoisir l'année :")
                 annee = demander_input_int("Année : ")
                 benefice_pour_annee(annee)
+                input("ENTER pour continuer")
             elif choix == "4":
                 benefice_par_annee_histogramme()
             elif choix == "5":
                 afficher_benefice_total()
+                input("ENTER pour continuer")
             elif choix == "6":
                 print("\nChoisir l'année :")
                 annee = demander_input_int("Année : ")
@@ -210,7 +212,7 @@ class Application:
             elif choix == "9":
                 plot_reservations_histogram(RESERVATIONS_FILE)
             elif choix == "10":
-                print("Déconnexion...")
+                print("Retour...")
                 break
             else:
                 print("Choix invalide. Veuillez réessayer.")
