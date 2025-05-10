@@ -46,7 +46,7 @@ class TestReservation(unittest.TestCase):
 
 class TestReservationDSL(unittest.TestCase):
     def test_parsing_valide(self):
-        dsl = "RESERVATION 123456789 CLIENT 987654321 VEHICULE AB-123-CD DU 05-01-2025 AU 05-03-2025 JOURS 3 PRIX 120.0 SURCLASSEMENT True"
+        dsl = "RESERVATION 123456789 CLIENT 987654321 VEHICULE AA-123-CD DU 05-01-2025 AU 05-03-2025 JOURS 3 PRIX 120.0 SURCLASSEMENT True"
         resa_dsl = Reservation_DSL.from_dsl(dsl)
         self.assertIsInstance(resa_dsl, Reservation_DSL)
         self.assertEqual(resa_dsl.prix_total, 120.0)

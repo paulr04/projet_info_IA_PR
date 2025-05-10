@@ -1,69 +1,250 @@
-import csv
-import matplotlib.pyplot as plt
-from collections import defaultdict
 
-def plot_rentabilite_depuis_csv(fichier_resa, fichier_vehicules):
-    revenus = defaultdict(float)
-    entretiens = {}
+TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
+TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul']
+BOITES_VITESSE = ["manuelle", "automatique"]
 
-    # Lecture des revenus depuis le fichier des réservations 
-    with open(fichier_resa, newline='', encoding='utf-8') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            id_vehicule = row["id_vehicule"]
-            prix = float(row["prix_total"])
-            revenus[id_vehicule] += prix
+class Vehicule:
+    """
+    Auteur : Paul Renaud
 
-    #Lecture des coûts d'entretien depuis le fichier des véhicules
-    with open(fichier_vehicules, newline='', encoding='utf-8') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            id_vehicule = row["id_vehicule"]
-            entretien = float(row["entretien_annuel"])
-            entretiens[id_vehicule] = entretien
+    Représente un véhicule disponible à la location.
+    """
 
-    #Fusion des véhicules présents dans les deux fichiers
-    ids_vehicules = sorted(list(set(revenus.keys()) & set(entretiens.keys())))
-    liste_revenus = [revenus[v] for v in ids_vehicules]
-    liste_entretiens = [entretiens[v] for v in ids_vehicules]
+    def __init__(self, id_vehicule, marque, modele, prix_jour, masse, vitesse_max, puissance,
+                 volume_utile, nb_places, type_moteur, hauteur, type_vehicule,
+                 boite_vitesse, entretien_annuel, dispo, description):
+        self._id_vehicule = id_vehicule
+        self._marque = marque
+        self._modele = modele
+        self._prix_jour = float(prix_jour)
+        self._masse = masse
+        self._vitesse_max = vitesse_max
+        self._puissance = puissance
+        self._volume_utile = volume_utile
+        self._nb_places = nb_places
+        self._type_moteur = type_moteur
+        self._hauteur = hauteur
+        self._type_vehicule = type_vehicule
+        self._boite_vitesse = boite_vitesse
+        self._entretien_annuel = entretien_annuel
+        self._dispo = bool(dispo)
+        self._description = description
 
-    #Calcul des indices de rentabilité
-    indices = []
-    for i in range(len(ids_vehicules)):
-        revenu = liste_revenus[i]
-        cout = liste_entretiens[i]
-        indice = revenu / cout if cout != 0 else float('inf')
-        indices.append(indice)
-        print(f"Véhicule {ids_vehicules[i]}  Indice de rentabilité : {indice:.2f}")
+    # Properties and setters with validation
+    @property
+    def id_vehicule(self):
+        return self._id_vehicule
 
-    #Affichage du graphique
-    x = range(len(ids_vehicules))
-    width = 0.35
-    fig, ax = plt.subplots(figsize=(14, 8))
-    #Diviser les valeurs par 1000 pour affichage en k€
-    bar1 = ax.bar([i - width/2 for i in x], [r / 1000 for r in liste_revenus], width, label="Revenus (k€)", color='green')
-    bar2 = ax.bar([i + width/2 for i in x], [e / 1000 for e in liste_entretiens], width, label="Entretien (k€)", color='red')
+    @property
+    def marque(self):
+        return self._marque
 
-    #Ajout des indices de rentabilité au-dessus des barres
-    for i in range(len(x)):
-        pos = max(liste_revenus[i], liste_entretiens[i]) / 1000 + 0.05
-        ax.text(i, pos, f"{indices[i]:.2f}", ha='center', fontsize=11, fontweight='bold')
+    @marque.setter
+    def marque(self, value):
+        try:
+            if not isinstance(value, str):
+                raise ValueError("La marque doit être une chaîne de caractères.")
+            self._marque = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
 
-    ax.set_xlabel("ID Véhicule")
-    ax.set_ylabel("Montant (k€)")
-    ax.set_title("Revenus vs Entretien (en k€) avec Indice de Rentabilité")
-    ax.set_xticks(x)
-    ax.set_xticklabels(ids_vehicules)
-    ax.legend()
-    ax.grid(True, axis='y', linestyle='--', alpha=0.7)
+    @property
+    def modele(self):
+        return self._modele
 
-    plt.tight_layout()
-    plt.show()
-    print("Graphique généré avec succès !")
+    @modele.setter
+    def modele(self, value):
+        try:
+            if not isinstance(value, str):
+                raise ValueError("Le modèle doit être une chaîne de caractères.")
+            self._modele = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
 
-# Exemple d'appel :
-# plot_rentabilite_depuis_csv("reservations.csv", "vehicules.csv")
+    @property
+    def prix_jour(self):
+        return self._prix_jour
 
-if __name__ == "__main__":
-    # Exemple d'utilisation
-    plot_rentabilite_depuis_csv("data/reservations.csv", "data/vehicules.csv")
+    @prix_jour.setter
+    def prix_jour(self, value):
+        try:
+            if not isinstance(value, (float, int)) or value <= 0:
+                raise ValueError("Le prix par jour doit être un nombre positif.")
+            self._prix_jour = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
+
+    @property
+    def masse(self):
+        return self._masse
+
+    @masse.setter
+    def masse(self, value):
+        try:
+            if not isinstance(value, (float, int)) or value <= 0:
+                raise ValueError("La masse doit être un nombre positif.")
+            self._masse = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
+
+    @property
+    def vitesse_max(self):
+        return self._vitesse_max
+
+    @vitesse_max.setter
+    def vitesse_max(self, value):
+        try:
+            if not isinstance(value, (float, int)) or value <= 0:
+                raise ValueError("La vitesse maximale doit être un nombre positif.")
+            self._vitesse_max = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
+
+    @property
+    def puissance(self):
+        return self._puissance
+
+    @puissance.setter
+    def puissance(self, value):
+        try:
+            if not isinstance(value, (float, int)) or value <= 0:
+                raise ValueError("La puissance doit être un nombre positif.")
+            self._puissance = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
+
+    @property
+    def volume_utile(self):
+        return self._volume_utile
+
+    @volume_utile.setter
+    def volume_utile(self, value):
+        try:
+            if not isinstance(value, (float, int)) or value <= 0:
+                raise ValueError("Le volume utile doit être un nombre positif.")
+            self._volume_utile = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
+
+    @property
+    def nb_places(self):
+        return self._nb_places
+
+    @nb_places.setter
+    def nb_places(self, value):
+        try:
+            if not isinstance(value, int) or value <= 0:
+                raise ValueError("Le nombre de places doit être un entier positif.")
+            self._nb_places = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
+
+    @property
+    def type_moteur(self):
+        return self._type_moteur
+
+    @type_moteur.setter
+    def type_moteur(self, value):
+        try:
+            if not isinstance(value, str):
+                raise ValueError("Le type de moteur doit être une chaîne de caractères.")
+            self._type_moteur = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
+
+    @property
+    def hauteur(self):
+        return self._hauteur
+
+    @hauteur.setter
+    def hauteur(self, value):
+        try:
+            if not isinstance(value, (float, int)) or value <= 0:
+                raise ValueError("La hauteur doit être un nombre positif.")
+            self._hauteur = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
+
+    @property
+    def type_vehicule(self):
+        return self._type_vehicule
+
+    @type_vehicule.setter
+    def type_vehicule(self, value):
+        try:
+            if not isinstance(value, str):
+                raise ValueError("Le type de véhicule doit être une chaîne de caractères.")
+            self._type_vehicule = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
+
+    @property
+    def boite_vitesse(self):
+        return self._boite_vitesse
+
+    @boite_vitesse.setter
+    def boite_vitesse(self, value):
+        try:
+            if value not in ["manuelle", "automatique"]:
+                raise ValueError("La boîte de vitesse doit être 'manuelle' ou 'automatique'.")
+            self._boite_vitesse = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
+
+    @property
+    def entretien_annuel(self):
+        return self._entretien_annuel
+
+    @entretien_annuel.setter
+    def entretien_annuel(self, value):
+        try:
+            if not isinstance(value, (float, int)) or value < 0:
+                raise ValueError("L'entretien annuel doit être un nombre positif ou nul.")
+            self._entretien_annuel = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
+
+    @property
+    def dispo(self):
+        return self._dispo
+
+    @dispo.setter
+    def dispo(self, value):
+        try:
+            if not isinstance(value, bool):
+                raise ValueError("La disponibilité doit être un booléen.")
+            self._dispo = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        try:
+            if not isinstance(value, str):
+                raise ValueError("La description doit être une chaîne de caractères.")
+            self._description = value
+        except ValueError as e:
+            print(f"Erreur : {e}")
+
+    def to_dict(self):
+        """Convertit l'objet Véhicule en dictionnaire pour une utilisation dans la base de données."""
+        return self.__dict__
+
+    def __str__(self):
+        """Retourne une chaîne de caractères représentant le véhicule."""
+        return (f"{self.marque} {self.modele} ({self.type_vehicule}) - {self.id_vehicule} - "
+                f"{self.prix_jour:.2f}€/jour - {self.nb_places} places - {self.dispo}")
+
+    # Method to set a value to any instance variable
+    def set_valeur(self, attribut, valeur):
+        try:
+            if hasattr(self, attribut):
+                setattr(self, attribut, valeur)
+            else:
+                raise AttributeError(f"L'attribut {attribut} n'existe pas.")
+        except Exception as e:
+            print(f"Erreur : {e}")

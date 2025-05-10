@@ -217,7 +217,7 @@ class Reservation_DSL:
             if not match:
                 raise ValueError("DSL invalide. Format attendu : ""RESERVATION 578878064 CLIENT 000000230 VEHICULE FR-416-FR DU 08-08-2025 AU 08-09-2025 JOURS 2 PRIX 30000.0 SURCLASSEMENT False")
         except ValueError:
-            raise 
+            raise  ValueError("DSL invalide. Format attendu : ""RESERVATION 578878064 CLIENT 000000230 VEHICULE FR-416-FR DU 08-08-2025 AU 08-09-2025 JOURS 2 PRIX 30000.0 SURCLASSEMENT False")
     def enregistrer(self, chemin_fichier="data/reservations.csv"):
         """
         Enregistre la réservation actuelle dans un fichier CSV.
