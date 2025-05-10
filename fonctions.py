@@ -6,8 +6,7 @@ import random
 from objects import *
 import matplotlib.pyplot as plt
 import pandas as pd
-
-from datetime import datetime
+import numpy as np
 from collections import defaultdict
 from collections import Counter
 
@@ -773,3 +772,111 @@ def plot_reservations_par_vehicule(fichier_reservations='reservations.csv'):
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.show()
+
+def plot_reservations_histogram(csv_path='data/reservations.csv'):
+    """
+    Affiche un histogramme comparant les réservations classiques et les surclassements
+    pour chaque véhicule à partir d'un fichier CSV.
+
+    :param csv_path: Chemin vers le fichier CSV contenant les réservations.
+                     Le fichier doit avoir au moins les colonnes : 'id_vehicule', 'surclassement'.
+    """
+
+    # Chargement des données
+    df = pd.read_csv(csv_path)
+
+    # Regrouper par véhicule et surclassement
+    grouped = df.groupby(['id_vehicule', 'surclassement']).size().unstack(fill_value=0)
+
+    # Forcer l'existence des colonnes True et False
+    if True not in grouped.columns:
+        grouped[True] = 0
+    if False not in grouped.columns:
+        grouped[False] = 0
+
+    # Total par véhicule
+    grouped['total'] = grouped[True] + grouped[False]
+
+    # Tracé
+    x = np.arange(len(grouped))
+    width = 0.35
+
+    fig, ax = plt.subplots(figsize=(16, 9)) 
+
+    bars_false = ax.bar(x - width/2, grouped[False], width, label='Classique', color='green')
+    bars_true = ax.bar(x + width/2, grouped[True], width, label='Surclassement', color='red')
+
+    for i, total in enumerate(grouped['total']):
+        ax.text(i, total + 0.5, str(total), ha='center', va='bottom', fontsize=11, fontweight='bold')
+
+    # Mise en forme
+    ax.set_xlabel('ID Véhicule')
+    ax.set_ylabel('Nombre de réservations')
+    ax.set_title('Réservations par véhicule : Classiques (vert) vs Surclassements (rouge)')
+    ax.set_xticks(x)
+    ax.set_xticklabels(grouped.index, rotation=45, ha='right')
+    ax.legend()
+    ax.grid(True, axis='y', linestyle='--', alpha=0.7)
+
+    plt.tight_layout()
+    plt.show()
+
+def plot_rentabilite_depuis_csv(fichier_resa, fichier_vehicules):
+    revenus = defaultdict(float)
+    entretiens = {}
+
+    # Lecture des revenus depuis le fichier des réservations 
+    with open(fichier_resa, newline='', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            id_vehicule = row["id_vehicule"]
+            prix = float(row["prix_total"])
+            revenus[id_vehicule] += prix
+
+    #Lecture des coûts d'entretien depuis le fichier des véhicules
+    with open(fichier_vehicules, newline='', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            id_vehicule = row["id_vehicule"]
+            entretien = float(row["entretien_annuel"])
+            entretiens[id_vehicule] = entretien
+
+    #Fusion des véhicules présents dans les deux fichiers
+    ids_vehicules = sorted(list(set(revenus.keys()) & set(entretiens.keys())))
+    liste_revenus = [revenus[v] for v in ids_vehicules]
+    liste_entretiens = [entretiens[v] for v in ids_vehicules]
+
+    #Calcul des indices de rentabilité
+    indices = []
+    for i in range(len(ids_vehicules)):
+        revenu = liste_revenus[i]
+        cout = liste_entretiens[i]
+        indice = revenu / cout if cout != 0 else float('inf')
+        indices.append(indice)
+        print(f"Véhicule {ids_vehicules[i]}  Indice de rentabilité : {indice:.2f}")
+
+    #Affichage du graphique
+    x = range(len(ids_vehicules))
+    width = 0.35
+    fig, ax = plt.subplots(figsize=(14, 8))
+    #Diviser les valeurs par 1000 pour affichage en k€
+    bar1 = ax.bar([i - width/2 for i in x], [r / 1000 for r in liste_revenus], width, label="Revenus (k€)", color='green')
+    bar2 = ax.bar([i + width/2 for i in x], [e / 1000 for e in liste_entretiens], width, label="Entretien (k€)", color='red')
+
+    #Ajout des indices de rentabilité au-dessus des barres
+    for i in range(len(x)):
+        pos = max(liste_revenus[i], liste_entretiens[i]) / 1000 + 0.05
+        ax.text(i, pos, f"{indices[i]:.2f}", ha='center', fontsize=11, fontweight='bold')
+
+    ax.set_xlabel("ID Véhicule")
+    ax.set_ylabel("Montant (k€)")
+    ax.set_title("Revenus vs Entretien (en k€) avec Indice de Rentabilité")
+    ax.set_xticks(x)
+    ax.set_xticklabels(ids_vehicules)
+    ax.legend()
+    ax.grid(True, axis='y', linestyle='--', alpha=0.7)
+
+    plt.tight_layout()
+    plt.show()
+    print("Graphique généré avec succès !")
+

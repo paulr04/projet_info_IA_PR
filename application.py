@@ -183,10 +183,10 @@ class Application:
             print("5. Consulter le bénéfice total")#fait
             print("6. Consulter le nombre de réservation par véhicule par année")#fait
             print("7. Consulter le nombre de réservation par véhicule")#fait
-            print("8. Consulter le chiffre d'affaires par véhicule")
-            print("9. Consulter la rentabolité par véhicule")
+            print("8. Consulter la rentabilité par véhicule")#fait
+            print("9. Consulter Le type de réservation par véhicule (surclassement ou classique)")#fait
             print("10. Quitter")
-            choix = input("Choisissez une action (1-9): ")
+            choix = input("Choisissez une action (1-10): ")
             if choix == "1":
                 plot_reservations_par_mois()   
             elif choix == "2":                   
@@ -206,9 +206,9 @@ class Application:
             elif choix == "7":
                 plot_reservations_par_vehicule()
             elif choix == "8":
-                print("en cour de développement")
+                plot_rentabilite_depuis_csv(RESERVATIONS_FILE, VEHICULES_FILE)
             elif choix == "9":
-                print("en cour de développement")
+                plot_reservations_histogram(RESERVATIONS_FILE)
             elif choix == "10":
                 print("Déconnexion...")
                 break

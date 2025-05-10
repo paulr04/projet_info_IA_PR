@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 
 # Exemple de données (à remplacer par tes listes réelles)
+
 ids_vehicules = ["V1", "V2", "V3"]
 revenus = [3000, 1500, 4000]
 entretiens = [1000, 1200, 2000]
