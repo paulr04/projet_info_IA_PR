@@ -1,7 +1,8 @@
 import unittest
 from test import Vehicule
-class TestVehicule(unittest.TestCase):
 
+class TestVehicule(unittest.TestCase):
+    """Classe de test pour la classe Vehicule."""
     def test_creation_valide(self):
         """Tester la création d'un objet Vehicule avec des valeurs valides."""
         vehicule = Vehicule(
@@ -16,6 +17,16 @@ class TestVehicule(unittest.TestCase):
         self.assertEqual(vehicule.type_moteur, "essence")
         self.assertEqual(vehicule.type_vehicule, "berline")
         self.assertEqual(vehicule.description, "voiture familiale")
+
+    def test_creation_invalide_id_vehicule(self):
+        """Tester la création avec un ID véhicule invalide."""
+        with self.assertRaises(ValueError):
+            Vehicule(
+                id_vehicule="123-456", marque="toyota", modele="corolla", prix_jour=50.0,
+                masse=1500.0, vitesse_max=180.0, puissance=120.0, volume_utile=0.5,
+                nb_places=5, type_moteur="essence", hauteur=1.5, type_vehicule="berline",
+                boite_vitesse="manuelle", entretien_annuel=200.0, dispo=True, description="voiture familiale"
+            )
 
     def test_creation_invalide_prix_jour(self):
         """Tester la création avec un prix par jour invalide (négatif)."""
