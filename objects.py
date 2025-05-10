@@ -206,7 +206,6 @@ class Reservation_DSL:
 
         """
         import re
-        from datetime import datetime
 
         pattern = r"RESERVATION (\d{9}) CLIENT (\d{9}) VEHICULE ([A-Z]{2}-\d{3}-[A-Z]{2}) DU (\d{2}-\d{2}-\d{4}) AU (\d{2}-\d{2}-\d{4}) JOURS (\d+) PRIX ([\d\.]+) SURCLASSEMENT (True|False)"
         try:
@@ -217,7 +216,7 @@ class Reservation_DSL:
                 return cls(id_resa, id_user, id_vehicule, date_debut, date_fin, int(jours), float(prix_total), bool(surclassement))
             if not match:
                 raise ValueError("DSL invalide. Format attendu : ""RESERVATION 578878064 CLIENT 000000230 VEHICULE FR-416-FR DU 08-08-2025 AU 08-09-2025 JOURS 2 PRIX 30000.0 SURCLASSEMENT False")
-        except ValueError as e:
+        except ValueError:
             raise 
     def enregistrer(self, chemin_fichier="data/reservations.csv"):
         """

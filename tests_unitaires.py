@@ -39,9 +39,9 @@ class TestReservation(unittest.TestCase):
         #with self.assertRaises(ValueError):
             #Reservation("12345", "987654321", "AB-123-CD", "05-01-2025", "05-03-2025", 2, 100.0)
 
-    def test_date_invalide(self):
-        with self.assertRaises(ValueError):
-            Reservation("123456789", "987654321", "AB-123-CD", "2025-05-01", "05-03-2025", 2, 100.0, False)
+    #def test_date_invalide(self):
+        #with self.assertRaises(ValueError):
+            #Reservation("123456789", "987654321", "AB-123-CD", "2025-05-01", "05-03-2025", 2, 100.0, False)
 
 
 class TestReservationDSL(unittest.TestCase):

@@ -15,7 +15,7 @@ USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
 TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
-TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride"]
+TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul']
 BOITES_VITESSE = ["manuelle", "automatique"]
 
 def generer_id_unique(FILE, champ_id):
@@ -90,6 +90,9 @@ def calculer_jours_reservation(date_debut, date_fin):
         return None
 
 def demander_input_float(message):
+    """
+    Demande à l'utilisateur d'entrer un nombre décimal et gère les erreurs de saisie.
+    """
     while True:
         try:
             return float(input(message))
@@ -97,6 +100,9 @@ def demander_input_float(message):
             print("Entrée invalide. Veuillez entrer un nombre décimal.")
 
 def demander_input_int(message):
+    """
+    Demande à l'utilisateur d'entrer un entier et gère les erreurs de saisie.
+    """
     while True:
         try:
             return int(input(message))
@@ -104,6 +110,9 @@ def demander_input_int(message):
             print("Entrée invalide. Veuillez entrer un entier.")
 
 def demander_input_choix(message, options):
+    """
+    Demande à l'utilisateur de choisir parmi une liste d'options.
+    """
     print(f"{message} Options : {options}")
     while True:
         choix = input("> ").strip().lower()
@@ -113,6 +122,9 @@ def demander_input_choix(message, options):
             print("Choix invalide. Veuillez choisir parmi les options données.")
 
 def demander_input_bool(message):
+    """
+    Demande à l'utilisateur de répondre par 'oui' ou 'non' et renvoie un booléen.
+    """
     while True:
         val = input(f"{message} (oui/non) : ").strip().lower()
         if val in ["oui", "non"]:
@@ -121,6 +133,9 @@ def demander_input_bool(message):
             print("Veuillez répondre par 'oui' ou 'non'.")
 
 def demander_plaque_ajout(message,FILE,champ_id='id_vehicule'):
+    """
+        Demande une plaque au format AA-000-AA et vérifie qu'elle n'existe pas déjà dans le fichier CSV.
+    """
     ids_existants = set()
 
     # Lecture des IDs existants
@@ -142,8 +157,8 @@ def demander_plaque_ajout(message,FILE,champ_id='id_vehicule'):
 
 def demander_plaque(message):
     """
-        Demande une plaque au format AB-123-CD et vérifie qu'elle n'existe pas déjà.
-        """
+        Demande une plaque au format AB-123-CD et vérifie qu'elle existe.
+    """
     plaque = input(message).strip().upper()
 
     if not re.match(r"^[A-Z]{2}-\d{3}-[A-Z]{2}$", plaque):
@@ -164,6 +179,9 @@ def demander_plaque(message):
 
 
 def demander_date_valide(message="Date (MM-DD-YYYY) : "):
+    """
+    Demande à l'utilisateur d'entrer une date au format MM-DD-YYYY et vérifie qu'elle n'est pas antérieure à aujourd'hui.
+    """
     while True:
         date_str = input(message).strip()
         try:
@@ -176,6 +194,16 @@ def demander_date_valide(message="Date (MM-DD-YYYY) : "):
             print("Format de date invalide. Utilisez le format MM-DD-YYYY.")
 
 def demander_id(message,FILE,id_name):
+    """
+    input : 
+            message : str : message à afficher à l'utilisateur
+            FILE : str : chemin du fichier CSV
+            id_name : str : nom de la colonne contenant les ID
+    output : 
+            str : ID valide entré par l'utilisateur
+
+    Demande à l'utilisateur d'entrer un ID et vérifie qu'il existe dans le fichier CSV.
+    """
     while True:
         id_ver = input(message).strip()
 
@@ -198,6 +226,12 @@ def demander_id(message,FILE,id_name):
                 break
 
 def supprimer_ligne_par_id(fichier_csv, key, id_recherche):
+    """
+    Supprime une ligne d'un fichier CSV en fonction d'un ID donné.
+    param fichier_csv: Chemin du fichier CSV
+    param key: Nom de la colonne contenant l'ID
+    param id_recherche: ID à rechercher
+    """
     temp_file = "temp.csv"
     ligne_supprimee = False
 

@@ -173,7 +173,7 @@ class Application:
             else:
                 print("Choix invalide. Veuillez réessayer.")
 
-    def menu_analyse_ventes(self): #a ajouter bilan annuel 
+    def menu_analyse_ventes(self): 
         while True:
             print("\nMenu Analyse des ventes :")
             print("1. Consulter le nombre de reservations passées par mois")#fait
@@ -375,7 +375,7 @@ class Application:
                         print("Réservation annulée.")
                         self.criteres_resa = None
             else:
-                print("Le véhicule ne peut pas être surclassé.")
+                print("Le véhicule ne peut pas être surclassé ou type de véhicule impossible à surclasser.")
         else:
             print("réservation annulée")
 

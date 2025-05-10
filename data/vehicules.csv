@@ -23,7 +23,7 @@ NN-999-NN,thales,barracuda,200000.0,50000.0,50.0,10000.0,20.0,12,nucleaire,10.0,
 OO-111-OO,toyota,hilux,85.0,1900.0,175.0,190.0,1.2,5,diesel,1.85,pick-up,manuelle,650.0,True,pick-up tout-terrain robuste et fiable.
 PP-222-PP,knds,leclerc,25000.0,57000.0,72.0,1500.0,12.0,3,diesel,3.00,militaire,automatique,120000.0,True,char de combat principal français de 3e génération puissant et blindé.
 WW-999-WW,dassault,guardian 2,12000.0,9000.0,450.0,1200.0,2.0,6,kerosene,4.30,avion,automatique,20000.0,True,hydravion de surveillance maritime à décollage court.
-XX-111-XX,cmacgm,jules verne,50000.0,300000.0,40.0,100000.0,3000.0,25,fioul lourd,25.0,special,automatique,500000.0,True,porte-conteneurs géant de 396 mètres de long.
+XX-111-XX,cmacgm,jules verne,50000.0,300000.0,40.0,100000.0,3000.0,25,fioul,25.0,special,automatique,500000.0,True,porte-conteneurs géant de 396 mètres de long.
 YY-222-YY,ferrari,812 superfast,2500.0,1525.0,340.0,800.0,0.2,2,essence,1.28,supercar,automatique,10000.0,True,coupé V12 puissant et emblématique de Maranello.
 ZZ-333-ZZ,lamborghini,aventador svj,2700.0,1575.0,350.0,770.0,0.3,2,essence,1.14,supercar,automatique,12000.0,True,supercar italienne au design agressif et performance extrême.
 AA-999-AA,bugatti,chironsport,4500.0,1995.0,420.0,1500.0,0.2,2,essence,1.21,supercar,automatique,25000.0,True,hypercar de luxe alliant vitesse puissance et élégance.
