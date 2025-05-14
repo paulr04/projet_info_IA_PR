@@ -613,7 +613,15 @@ def load_vehicule_POO(row):
 
 def load_vehicule_POO_id(csv,id_vehicule):
     """
-    Charge un véhicule à partir d'une ligne de CSV.
+    Recherche un véhicule par son identifiant dans un fichier CSV et renvoie une instance
+    d'objet véhicule via la fonction load_vehicule_POO.
+
+    Paramètres :
+        csv (str) : Chemin vers le fichier CSV contenant les données des véhicules.
+        id_vehicule (str) : Identifiant du véhicule à rechercher.
+
+    Retour :
+        objet : L'objet véhicule correspondant si trouvé, sinon None.
     """
     with open(csv, mode="r", encoding="utf-8") as file:
         reader = csv.DictReader(file)
@@ -624,6 +632,19 @@ def load_vehicule_POO_id(csv,id_vehicule):
                 print("Véhicule introuvable !")
 
 def lire_donnees_reservations(fichier_reservations='reservations.csv'):
+    """
+    Lit un fichier CSV de réservations et convertit certaines colonnes en types appropriés.
+
+    Cette fonction lit les réservations à partir d'un fichier CSV situé dans le dossier 'data'
+    relatif au script. Elle convertit les champs 'date_debut' en objets datetime et 'prix_total'
+    en float. Les lignes invalides sont ignorées avec un message d'erreur.
+
+    Paramètres :
+        fichier_reservations (str) : Nom du fichier CSV des réservations (par défaut 'reservations.csv').
+
+    Retour :
+        list : Liste de dictionnaires représentant les réservations avec types convertis.
+    """
     chemin_repertoire = os.path.dirname(os.path.realpath(__file__))
     chemin_data = os.path.join(chemin_repertoire, 'data') 
     chemin_reservations = os.path.join(chemin_data, fichier_reservations)
@@ -640,6 +661,19 @@ def lire_donnees_reservations(fichier_reservations='reservations.csv'):
     return donnees
 
 def plot_reservations_par_mois(donnees=lire_donnees_reservations('reservations.csv')):
+    """
+    Affiche un histogramme du nombre de réservations par mois.
+
+    La fonction extrait la date de début de chaque réservation, l'agrège par mois (au format YYYY-MM),
+    puis affiche un histogramme montrant l'évolution mensuelle du nombre de réservations.
+
+    Paramètres :
+        donnees (list) : Liste de dictionnaires représentant les réservations, chaque élément contenant
+                         au moins une clé 'date_debut' de type datetime.
+
+    Retour :
+        None
+    """
     stats = defaultdict(int)
     for r in donnees:
         mois = r['date_debut'].strftime("%Y-%m")
@@ -658,6 +692,20 @@ def plot_reservations_par_mois(donnees=lire_donnees_reservations('reservations.c
     plt.show()
 
 def plot_reservations_par_annee(donnees=lire_donnees_reservations('reservations.csv')):
+    """
+    Affiche un histogramme du nombre de réservations par année.
+
+    La fonction parcourt les données de réservation, extrait l'année de début de chaque réservation, 
+    puis compte combien de réservations ont eu lieu chaque année. Elle génère ensuite un histogramme 
+    pour visualiser l'évolution du nombre de réservations dans le temps.
+
+    Paramètres :
+        donnees (list) : Liste de dictionnaires représentant les réservations, chaque élément contenant 
+                         au moins une clé 'date_debut' de type datetime.
+
+    Retour :
+        None
+    """
     stats = defaultdict(int)
     for r in donnees:
         annee = r['date_debut'].year
@@ -675,6 +723,21 @@ def plot_reservations_par_annee(donnees=lire_donnees_reservations('reservations.
     plt.show()
 
 def benefice_par_annee_histogramme(fichier_reservations='reservations.csv', fichier_vehicules='vehicules.csv'):
+    """
+    Calcule le bénéfice net annuel et affiche un histogramme des bénéfices par année.
+
+    Pour chaque réservation, le bénéfice est calculé comme la différence entre le prix total 
+    payé et le coût d'entretien journalier (entretien annuel divisé par 365 jours multiplié 
+    par le nombre de jours de la réservation). Seules les dates de début des réservations 
+    sont prises en compte pour déterminer l'année.
+
+    Paramètres :
+        fichier_reservations (str) : Nom du fichier CSV contenant les réservations, utilisation des colonnes 'id_vehicule', 'date_debut', 'date_fin', 'prix_total'.
+        fichier_vehicules (str) : Nom du fichier CSV contenant les véhicules, utilisation des colonnes 'id_vehicule' et 'entretien_annuel'.
+
+    Retour :
+        dict : Dictionnaire associant chaque année (int) à son bénéfice net (float) en euros.
+    """
     chemin_script = os.path.dirname(os.path.realpath(__file__))
     chemin_data = os.path.join(chemin_script, 'data')
     chemin_reservations = os.path.join(chemin_data, fichier_reservations)
@@ -730,7 +793,22 @@ def benefice_par_annee_histogramme(fichier_reservations='reservations.csv', fich
 
 
 def benefice_pour_annee(annee_voulue, fichier_reservations='reservations.csv', fichier_vehicules='vehicules.csv'):
+    """
+    Calcule et affiche le bénéfice net généré par les réservations pour une année donnée.
 
+    Le bénéfice est obtenu en soustrayant les coûts d'entretien (proportionnels au nombre de jours 
+    de réservation) du prix total payé pour chaque réservation commencée dans l'année spécifiée.
+    Le coût d'entretien annuel est réparti sur 365 jours.
+
+    Paramètres :
+        annee_voulue (int) : Année pour laquelle calculer le bénéfice (ex : 2023).
+        fichier_reservations (str) : Nom du fichier CSV contenant les réservations, utilisation des colonnes 'id_vehicule', 'date_debut', 'date_fin' et 'prix_total'.
+        fichier_vehicules (str) : Nom du fichier CSV contenant les véhicules, utilisation des colonnes 'id_vehicule' et 'entretien_annuel'.
+
+    Retour :
+        float : Bénéfice net total pour l'année spécifiée (en euros).
+    """
+    
     chemin_script = os.path.dirname(os.path.realpath(__file__))
     chemin_data = os.path.join(chemin_script, 'data')
     chemin_reservations = os.path.join(chemin_data, fichier_reservations)
@@ -767,6 +845,21 @@ def benefice_pour_annee(annee_voulue, fichier_reservations='reservations.csv', f
     return total_net
 
 def afficher_benefice_total(fichier_reservations='reservations.csv', fichier_vehicules='vehicules.csv'):
+    
+    """
+    Calcule et affiche le bénéfice total généré par tous les véhicules, toutes années confondues.
+
+    Le bénéfice est calculé en soustrayant le coût d'entretien (proportionnel au nombre de jours 
+    de réservation) du prix total payé pour chaque réservation. Le coût d'entretien annuel est 
+    réparti sur 365 jours.
+
+    Paramètres :
+        fichier_reservations (str) : Nom du fichier CSV contenant les réservations, utilisation des colonnes 'id_vehicule', 'prix_total' et 'jours'.
+        fichier_vehicules (str) : Nom du fichier CSV contenant les véhicules, utilisation des colonnes 'id_vehicule' et 'entretien_annuel'.
+
+    Retour :
+        float : Le bénéfice total cumulé (en euros).
+    """
     # Chemins vers les fichiers
     dossier = os.path.join(os.path.dirname(__file__), 'data')
     reservations = lire_csv(os.path.join(dossier, fichier_reservations))
@@ -789,6 +882,16 @@ def afficher_benefice_total(fichier_reservations='reservations.csv', fichier_veh
     return benefice_total
 
 def lire_csv(fichier):
+    """
+    Lit un fichier CSV et retourne une liste de dictionnaires, 
+    où chaque dictionnaire représente une ligne du fichier avec des paires clé-valeur.
+
+    Paramètres :
+        fichier (str) : Chemin vers le fichier CSV à lire.
+
+    Retour :
+        list[dict] : Liste de lignes du fichier, chaque ligne étant représentée sous forme de dictionnaire.
+    """
     with open(fichier, mode='r') as file:
         reader = csv.DictReader(file)
         return [row for row in reader]
