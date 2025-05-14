@@ -65,7 +65,18 @@ TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydro
 BOITES_VITESSE = ["manuelle", "automatique"]
 
 def generer_id_unique(FILE, champ_id):
+    """
+    génère un ID unique à 9 chiffres aléatoires qui n'existe pas déjà dans un fichier CSV.
 
+    Paramètres :
+        FILE (str) : chemin du fichier CSV
+        champ_id (str) : nom de la colonne contenant les IDs
+    Affiche :
+        - "fichier introuvable" si le fichier n'existe pas
+        - "ID déjà existant" si l'ID existe déjà
+    Retour : 
+        - nouvel_id (str) : ID unique généré
+    """
     ids_existants = set()
 
     # Lecture des IDs existants
@@ -89,6 +100,15 @@ def generer_id_unique(FILE, champ_id):
 def convertir_date(date):
     """
     Convertit une date sous forme de chaîne (MM-DD-YYYY) en objet datetime.
+    Paramètres :
+        date (str) : date au format MM-DD-YYYY
+
+    Affiche :
+        - "Format de date incorrect" si le format n'est pas valide
+        - "Date invalide" si la date est invalide
+
+    Retour :
+        datetime : objet datetime représentant la date
     """
     format_date = "%m-%d-%Y"  # Format MM-DD-YYYY
     return datetime.strptime(date, format_date)
@@ -96,6 +116,15 @@ def convertir_date(date):
 def verifier_dates(date_debut, date_fin):
     """
     Vérifie si les dates sont valides (format et ordre) et renvoie True si tout est correct.
+    La date doit être au format MM-DD-YYYY.
+    Paramètres :
+        date_debut (str) : date de début au format MM-DD-YYYY
+        date_fin (str) : date de fin au format MM-DD-YYYY
+    Affiche :
+        - "La date de fin ne peut pas être antérieure à la date de début" si la date de fin est antérieure à la date de début
+        - "Format de date incorrect" si le format n'est pas valide
+    Retour :
+        - (bool, datetime, datetime) : True si les dates sont valides, sinon False et None
     """
     # conversion des dates
     date_debut = convertir_date(date_debut)
@@ -114,6 +143,14 @@ def calculer_jours_reservation(date_debut, date_fin):
     """
     Calcule le nombre de jours entre deux dates après vérification de leur validité.
     La date doit être au format MM-DD-YYYY.
+    Paramètres :
+        date_debut (str) : date de début au format MM-DD-YYYY
+        date_fin (str) : date de fin au format MM-DD-YYYY
+    Affiche :
+        - "La date de fin ne peut pas être antérieure à la date de début" si la date de fin est antérieure à la date de début
+        - "Format de date incorrect" si le format n'est pas valide
+    Retour :
+        - int : nombre de jours entre les deux dates (incluses)
     """
     try:
         # Conversion des dates en objets datetime
@@ -136,6 +173,13 @@ def calculer_jours_reservation(date_debut, date_fin):
 def demander_input_float(message):
     """
     Demande à l'utilisateur d'entrer un nombre décimal et gère les erreurs de saisie.
+    
+    Paramètres :
+        message (str) : message à afficher à l'utilisateur
+    Affiche :
+        - "Entrée invalide. Veuillez entrer un nombre décimal." si l'entrée n'est pas valide
+    Retour :
+        - float : nombre décimal entré par l'utilisateur
     """
     while True:
         try:
@@ -146,6 +190,12 @@ def demander_input_float(message):
 def demander_input_int(message):
     """
     Demande à l'utilisateur d'entrer un entier et gère les erreurs de saisie.
+    Paramètres :
+        message (str) : message à afficher à l'utilisateur
+    Affiche :
+        - "Entrée invalide. Veuillez entrer un entier." si l'entrée n'est pas valide
+    Retour :
+        - int : entier entré par l'utilisateur
     """
     while True:
         try:
@@ -156,6 +206,13 @@ def demander_input_int(message):
 def demander_input_choix(message, options):
     """
     Demande à l'utilisateur de choisir parmi une liste d'options.
+    Paramètres :
+        message (str) : message à afficher à l'utilisateur
+        options (list) : liste d'options valides
+    Affiche :
+        - "Choix invalide. Veuillez choisir parmi les options données." si l'entrée n'est pas valide
+    Retour :
+        - str : choix valide entré par l'utilisateur
     """
     print(f"{message} Options : {options}")
     while True:
@@ -168,6 +225,12 @@ def demander_input_choix(message, options):
 def demander_input_bool(message):
     """
     Demande à l'utilisateur de répondre par 'oui' ou 'non' et renvoie un booléen.
+    Paramètres :
+        message (str) : message à afficher à l'utilisateur
+    Affiche :
+        - "Veuillez répondre par 'oui' ou 'non'." si l'entrée n'est pas valide
+    Retour :
+        - bool : True si l'utilisateur répond 'oui', False s'il répond 'non'
     """
     while True:
         val = input(f"{message} (oui/non) : ").strip().lower()
@@ -178,7 +241,16 @@ def demander_input_bool(message):
 
 def demander_plaque_ajout(message,FILE,champ_id='id_vehicule'):
     """
-        Demande une plaque au format AA-000-AA et vérifie qu'elle n'existe pas déjà dans le fichier CSV.
+    Demande une plaque au format AA-000-AA et vérifie qu'elle n'existe pas déjà dans le fichier CSV.
+    Paramètres :
+        message (str) : message à afficher à l'utilisateur
+        FILE (str) : chemin du fichier CSV
+        champ_id (str) : nom de la colonne contenant les IDs
+    Affiche :
+        - "fichier introuvable" si le fichier n'existe pas
+        - "Format invalide ou plaque existante. Utilisez le format AA-000-AA." si la plaque n'est pas valide ou existe déjà
+    Retour :
+        - str : plaque valide entrée par l'utilisateur
     """
     ids_existants = set()
 
@@ -201,7 +273,15 @@ def demander_plaque_ajout(message,FILE,champ_id='id_vehicule'):
 
 def demander_plaque(message):
     """
-        Demande une plaque au format AB-123-CD et vérifie qu'elle existe.
+    Demande une plaque au format AB-123-CD et vérifie qu'elle existe.
+    Paramètres :
+        message (str) : message à afficher à l'utilisateur
+    Affiche :
+        - "Format invalide. Utilisez le format AB-123-CD." si la plaque n'est pas valide
+        - "Véhicule trouvé !" si la plaque existe
+        - "Véhicule introuvable !" si la plaque n'existe pas
+    Retour :
+        - str : plaque valide entrée par l'utilisateur
     """
     plaque = input(message).strip().upper()
 
@@ -225,6 +305,13 @@ def demander_plaque(message):
 def demander_date_valide(message="Date (MM-DD-YYYY) : "):
     """
     Demande à l'utilisateur d'entrer une date au format MM-DD-YYYY et vérifie qu'elle n'est pas antérieure à aujourd'hui.
+    Paramètres :
+        message (str) : message à afficher à l'utilisateur
+    Affiche :
+        - "La date ne peut pas être antérieure à aujourd’hui." si la date est antérieure
+        - "Format de date invalide. Utilisez le format MM-DD-YYYY." si le format n'est pas valide
+    Retour :
+        - str : date valide entrée par l'utilisateur
     """
     while True:
         date_str = input(message).strip()
@@ -239,14 +326,19 @@ def demander_date_valide(message="Date (MM-DD-YYYY) : "):
 
 def demander_id(message,FILE,id_name):
     """
-    input : 
-            message : str : message à afficher à l'utilisateur
-            FILE : str : chemin du fichier CSV
-            id_name : str : nom de la colonne contenant les ID
-    output : 
-            str : ID valide entré par l'utilisateur
-
     Demande à l'utilisateur d'entrer un ID et vérifie qu'il existe dans le fichier CSV.
+
+    Paramètres :
+        message (str) : message à afficher à l'utilisateur
+        FILE (str) : chemin du fichier CSV
+        id_name (str) : nom de la colonne contenant les IDs
+
+    Affiche :
+        - "Format d'ID invalide. L'ID doit contenir exactement 9 chiffres." si le format n'est pas valide
+        - "ID introuvable." si l'ID n'existe pas
+    
+    Retour :
+        - str : ID valide entré par l'utilisateur
     """
     while True:
         id_ver = input(message).strip()
@@ -272,9 +364,18 @@ def demander_id(message,FILE,id_name):
 def supprimer_ligne_par_id(fichier_csv, key, id_recherche):
     """
     Supprime une ligne d'un fichier CSV en fonction d'un ID donné.
-    param fichier_csv: Chemin du fichier CSV
-    param key: Nom de la colonne contenant l'ID
-    param id_recherche: ID à rechercher
+
+    Paramètres :
+        fichier_csv (str) : chemin du fichier CSV
+        key (str) : nom de la colonne contenant les IDs
+        id_recherche (str) : ID à rechercher
+
+    Affiche :
+        - "Ligne avec l’ID {id_recherche} supprimée avec succès." si la ligne a été supprimée
+        - "Aucune ligne avec l’ID {id_recherche} trouvée." si aucune ligne n'a été trouvée
+        - "Fichier introuvable." si le fichier n'existe pas
+    Retour :
+        - None
     """
     temp_file = "temp.csv"
     ligne_supprimee = False
@@ -302,6 +403,23 @@ def supprimer_ligne_par_id(fichier_csv, key, id_recherche):
 
 
 def modifier_champ_csv_par_id(fichier_csv, id_recherche, champ_id, champ_a_modifier, nouvelle_valeur):
+    """
+    modifie un champ (valeur) d'un fichier CSV en fonction d'un ID donné (champ et valeur).
+
+    Paramètres :
+        fichier_csv (str) : chemin du fichier CSV
+        id_recherche (str) : ID à rechercher
+        champ_id (str) : nom de la colonne contenant les IDs
+        champ_a_modifier (str) : nom du champ à modifier
+        nouvelle_valeur (str) : nouvelle valeur à attribuer au champ
+    Affiche :
+        - "Le champ {champ_a_modifier} a été mis à jour pour l'ID {id_recherche}." si la mise à jour a réussi
+        - "Aucune entrée avec l'ID {id_recherche} trouvée dans le fichier." si aucune entrée n'a été trouvée
+        - "Champ '{champ_a_modifier}' introuvable." si le champ à modifier n'existe pas
+        - "Fichier introuvable." si le fichier n'existe pas
+    Retour :
+        - None
+    """
     temp_file = "temp.csv"
     trouve = False
 
@@ -331,6 +449,23 @@ def modifier_champ_csv_par_id(fichier_csv, id_recherche, champ_id, champ_a_modif
         print(f"Aucune entrée avec l'ID {id_recherche} trouvée dans le fichier.")
 
 def trouver_value(FILE, id_recherche, champ_id, champ_id_return):
+    """
+    Trouve une valeur dans un fichier CSV en fonction d'un ID donné.
+
+    Paramètres :
+        FILE (str) : chemin du fichier CSV
+        id_recherche (str) : ID à rechercher
+        champ_id (str) : nom de la colonne contenant les IDs
+        champ_id_return (str) : nom de la colonne dont on veut récupérer la valeur
+
+    Affiche :
+        - "Fichier introuvable." si le fichier n'existe pas
+        - "Champs '{champ_id}' ou '{champ_id_return}' introuvables dans le fichier." si les champs ne sont pas trouvés
+        - "Valeur avec {champ_id} = {id_recherche} non trouvée." si la valeur n'est pas trouvée
+    
+    Retour :
+        - str : valeur trouvée dans le fichier CSV
+    """
     if not os.path.exists(FILE):
         print("Fichier introuvable.")
         return None
@@ -349,6 +484,18 @@ def trouver_value(FILE, id_recherche, champ_id, champ_id_return):
 def info_user(id_user):
     """
     Récupère les informations d'un utilisateur à partir de son ID.
+
+    Paramètres :
+        id_user (str) : ID de l'utilisateur à rechercher
+
+    Affiche :
+        - "Fichier introuvable." si le fichier n'existe pas
+        - "Champs 'id_user', 'nom', 'prenom', 'email', 'telephone', 'role' ou 'mot_de_passe' introuvables dans le fichier." si les champs ne sont pas trouvés
+        - "Utilisateur introuvable." si l'utilisateur n'existe pas
+        - "Rôle inconnu." si le rôle n'est pas reconnu
+
+    Retour :
+        - Class : objet utilisateur (User) (Vendeur ou Client) avec les informations récupérées
     """
     if not os.path.exists(USER_FILE):
         print("Fichier introuvable.")
@@ -365,12 +512,31 @@ def info_user(id_user):
                 telephone = row['telephone']
                 role = row['role']
                 mot_de_passe = row['mot_de_passe']
-                return User(user_id, nom, prenom, email, telephone, role, mot_de_passe)
+                if role == "V":
+                    return Vendeur(user_id, nom, prenom, email, telephone, role, mot_de_passe)
+                elif role == "C":
+                    return Client(user_id, nom, prenom, email, telephone, role, mot_de_passe)
+                else:
+                    print("Rôle inconnu.")
+                    break
             else:
                 pass
 def info_vehicule(id_vehicule):
     """
     Récupère les informations d'un véhicule à partir de son ID.
+
+    Paramètres :
+        id_vehicule (str) : ID du véhicule à rechercher
+    
+    Affiche :
+        - "Fichier introuvable." si le fichier n'existe pas
+        - "Champs 'id_vehicule', 'marque', 'modele', 'prix_jour', 'masse', 'vitesse_max', 'puissance', 'volume_utile', 'nb_places', 'type_moteur', 'hauteur', 'type_vehicule', 'boite_vitesse', 'entretien_annuel' ou 'dispo' introuvables dans le fichier." si les champs ne sont pas trouvés
+        - "Véhicule introuvable." si le véhicule n'existe pas
+        - "Type de véhicule inconnu." si le type de véhicule n'est pas reconnu
+    
+    Retour :
+        - Class : objet véhicule (Vehicule) avec les informations récupérées
+
     """
     if not os.path.exists(VEHICULES_FILE):
         print("Fichier introuvable.")
@@ -405,6 +571,21 @@ def info_vehicule(id_vehicule):
                 pass
 
 def verifier_reservation(date_debut, date_fin, id_vehicule):
+    """
+    Vérifie si une réservation est possible en fonction des dates et de l'ID du véhicule.
+    
+    Paramètres :
+        date_debut (str) : date de début de la réservation au format MM-DD-YYYY
+        date_fin (str) : date de fin de la réservation au format MM-DD-YYYY
+        id_vehicule (str) : ID du véhicule à réserver
+    Affiche :
+        - "OK RESERVATION" si la réservation est possible (debug)
+        - "CONFLIT DE RESERVATION" si la réservation n'est pas possible (debug)
+        - "Aucune réservation trouvée." si aucune réservation n'existe pour le véhicule
+    
+    Retour :
+        - bool : True si la réservation est impossible, False sinon
+    """
     lst_date_debut = []
     lst_date_fin = []
     with open(RESERVATIONS_FILE, mode="r", encoding="utf-8") as file:
@@ -427,6 +608,16 @@ def verifier_reservation(date_debut, date_fin, id_vehicule):
 def supprimer_facture(id_resa):
     """
     Supprime la facture associée à une réservation donnée.
+
+    Paramètres :
+        id_resa (str) : ID de la réservation
+
+    Affiche :
+        - "Facture {fichier_pdf} supprimée avec succès." si la facture a été supprimée
+        - "Aucune facture trouvée pour l'ID de réservation {id_resa}." si aucune facture n'a été trouvée
+
+    Retour :
+        - None
     """
     fichier_pdf = f"facture_{id_resa}.pdf"
     path_save = os.path.join(os.path.abspath("factures_pdf"), fichier_pdf)
@@ -439,6 +630,24 @@ def supprimer_facture(id_resa):
 
 
 def modifier_champ_csv(fichier_csv, champ_id, id_val, champs_interdits):
+    """
+    Modifie un champ d'un fichier CSV en fonction d'un ID donné (champ et valeur).
+    
+    Paramètres :
+        fichier_csv (str) : chemin du fichier CSV
+        champ_id (str) : nom de la colonne contenant les IDs
+        id_val (str) : valeur de l'ID à rechercher
+        champs_interdits (list) : liste des champs interdits à modifier
+    Affiche :
+        - "Erreur : le champ ID '{champ_id}' n'existe pas." si le champ ID n'existe pas
+        - "Champs modifiables :" suivi des champs modifiables
+        - "Erreur : champ interdit ou inexistant." si le champ à modifier est interdit ou inexistant
+        - "Aucune ligne trouvée avec {champ_id} = {id_val}." si aucune ligne n'a été trouvée
+        - "Modification effectuée avec succès." si la modification a réussi
+
+    Retour :
+        - None
+    """
     # Lecture du fichier
     with open(fichier_csv, mode='r', newline='', encoding='utf-8') as f:
         lecteur = csv.DictReader(f)
@@ -477,6 +686,20 @@ def modifier_champ_csv(fichier_csv, champ_id, id_val, champs_interdits):
     print("Modification effectuée avec succès.")
 
 def load_vehicules(fichier_csv):
+    """
+    Chaque ligne du fichier CSV est convertie en un objet de la classe Vehicule.
+    
+    Paramètres :
+        fichier_csv (str) : chemin du fichier CSV contenant les informations des véhicules
+
+    Affiche :
+        - "Fichier introuvable." si le fichier n'existe pas
+        - "Erreur lors de la lecture du fichier CSV." si une erreur se produit lors de la lecture
+    
+    Retour :
+        - list : liste d'objets Vehicule
+
+    """
     with open(fichier_csv, newline='', encoding='utf-8') as f:
         lecteur = csv.DictReader(f)
         vehicules = []
@@ -491,8 +714,35 @@ def load_vehicules(fichier_csv):
             vehicules.append(load_vehicule_POO(ligne))
     return vehicules
 
-def criteres(fichier_csv):
-    # Liste prédéfinie des types de véhicules
+def criteres():
+    """
+    Demande à l'utilisateur de spécifier des critères de recherche pour les véhicules.
+
+    Les critères de recherche sont sous forme de tuples (champ, opérateur, valeur).
+    Les champs disponibles sont : marque, modele, prix_jour, masse, vitesse_max, puissance,
+    volume_utile, nb_places, type_moteur, hauteur, type_vehicule, boite_vitesse.
+    Les opérateurs valides sont : =, <, >, <=, >=.
+    Les champs texte ne peuvent pas être comparés avec <, >, <= ou >=.
+    Les champs texte sont en minuscule sans accents.
+    Les types de moteur disponibles sont dans la liste TYPES_MOTEUR.
+    Les types de véhicule disponibles sont dans la liste TYPES_VEHICULE et les boîtes de vitesse dans BOITES_VITESSE.
+    Les critères sont ajoutés à une liste et renvoyés à la fin de la fonction.
+
+    Paramètres :
+        - Aucun
+
+    Affiche :
+        - "Type de véhicule obligatoire. Veuillez entrer un type de véhicule." si le type de véhicule n'est pas valide
+        - "Format invalide. Exemple : prix_jour <= 50 , marque = toyota" si le format de l'entrée n'est pas valide
+        - "Champ '{champ}' non valide." si le champ n'est pas valide
+        - "Opérateur '{op}' non valide pour le champ texte '{champ}'." si l'opérateur n'est pas valide pour le champ texte
+        - "Aucun véhicule ne correspond aux critères." si aucun véhicule ne correspond aux critères
+        - "Essayez d'etre plus souple dans vos critères de recherche." si aucun véhicule ne correspond aux critères
+        - "Vous pouvez consulter le catalogue des véhicules pour plus d'information." si aucun véhicule ne correspond aux critères
+    
+    Retour :
+        - list : liste de tuples contenant les critères de recherche
+    """
 
     champs_recherche = [
         "marque", "modele", "prix_jour", "masse", "vitesse_max", "puissance",
@@ -541,7 +791,23 @@ def criteres(fichier_csv):
 
 
 def recherche(vehicules, criteres):
+    """
+    Recherche des véhicules en fonction des critères spécifiés.
 
+    Paramètres :
+        vehicules (list) : liste d'objets Vehicule
+        criteres (list) : liste de tuples contenant les critères de recherche
+    
+    Affiche :
+        - "Aucun véhicule ne correspond aux critères." si aucun véhicule ne correspond aux critères
+        - "Essayez d'etre plus souple dans vos critères de recherche." si aucun véhicule ne correspond aux critères
+        - "Vous pouvez consulter le catalogue des véhicules pour plus d'information." si aucun véhicule ne correspond aux critères
+        - "X véhicule(s) trouvé(s) :" suivi des informations du véhicule trouvé
+        - "ID : {id_vehicule}, Prix/jour : {prix_jour} €, Type : {type_vehicule}, Marque : {marque}, Modèle : {modele}, {description}" pour chaque véhicule trouvé
+    
+    Retour :
+        - list : liste d'objets Vehicule correspondant aux critères
+    """
     op_map = {
         "=": lambda a, b: a == b,
         "<": lambda a, b: a < b,
@@ -602,6 +868,15 @@ def recherche(vehicules, criteres):
 def load_vehicule_POO(row):
     """
     Charge un véhicule à partir d'une ligne de CSV.
+
+    Paramètres :
+        row (dict) : ligne du fichier CSV contenant les informations du véhicule
+    
+    Affiche :
+        - "Erreur lors de la lecture du fichier CSV." si une erreur se produit lors de la lecture
+    
+    Retour :
+        - Class : objet véhicule (Vehicule) avec les informations récupérées
     """
     return Vehicule(
         row['id_vehicule'], row['marque'], row['modele'], float(row['prix_jour']),
