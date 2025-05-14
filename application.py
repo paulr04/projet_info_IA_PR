@@ -105,7 +105,10 @@ class Application:
                     telephone = row['telephone']
                     role = row['role']
                     mot_de_passe = row['mot_de_passe']
-                    return User(user_id, nom, prenom, email, telephone, role, mot_de_passe)  # Retourne les informations de l'utilisateur (client ou vendeur)
+                    if role == "V":
+                        return Vendeur(user_id, nom, prenom, email, telephone, role, mot_de_passe)  
+                    if role == "C":
+                        return Client(user_id, nom, prenom, email, telephone, role, mot_de_passe)  
         return None  # Si aucun utilisateur n'est trouvé ou mot de passe incorrect
 
     def afficher_menu(self, role):
@@ -460,7 +463,7 @@ class Application:
         client_id = generer_id_unique(USER_FILE,'id_user')
         role = 'C'
 
-        user = User(client_id, nom, prenom, email, telephone, role, mot_de_passe)
+        user = Client(client_id, nom, prenom, email, telephone, role, mot_de_passe)
 
         file_exists = os.path.exists(USER_FILE)
         with open(USER_FILE, mode='a', newline="", encoding="utf-8") as file:

@@ -432,7 +432,126 @@ class User:
             str : Prénom, Nom et rôle de l'utilisateur.
         """
         return f"{self.prenom} {self.nom} - {self.role}"
-    
+
+class Client(User):
+    """
+    Auteur : Paul Renaud
+
+    Représente un client de l'application de gestion de location de véhicules.
+
+    Attributs :
+        id_user (int)     : Identifiant unique de l'utilisateur.
+        nom (str)           : Nom de l'utilisateur.
+        prenom (str)        : Prénom de l'utilisateur.
+        email (str)         : Adresse e-mail.
+        telephone (str)     : Numéro de téléphone.
+        mot_de_passe (str)  : Mot de passe (stocké en clair dans le CSV).
+        role (str)          : Rôle de l'utilisateur ('C' pour client, 'V' pour vendeur).
+    """
+
+    def __init__(self, id_user, nom, prenom, email, telephone, role,mot_de_passe):
+        super().__init__(id_user, nom, prenom, email, telephone, "C", mot_de_passe)
+        # Validation des attributs sur l'initialisation
+        try:
+            if not re.match(r"^\d{9}$", id_user) or not isinstance(id_user, str):
+                raise ValueError("L'ID de l'utilisateur doit être au format '123456789' et en str.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation du client : {e}")
+            raise
+        try:
+            if not isinstance(nom, str):
+                raise ValueError("Le nom doit être une chaîne de caractères.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation du client : {e}")
+            raise
+        try:
+            if not isinstance(prenom, str):
+                raise ValueError("Le prénom doit être une chaîne de caractères.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation du client : {e}")
+            raise
+        try:
+            if not isinstance(email, str):
+                raise ValueError("L'email doit être une chaîne de caractères.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation du client : {e}")
+            raise
+        try:
+            if not re.match(r"^\d{10}$", telephone) or not isinstance(telephone, str):
+                raise ValueError("Le téléphone doit être au format '0123456789' et en str.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation du client : {e}")
+            raise
+        try:
+            if not isinstance(mot_de_passe, str):
+                raise ValueError("Le mot de passe doit être une chaîne de caractères.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation du client : {e}")
+            raise
+        def menu_client():
+            return None
+
+class Vendeur(User):
+    """
+    Auteur : Paul Renaud
+
+    Représente un vendeur de l'application de gestion de location de véhicules.
+
+    Attributs :
+        id_user (int)     : Identifiant unique de l'utilisateur.
+        nom (str)           : Nom de l'utilisateur.
+        prenom (str)        : Prénom de l'utilisateur.
+        email (str)         : Adresse e-mail.
+        telephone (str)     : Numéro de téléphone.
+        mot_de_passe (str)  : Mot de passe (stocké en clair dans le CSV).
+        role (str)          : Rôle de l'utilisateur ('C' pour client, 'V' pour vendeur).
+    """
+
+    def __init__(self, id_user, nom, prenom, email, telephone, role, mot_de_passe):
+        super().__init__(id_user, nom, prenom, email, telephone, "V", mot_de_passe)
+        # Validation des attributs sur l'initialisation
+        try:
+            if not re.match(r"^\d{9}$", id_user) or not isinstance(id_user, str):
+                raise ValueError("L'ID de l'utilisateur doit être au format '123456789' et en str.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation du vendeur : {e}")
+            raise
+        try:
+            if not isinstance(nom, str):
+                raise ValueError("Le nom doit être une chaîne de caractères.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation du vendeur : {e}")
+            raise
+        try:
+            if not isinstance(prenom, str):
+                raise ValueError("Le prénom doit être une chaîne de caractères.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation du vendeur : {e}")
+            raise
+        try:
+            if not isinstance(email, str):
+                raise ValueError("L'email doit être une chaîne de caractères.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation du vendeur : {e}")
+            raise
+        try:
+            if not re.match(r"^\d{10}$", telephone) or not isinstance(telephone, str):
+                raise ValueError("Le téléphone doit être au format '0123456789' et en str.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation du vendeur : {e}")
+            raise
+        try:
+            if not isinstance(mot_de_passe, str):
+                raise ValueError("Le mot de passe doit être une chaîne de caractères.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation du vendeur : {e}")
+            raise
+        def menu_vendeur():
+            return None
+
+
+
+
 class Reservation_DSL:
     """
     Auteur : Paul Renaud
