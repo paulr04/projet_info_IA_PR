@@ -382,56 +382,6 @@ class Vehicule:
         except AttributeError:
             raise AttributeError(f"Erreur : L'attribut {attribut} n'existe pas.")
 
-class Reservation:
-    """
-    Auteur : Paul Renaud
-
-    Représente une réservation de véhicule effectuée par un client.
-
-    Attributs :
-        id_resa (str)         : Identifiant unique de la réservation.
-        id_user (str)         : Identifiant de l'utilisateur.
-        id_vehicule (str)     : Identifiant du véhicule réservé.
-        date_debut (str)      : Date de début de la location (format YYYY-MM-DD).
-        date_fin (str)        : Date de fin de la location (format YYYY-MM-DD).
-        jours (int)           : Nombre de jour(s) (durée de la réservation)
-        prix_total (str)      : Prix total de la réservation en EUR €
-
-    Méthodes :
-        to_dict()             : Renvoie une représentation dictionnaire de la réservation.
-        save_to_file()        : Enregistre la réservation dans le fichier CSV.
-    """
-
-    def __init__(self, id_resa, id_user, id_vehicule, date_debut, date_fin, jours, prix_total,surclassement):
-        self.id_resa = id_resa
-        self.id_user = id_user
-        self.id_vehicule = id_vehicule
-        self.date_debut = date_debut
-        self.date_fin = date_fin
-        self.jours = jours
-        self.prix_total = prix_total
-        self.surclassement = surclassement
-
-    def to_dict(self):
-        """
-        Convertit l'objet Reservation en dictionnaire pour une utilisation dans la base de données.
-
-        Retour :
-            dict : Représentation de l'objet sous forme de dictionnaire.
-        """
-        return self.__dict__
-
-    def __str__(self):
-        """
-        Retourne une chaîne de caractères représentant la réservation.
-
-        Retour :
-            str : Détails de la réservation incluant l'ID du client, l'ID du véhicule,
-                  les dates de début et de fin, et le prix total.
-        """
-        return (f"Réservation ID {self.id_resa} - Client {self.id_user} - "
-                f"Véhicule {self.id_vehicule} - Du {self.date_debut} au {self.date_fin} - ({self.jours} jour(s)) - "
-                f"Prix total : {self.prix_total:.2f}€")
 
 class User:
     """
