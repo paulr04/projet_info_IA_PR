@@ -1,7 +1,8 @@
 import re
 import os
 import csv
-
+from application import Application as app
+from fonctions import *
 TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
 TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire']
 BOITES_VITESSE = ["manuelle", "automatique"]
@@ -488,8 +489,43 @@ class Client(User):
         except ValueError as e:
             print(f"Erreur lors de l'initialisation du client : {e}")
             raise
-        def menu_client():
-            return None
+    def menu_client(self):
+        while True:
+            print("\nMenu Client :")
+            print("1. Consulter le catalogue de véhicules")
+            print("2. Faire une recherche de véhicule et le réserver")
+            print("3. Consulter vos réservations")
+            print("4. Faire une réservation")
+            print("5. Supprimer le compte")
+            print("6. Annuler une réservation")
+            print("7. Changer de mot de passse")
+            print("8. Modifier une caractéristique sur votre compte")
+            print("9. Quitter")
+
+            choix = input("Choisissez une action (1-9): ")
+            if choix == "1":
+                app.consulter_catalogue()
+            elif choix == "2":
+                app.recherche_de_véhicule_pour_reservation()
+            elif choix == "3":
+                app.consulter_reservations()
+            elif choix == "4":
+                app.reserver_vehicule()
+            elif choix == "5":
+                app.supprimer_compte_client()
+                break
+            elif choix == "6":
+                app.annuler_reservation()
+            elif choix == "7":
+                app.changer_de_mdp()
+                break
+            elif choix == "8":
+                app.changer_caracteristique_compte()
+            elif choix == "9":
+                print("Déconnexion...")
+                break
+            else:
+                print("Choix invalide. Veuillez réessayer.")
 
 class Vendeur(User):
     """
@@ -546,8 +582,110 @@ class Vendeur(User):
         except ValueError as e:
             print(f"Erreur lors de l'initialisation du vendeur : {e}")
             raise
-        def menu_vendeur():
-            return None
+    def menu_vendeur(self):
+        while True:
+            print("\nMenu Vendeur :")
+            print("1. Consulter le catalogue de véhicules")
+            print("2. Consulter les utilisateurs")
+            print("3. Consulter les réservations")
+            print("4. Ajouter un véhicule")
+            print("5. Supprimer un véhicule")
+            print("6. Faire une réservation")
+            print("7. Annuler une réservation")
+            print("8. Créer un compte client")
+            print("9. Supprimer un compte client")
+            print("10. Changer de mot de passe")
+            print("11. Analyse des ventes")
+            print("12. Modifier une caractéristique sur un véhicule")
+            print("13. Modifier une caractéristique sur votre compte")
+            print("14. Consulter les réservations prochaines d'un véhicule")
+            print("15. Consulter un véhicule")
+            print("16. Quitter")
+
+            choix = input("Choisissez une action (1-16): ")
+            if choix == "1":
+                app.consulter_catalogue()
+            elif choix == "2":
+                app.consulter_user()
+            elif choix == "3":
+                app.consulter_reservations()
+            elif choix == "4":
+                app.ajouter_vehicule()
+            elif choix == "5":
+                app.supprimer_vehicule()
+            elif choix == "6":
+                app.reserver_vehicule()
+            elif choix == "7":
+                app.annuler_reservation()
+            elif choix == "8":
+                app.creer_compte_client()
+            elif choix == "9":
+                app.supprimer_compte_client()
+            elif choix == "10":
+                app.changer_de_mdp()
+                break
+            elif choix == "11":
+                app.menu_analyse_ventes()
+            elif choix == "12":
+                app.changer_caracteristique_vehicule()
+            elif choix == "13":
+                app.changer_caracteristique_compte()
+            elif choix == "14":
+                app.consulter_reservations_prochaines_vehicule()
+            elif choix == "15":
+                app.consulter_vehicule()
+            elif choix == "16":
+                print("Déconnexion...")
+                break
+            else:
+                print("Choix invalide. Veuillez réessayer.")
+    def menu_analyse_ventes(self):
+        """
+        Analyse les ventes du vendeur.
+        """
+        while True:
+            print("\nMenu Analyse des ventes :")
+            print("1. Consulter le nombre de reservations passées par mois")#fait
+            print("2. Consulter le nombre de reservations passées par ans")#fait
+            print("3. Calculer le bénéfice sur l'année")#fait
+            print("4. Consulter le bénéfice par année")#fait
+            print("5. Consulter le bénéfice total")#fait
+            print("6. Consulter le nombre de réservation par véhicule par année")#fait
+            print("7. Consulter le nombre de réservation par véhicule")#fait
+            print("8. Consulter la rentabilité par véhicule")#fait
+            print("9. Consulter Le type de réservation par véhicule (surclassement ou classique)")#fait
+            print("10. Quitter")
+            choix = input("Choisissez une action (1-10): ")
+            if choix == "1":
+                plot_reservations_par_mois()   
+            elif choix == "2":                   
+                plot_reservations_par_annee()
+            elif choix == "3":
+                print("\nChoisir l'année :")
+                annee = demander_input_int("Année : ")
+                benefice_pour_annee(annee)
+                input("ENTER pour continuer")
+            elif choix == "4":
+                benefice_par_annee_histogramme()
+            elif choix == "5":
+                afficher_benefice_total()
+                input("ENTER pour continuer")
+            elif choix == "6":
+                print("\nChoisir l'année :")
+                annee = demander_input_int("Année : ")
+                reservations_par_vehicule_par_an(annee=annee)
+            elif choix == "7":
+                plot_reservations_par_vehicule()
+            elif choix == "8":
+                plot_rentabilite_depuis_csv(RESERVATIONS_FILE, VEHICULES_FILE)
+            elif choix == "9":
+                plot_reservations_histogram(RESERVATIONS_FILE)
+            elif choix == "10":
+                print("Retour...")
+                break
+            else:
+                print("Choix invalide. Veuillez réessayer.")
+        
 
 
 
