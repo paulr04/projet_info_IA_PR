@@ -1,3 +1,49 @@
+'''
+    Auteur :
+        Paul Renaud
+        Ilyann Aragon
+    
+    Ce fichier ne conttient pas de classes, il contient seulement des méthodes qui premettent de soulager les classees application,user,vehicule,reservation ...
+
+    Méthodes :
+        - generer_id_unique : génère un ID unique à 9 chiffres aléatoires qui n'existe pas déjà dansun fichier CSV.
+        - convertir_date : convertit une date sous forme de chaîne (MM-DD-YYYY) en objet datetime.
+        - verifier_dates : vérifie si les dates sont valides (format et ordre) et renvoie True si tout est correct.
+        - calculer_jours_reservation : calcule le nombre de jours entre deux dates après vérification de leur validité.
+        - demander_input_float : demande à l'utilisateur d'entrer un nombre décimal et gère les erreurs de saisie.
+        - demander_input_int : demande à l'utilisateur d'entrer un entier et gère les erreurs de saisie.
+        - demander_input_choix : demande à l'utilisateur de choisir parmi une liste d'options.
+        - demander_input_bool : demande à l'utilisateur de répondre par 'oui' ou 'non' et renvoie un booléen.
+        - demander_plaque_ajout : demande une plaque au format AA-000-AA et vérifie qu'elle n'existe pas déjà dans le fichier CSV (vehicule ou reservation) et l'ajoute dans ce dernier.
+        - demander_plaque : demande une plaque au format AB-123-CD et vérifie qu'elle existe.
+        - demander_date_valide : demande à l'utilisateur d'entrer une date au format MM-DD-YYYY et vérifie qu'elle n'est pas antérieure à la date actuelle.
+        - demander_id : demande à l'utilisateur d'entrer un ID et vérifie qu'il existe dans le fichier CSV.
+        - supprimer_ligne_par_id : supprime une ligne d'un fichier CSV en fonction d'un ID donné.
+        - modifier_champ_csv_par_id : modifie un champ d'un fichier CSV en fonction d'un ID donné.
+        - trouver_value : trouve une valeur dans un fichier CSV en fonction d'un ID donné.
+        - info_user : récupère les informations d'un utilisateur à partir de son ID.
+        - info_vehicule : récupère les informations d'un véhicule à partir de son ID.
+        - verifier_reservation : vérifie si une réservation est possible en fonction des dates et de l'ID du véhicule.
+        - supprimer_facture : supprime la facture associée à une réservation donnée.
+        - modifier_champ_csv : modifie un champ d'un fichier CSV en fonction d'un ID donné avec une liste de champs interdits.
+        - load_vehicules : charge les véhicules à partir d'un fichier CSV.
+        - criteres : demande à l'utilisateur de spécifier des critères de recherche pour les véhicules.
+        - recherche : effectue une recherche de véhicules en fonction des critères spécifiés par l'utilisateur.
+        - load_vehicule_POO : charge un véhicule à partir d'une ligne de CSV.
+        - load_vehicule_POO_id : charge un véhicule à partir d'une ligne de CSV en fonction de son ID.
+        - lire_donnees_reservations : lit les données de réservations à partir d'un fichier CSV.
+        - plot_reservations_par_mois : génère un histogramme du nombre de réservations par mois.
+        - plot_reservations_par_annee : génère un histogramme du nombre de réservations par année.
+        - benefice_par_annee_histogramme : génère un histogramme des bénéfices par année à partir des réservations et des véhicules.
+        - benefice_par_annee : calcule le bénéfice total pour une année à choisir.
+        - lire_csv : lit un fichier CSV et retourne son contenu sous forme de liste de dictionnaires.
+        - reservation_vehicule_par_an : génere un histogramme du nombre de reservations pout chaque vehicule pour une année donnée.
+        - plot_reservations_par_vehicule : génère un histogramme du nombre de réservations par véhicule.
+        - plot_reservations_histogramme : Affiche un histogramme comparant les réservations classiques et les surclassements pour chaque véhicule à partir d'un fichier CSV.
+        - plot_rentabilite_depuis_csv : Génère un graphique comparant les revenus et les coûts d'entretien annuels des véhicules, calculés à partir de deux fichiers CSV, et affiche un indice de rentabilité pour chaque véhicule.
+
+    '''
+
 from datetime import *
 import re
 import csv
@@ -19,9 +65,7 @@ TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydro
 BOITES_VITESSE = ["manuelle", "automatique"]
 
 def generer_id_unique(FILE, champ_id):
-    """
-    Génère un ID unique à 9 chiffres aléatoires qui n'existe pas déjà dans le fichier CSV.
-    """
+
     ids_existants = set()
 
     # Lecture des IDs existants
@@ -750,6 +794,24 @@ def lire_csv(fichier):
         return [row for row in reader]
     
 def reservations_par_vehicule_par_an(annee, fichier_vehicules='vehicules.csv', fichier_reservations='reservations.csv'):
+    """
+    Affiche un histogramme du nombre de réservations par véhicule pour une année donnée, 
+    à partir de deux fichiers CSV contenant les informations sur les véhicules et les réservations.
+
+    Paramètres :
+        annee (int) : Année pour laquelle on souhaite filtrer les réservations (ex : 2024).
+        fichier_vehicules (str) : Nom du fichier CSV contenant les données des véhicules. 
+                                  Doit contenir les colonnes 'id_vehicule', 'marque' et 'modele'.
+        fichier_reservations (str) : Nom du fichier CSV contenant les données de réservation.
+                                     Doit contenir les colonnes 'id_vehicule' et 'date_debut' (au format '%m-%d-%Y').
+
+    Affiche :
+        - Un graphique en barres indiquant le nombre de réservations effectuées pour chaque véhicule 
+          (nommé par sa marque et son modèle) durant l'année spécifiée.
+
+    Retour :
+        None
+    """
     # Définition des chemins
     chemin_repertoire = os.path.dirname(os.path.realpath(__file__))
     chemin_data = os.path.join(chemin_repertoire, 'data') 
@@ -784,7 +846,23 @@ def reservations_par_vehicule_par_an(annee, fichier_vehicules='vehicules.csv', f
     plt.show()
 
 def plot_reservations_par_vehicule(fichier_reservations='reservations.csv'):
+    """
+        Affiche un histogramme du nombre de réservations par véhicule à partir d'un fichier CSV.
 
+        Le graphique montre, pour chaque identifiant de véhicule, le nombre total de réservations 
+        enregistrées dans le fichier CSV.
+
+        Paramètres :
+            fichier_reservations (str) : Nom du fichier CSV contenant les réservations. 
+                                        Le fichier doit être situé dans un dossier 'data' 
+                                        à la racine du script, et contenir une colonne 'id_vehicule'.
+
+        Affiche :
+            - Un graphique en barres montrant le nombre de réservations pour chaque véhicule.
+
+        Retour :
+            None
+    """
     chemin_script = os.path.dirname(os.path.realpath(__file__))
     chemin_data = os.path.join(chemin_script, 'data')
     chemin_resa = os.path.join(chemin_data, fichier_reservations)
@@ -809,11 +887,24 @@ def plot_reservations_par_vehicule(fichier_reservations='reservations.csv'):
 
 def plot_reservations_histogram(csv_path='data/reservations.csv'):
     """
-    Affiche un histogramme comparant les réservations classiques et les surclassements
-    pour chaque véhicule à partir d'un fichier CSV.
+        Affiche un histogramme des réservations par véhicule, en distinguant les réservations classiques 
+    des surclassements, à partir d'un fichier CSV.
 
-    :param csv_path: Chemin vers le fichier CSV contenant les réservations.
-                     Le fichier doit avoir au moins les colonnes : 'id_vehicule', 'surclassement'.
+    Le graphique présente pour chaque véhicule deux barres côte à côte :
+    - une pour les réservations classiques (surclassement = False),
+    - une pour les surclassements (surclassement = True),
+    ainsi que le total de réservations annoté au-dessus des barres.
+
+    Paramètres :
+        csv_path (str) : Chemin vers le fichier CSV contenant les données de réservation ('id_vehicule' et 'surclassement').
+
+    Affiche :
+        - Un graphique matplotlib avec le nombre de réservations par véhicule,
+          différenciant classiques et surclassements.
+        - Le total des réservations au-dessus des barres pour chaque véhicule.
+
+    Retour :
+        None
     """
     # Chargement des données
     df = pd.read_csv(csv_path)
@@ -855,6 +946,24 @@ def plot_reservations_histogram(csv_path='data/reservations.csv'):
     plt.show()
 
 def plot_rentabilite_depuis_csv(fichier_resa, fichier_vehicules):
+    """    
+    Génère un graphique comparant les revenus et les coûts d'entretien annuels des véhicules,
+    calculés à partir de deux fichiers CSV, et affiche un indice de rentabilité pour chaque véhicule.
+
+    L'indice de rentabilité est défini comme : revenu total / coût d'entretien annuel.
+
+    Paramètres :
+        fichier_resa (str) : Chemin vers le fichier CSV des réservations ('id_vehicule' et 'prix_total').
+        fichier_vehicules (str) : Chemin vers le fichier CSV des véhicules ('id_vehicule' et 'entretien_annuel').
+
+    Affiche :
+        - Un graphique en barres montrant les revenus et les coûts d'entretien (en k€) pour chaque véhicule, indices de rentabilité directement au-dessus des barres.
+        - Affiche les indices dans la console.
+
+    Retour :
+        None
+    """
+    
     revenus = defaultdict(float)
     entretiens = {}
 
