@@ -4,7 +4,6 @@ import datetime
 from fonctions import *
 from objects import *
 from facture import *
-from fonctions import plot_reservations_par_mois
 
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
@@ -21,7 +20,7 @@ class Application:
     La classe Application représente le coeur du système de gestion de la location de véhicules.
     Elle centralise la gestion des utilisateurs (client et vendeur), des résevations et du parc de véhicules.
     Elle fournit toutes les fonctionnalités nécessaires à l'utilisation de la plateforme, quece soit du côté client (réservation, gestion du compte) ou du côté vendeur (gestion du catalogue et des clients).
-    Elle intègre également des outils d'analyse et de génération de rapports comme les factures et les bilans de ventes.
+    Elle intègre également des outils d'analyse et de génération de rselforts comme les factures et les bilans de ventes.
     Attributs :
         - utilisateur_connecte (bool) : L'utilisateur actuellement connecté (client ou vendeur).
         - criteres_resa (bool): Les critères de recherche pour le catalogue de véhicules.
@@ -88,7 +87,7 @@ class Application:
                 f"Bonjour, {user.prenom} ! Vous êtes connecté en tant que {'client' if user.role == 'C' else 'vendeur'}.")
 
             self.utilisateur_connecte = user
-            self.afficher_menu(user.role)
+            self.utilisateur_connecte.menu()
         else:
             print("ID ou mot de passe incorrect.")
 
@@ -106,156 +105,10 @@ class Application:
                     role = row['role']
                     mot_de_passe = row['mot_de_passe']
                     if role == "V":
-                        return Vendeur(user_id, nom, prenom, email, telephone, role, mot_de_passe)  
+                        return Vendeur(user_id, nom, prenom, email, telephone, role, mot_de_passe, app=self)  
                     if role == "C":
-                        return Client(user_id, nom, prenom, email, telephone, role, mot_de_passe)  
+                        return Client(user_id, nom, prenom, email, telephone, role, mot_de_passe, app=self)  
         return None  # Si aucun utilisateur n'est trouvé ou mot de passe incorrect
-
-    def afficher_menu(self, role):
-        if role == "C":
-            self.menu_client()
-        elif role == "V":
-            self.menu_vendeur()
-
-    def menu_client(self):
-        while True:
-            print("\nMenu Client :")
-            print("1. Consulter le catalogue de véhicules")
-            print("2. Faire une recherche de véhicule et le réserver")
-            print("3. Consulter vos réservations")
-            print("4. Faire une réservation")
-            print("5. Supprimer le compte")
-            print("6. Annuler une réservation")
-            print("7. Changer de mot de passse")
-            print("8. Modifier une caractéristique sur votre compte")
-            print("9. Quitter")
-
-            choix = input("Choisissez une action (1-9): ")
-            if choix == "1":
-                self.consulter_catalogue()
-            elif choix == "2":
-                self.recherche_de_véhicule_pour_reservation()
-            elif choix == "3":
-                self.consulter_reservations()
-            elif choix == "4":
-                self.reserver_vehicule()
-            elif choix == "5":
-                self.supprimer_compte_client()
-                break
-            elif choix == "6":
-                self.annuler_reservation()
-            elif choix == "7":
-                self.changer_de_mdp()
-                break
-            elif choix == "8":
-                self.changer_caracteristique_compte()
-            elif choix == "9":
-                print("Déconnexion...")
-                break
-            else:
-                print("Choix invalide. Veuillez réessayer.")
-
-    def menu_vendeur(self):
-        while True:
-            print("\nMenu Vendeur :")
-            print("1. Consulter le catalogue de véhicules")
-            print("2. Consulter les utilisateurs")
-            print("3. Consulter les réservations")
-            print("4. Ajouter un véhicule")
-            print("5. Supprimer un véhicule")
-            print("6. Faire une réservation")
-            print("7. Annuler une réservation")
-            print("8. Créer un compte client")
-            print("9. Supprimer un compte client")
-            print("10. Changer de mot de passe")
-            print("11. Analyse des ventes")
-            print("12. Modifier une caractéristique sur un véhicule")
-            print("13. Modifier une caractéristique sur votre compte")
-            print("14. Consulter les réservations prochaines d'un véhicule")
-            print("15. Consulter un véhicule")
-            print("16. Quitter")
-
-            choix = input("Choisissez une action (1-16): ")
-            if choix == "1":
-                self.consulter_catalogue()
-            elif choix == "2":
-                self.consulter_user()
-            elif choix == "3":
-                self.consulter_reservations()
-            elif choix == "4":
-                self.ajouter_vehicule()
-            elif choix == "5":
-                self.supprimer_vehicule()
-            elif choix == "6":
-                self.reserver_vehicule()
-            elif choix == "7":
-                self.annuler_reservation()
-            elif choix == "8":
-                self.creer_compte_client()
-            elif choix == "9":
-                self.supprimer_compte_client()
-            elif choix == "10":
-                self.changer_de_mdp()
-                break
-            elif choix == "11":
-                self.menu_analyse_ventes()
-            elif choix == "12":
-                self.changer_caracteristique_vehicule()
-            elif choix == "13":
-                self.changer_caracteristique_compte()
-            elif choix == "14":
-                self.consulter_reservations_prochaines_vehicule()
-            elif choix == "15":
-                self.consulter_vehicule()
-            elif choix == "16":
-                print("Déconnexion...")
-                break
-            else:
-                print("Choix invalide. Veuillez réessayer.")
-
-    def menu_analyse_ventes(self): 
-        while True:
-            print("\nMenu Analyse des ventes :")
-            print("1. Consulter le nombre de reservations passées par mois")#fait
-            print("2. Consulter le nombre de reservations passées par ans")#fait
-            print("3. Calculer le bénéfice sur l'année")#fait
-            print("4. Consulter le bénéfice par année")#fait
-            print("5. Consulter le bénéfice total")#fait
-            print("6. Consulter le nombre de réservation par véhicule par année")#fait
-            print("7. Consulter le nombre de réservation par véhicule")#fait
-            print("8. Consulter la rentabilité par véhicule")#fait
-            print("9. Consulter Le type de réservation par véhicule (surclassement ou classique)")#fait
-            print("10. Quitter")
-            choix = input("Choisissez une action (1-10): ")
-            if choix == "1":
-                plot_reservations_par_mois()   
-            elif choix == "2":                   
-                plot_reservations_par_annee()
-            elif choix == "3":
-                print("\nChoisir l'année :")
-                annee = demander_input_int("Année : ")
-                benefice_pour_annee(annee)
-                input("ENTER pour continuer")
-            elif choix == "4":
-                benefice_par_annee_histogramme()
-            elif choix == "5":
-                afficher_benefice_total()
-                input("ENTER pour continuer")
-            elif choix == "6":
-                print("\nChoisir l'année :")
-                annee = demander_input_int("Année : ")
-                reservations_par_vehicule_par_an(annee=annee)
-            elif choix == "7":
-                plot_reservations_par_vehicule()
-            elif choix == "8":
-                plot_rentabilite_depuis_csv(RESERVATIONS_FILE, VEHICULES_FILE)
-            elif choix == "9":
-                plot_reservations_histogram(RESERVATIONS_FILE)
-            elif choix == "10":
-                print("Retour...")
-                break
-            else:
-                print("Choix invalide. Veuillez réessayer.")
 
     def consulter_catalogue(self):
         print("\nCatalogue des véhicules :\n")
@@ -463,7 +316,7 @@ class Application:
         client_id = generer_id_unique(USER_FILE,'id_user')
         role = 'C'
 
-        user = Client(client_id, nom, prenom, email, telephone, role, mot_de_passe)
+        user = Client(client_id, nom, prenom, email, telephone, role, mot_de_passe, app=self)
 
         file_exists = os.path.exists(USER_FILE)
         with open(USER_FILE, mode='a', newline="", encoding="utf-8") as file:
@@ -613,5 +466,5 @@ class Application:
             print("Aucun véhicule trouvé avec les critères spécifiés.")
     
 if __name__ == "__main__":
-    # Création d'une instance de l'application et lancement du menu principal
-    app = Application()
+    # Création d'une instance de l'selflication et lancement du menu principal
+    self = Application()

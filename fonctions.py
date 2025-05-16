@@ -49,13 +49,14 @@ import re
 import csv
 import os
 import random
-from objects import *
+from objects import Client,Vehicule,Vendeur,User
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from collections import defaultdict
 from collections import Counter
-
+from collections import Counter
+from application import Application as app
 
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
@@ -365,7 +366,10 @@ def info_user(id_user):
                 telephone = row['telephone']
                 role = row['role']
                 mot_de_passe = row['mot_de_passe']
-                return User(user_id, nom, prenom, email, telephone, role, mot_de_passe)
+                if role == 'C':
+                    return Client(user_id, nom, prenom, email, telephone, role, mot_de_passe, app=app)
+                if role == 'V':
+                    return Vendeur(user_id, nom, prenom, email, telephone, role, mot_de_passe, app=app)
             else:
                 pass
 def info_vehicule(id_vehicule):
@@ -907,11 +911,7 @@ def lire_csv(fichier):
         reader = csv.DictReader(file)
         return [row for row in reader]
     
-import os
-import matplotlib.pyplot as plt
-from collections import Counter
-from datetime import datetime
-import csv
+
 
 def reservations_par_vehicule_par_an(annee, fichier_vehicules='vehicules.csv', fichier_reservations='reservations.csv'):
     """
@@ -1008,11 +1008,11 @@ def plot_reservations_par_vehicule(fichier_reservations='reservations.csv'):
     plt.title('Nombre de réservations par véhicule')
     plt.xticks(rotation=45)
     plt.tight_layout()
-    dossier_bilan = os.path.join(chemin_script, 'bilan')
-    chemin_sauvegarde = os.path.join(dossier_bilan,'reservations_par_vehicule.png')
-    plt.savefig(chemin_sauvegarde)
-    print(f"Le graphique a été enregistré dans le dossier 'bilan' sous : {chemin_sauvegarde}")
-    plt.show()
+    #dossier_bilan = os.path.join(chemin_script, 'bilan')
+    #chemin_sauvegarde = os.path.join(dossier_bilan,'reservations_par_vehicule.png')
+    #plt.savefig(chemin_sauvegarde)
+    #print(f"Le graphique a été enregistré dans le dossier 'bilan' sous : {chemin_sauvegarde}")
+    #plt.show()
 
 def plot_reservations_histogram(csv_path='data/reservations.csv'):
     """
