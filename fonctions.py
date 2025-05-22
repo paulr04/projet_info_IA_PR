@@ -56,13 +56,13 @@ import numpy as np
 from collections import defaultdict
 from collections import Counter
 from collections import Counter
-from application import Application as app
+
 
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
 TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
-TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul']
+TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire']
 BOITES_VITESSE = ["manuelle", "automatique"]
 
 def generer_id_unique(FILE, champ_id):
@@ -366,6 +366,7 @@ def info_user(id_user):
                 telephone = row['telephone']
                 role = row['role']
                 mot_de_passe = row['mot_de_passe']
+                from application import Application as app
                 if role == 'C':
                     return Client(user_id, nom, prenom, email, telephone, role, mot_de_passe, app=app)
                 if role == 'V':
@@ -649,8 +650,8 @@ def lire_donnees_reservations(fichier_reservations='reservations.csv'):
     Retour :
         list : Liste de dictionnaires représentant les réservations avec types convertis.
     """
-    chemin_repertoire = os.path.dirname(os.path.realpath(__file__))
-    chemin_data = os.path.join(chemin_repertoire, 'data') 
+    chemin_repertoire = str(os.path.dirname(os.path.realpath(__file__)))
+    chemin_data = str(os.path.join(chemin_repertoire, 'data'))
     chemin_reservations = os.path.join(chemin_data, fichier_reservations)
     donnees = []
     with open(chemin_reservations, mode='r', newline='', encoding='utf-8') as file:
@@ -710,9 +711,6 @@ def plot_reservations_par_annee(fichier_reservations=lire_donnees_reservations('
     Retour :
         None
     """
-    chemin_script = os.path.dirname(os.path.realpath(__file__))
-    chemin_data = os.path.join(chemin_script, 'data')
-    chemin_reservations = os.path.join(chemin_data, fichier_reservations)
     stats = defaultdict(int)
     for r in fichier_reservations:
         annee = r['date_debut'].year
@@ -727,10 +725,6 @@ def plot_reservations_par_annee(fichier_reservations=lire_donnees_reservations('
     plt.xlabel("Année")
     plt.ylabel("Nombre de réservations")
     plt.tight_layout()
-    dossier_bilan = os.path.join(chemin_script, 'bilan')
-    chemin_sauvegarde = os.path.join(dossier_bilan,'reservations_par_vehicule.png')
-    plt.savefig(chemin_sauvegarde)
-    print(f"Le graphique a été enregistré dans le dossier 'bilan' sous : {chemin_sauvegarde}")
     plt.show()
 
 def benefice_par_annee_histogramme(fichier_reservations='reservations.csv', fichier_vehicules='vehicules.csv'):
@@ -799,10 +793,6 @@ def benefice_par_annee_histogramme(fichier_reservations='reservations.csv', fich
     plt.xticks(sorted(benefices_par_annee.keys()))  # assure aussi l’ordre chronologique
 
     plt.tight_layout()
-    dossier_bilan = os.path.join(chemin_script, 'bilan')
-    chemin_sauvegarde = os.path.join(dossier_bilan,'benefice_par_anne_histogramme.png')
-    plt.savefig(chemin_sauvegarde)
-    print(f"Le graphique a été enregistré dans le dossier 'bilan' sous : {chemin_sauvegarde}")
     plt.show()
     return dict(benefices_par_annee)
 
@@ -963,12 +953,8 @@ def reservations_par_vehicule_par_an(annee, fichier_vehicules='vehicules.csv', f
     plt.tight_layout()
 
     # Enregistrer le graphique en PNG dans le dossier 'bilan'
-    dossier_bilan = os.path.join(chemin_repertoire, 'bilan')
-    chemin_sauvegarde = os.path.join(dossier_bilan, f'reservations_par_vehicule_{annee}.png')
-    plt.savefig(chemin_sauvegarde)
-    print(f"Le graphique a été enregistré dans le dossier 'bilan' sous : {chemin_sauvegarde}")
     plt.show()
-
+    return plt
 
 def plot_reservations_par_vehicule(fichier_reservations='reservations.csv'):
     """
@@ -1074,7 +1060,7 @@ def plot_reservations_histogram(csv_path='data/reservations.csv'):
     plt.tight_layout()
     plt.show()
 
-def plot_rentabilite_depuis_csv(fichier_resa, fichier_vehicules):
+def plot_rentabilite_depuis_csv(fichier_resa=RESERVATIONS_FILE, fichier_vehicules=VEHICULES_FILE):
     """    
     Génère un graphique comparant les revenus et les coûts d'entretien annuels des véhicules,
     calculés à partir de deux fichiers CSV, et affiche un indice de rentabilité pour chaque véhicule.
@@ -1143,6 +1129,7 @@ def plot_rentabilite_depuis_csv(fichier_resa, fichier_vehicules):
     ax.set_ylabel("Montant (k€)")
     ax.set_title("Revenus vs Entretien (en k€) avec Indice de Rentabilité")
     ax.set_xticks(x)
+    ax.set_xticklabels(x, rotation=45, ha='right')
     ax.set_xticklabels(ids_vehicules)
     ax.legend()
     ax.grid(True, axis='y', linestyle='--', alpha=0.7)
@@ -1150,7 +1137,3 @@ def plot_rentabilite_depuis_csv(fichier_resa, fichier_vehicules):
     plt.tight_layout()
     plt.show()
     print("Graphique généré avec succès !")
-
-def bilan_pdf():
-
-    return None

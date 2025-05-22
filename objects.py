@@ -1,7 +1,7 @@
 import re
 import os
 import csv
-from application import Application 
+
 from fonctions import *
 
 TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
