@@ -468,3 +468,4 @@ class Application:
 if __name__ == "__main__":
     # Création d'une instance de l'selflication et lancement du menu principal
     self = Application()
+    
