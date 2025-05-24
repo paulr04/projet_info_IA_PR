@@ -1137,4 +1137,4 @@ def plot_rentabilite_depuis_csv(fichier_resa=RESERVATIONS_FILE, fichier_vehicule
 
     plt.tight_layout()
     plt.show()
-    print("Graphique généré avec succès !")
+
