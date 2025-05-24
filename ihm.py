@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QScrollArea, QMessageBox, QDialog, QLineEdit, QInputDialog
+    QApplication, QTableWidgetItem, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QScrollArea, QTextEdit, QTableWidget, QMessageBox, QDialog, QLineEdit, QInputDialog
 )
 from PyQt5.QtGui import QPixmap, QFont, QRegExpValidator
 from PyQt5.QtCore import Qt, QRegExp
@@ -11,7 +11,7 @@ from facture import facture as fact
 import fonctions as f
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-
+from datetime import datetime
 from objects import Client, Vendeur, Vehicule, Reservation_DSL
 
 # from facture import facture as fact
@@ -71,6 +71,14 @@ class MainWindow(QMainWindow):
             if widget is not None:
                 widget.deleteLater()
 
+    def retour_menu(self):
+        if self.utilisateur_connecte and self.utilisateur_connecte.role == "C":
+            self.menu_client()
+        elif self.utilisateur_connecte and self.utilisateur_connecte.role == "V":
+            self.menu_vendeur()
+        else:
+            self.menu_initial()
+    
     def menu_initial(self):
         self.clear_layout()
         logo = QLabel()
@@ -159,7 +167,7 @@ class MainWindow(QMainWindow):
             self.utilisateur_connecte = user
             QMessageBox.information(self, "Connexion réussie", f"Bonjour, {user.prenom} !")
             dialog.accept()
-
+            print(f"Utilisateur connecté : {self.utilisateur_connecte}")
             # Afficher menu adapté selon rôle
             if self.utilisateur_connecte.role == "C":
                 self.menu_client()
@@ -236,7 +244,7 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(title)
 
         actions = [
-            ("Consulter le catalogue de véhicules", self.consulter_catalogue),
+            ("Consulter le catalogue de véhicules", lambda: self.consulter_catalogue()),
             ("Faire une recherche de véhicule et le réserver", self.recherche_de_vehicule_pour_reservation),
             ("Consulter vos réservations", self.consulter_reservations),
             ("Faire une réservation", self.reserver_vehicule),
@@ -252,7 +260,6 @@ class MainWindow(QMainWindow):
             btn.clicked.connect(method)
             self.layout.addWidget(btn)
 
-        # Scroll area pour gérer la taille si besoin
         content_widget = QWidget()
         content_widget.setLayout(self.layout)
 
@@ -288,7 +295,7 @@ class MainWindow(QMainWindow):
             ("Réservations par véhicule", lambda: self.afficher_graphique_ventes(f.plot_reservations_par_vehicule)),
             ("Rentabilité par véhicule", lambda: self.afficher_graphique_ventes(lambda: f.plot_rentabilite_depuis_csv("data/reservations.csv", "data/vehicules.csv"))),
             ("Types de réservation par véhicule", lambda: self.afficher_graphique_ventes(lambda: f.plot_reservations_histogram("data/reservations.csv"))),
-            ("Retour", self.menu_vendeur)
+            ("Retour", self.retour_menu)
         ]
 
         for label, action in actions:
@@ -304,7 +311,6 @@ class MainWindow(QMainWindow):
         scroll.setWidgetResizable(True)
         self.setCentralWidget(scroll)
 
-    
     def afficher_benefice_annee(self):
         annee, ok = QInputDialog.getInt(self, "Bénéfice annuel", "Entrez l'année :",min=2000,max=2100)
         if ok:
@@ -341,12 +347,61 @@ class MainWindow(QMainWindow):
         fenetre.exec_()
 
     def consulter_catalogue(self):
-        pass
+        self.clear_layout()  
+        self.layout = QVBoxLayout()
+        title = QLabel("Catalogue des véhicules")
+        title.setAlignment(Qt.AlignCenter)
+        title.setFont(QFont("Arial", 14, QFont.Bold))
+        self.layout.addWidget(title)
+        table = QTableWidget()
+        self.layout.addWidget(table)
+        try:
+            with open(VEHICULES_FILE, mode='r', encoding='utf-8') as file:
+                reader = csv.DictReader(file)
+                rows = list(reader)
+                if not rows:
+                    self.layout.addWidget(QLabel("Aucun véhicule disponible"))
+                else:
+                    headers = reader.fieldnames
+
+                    # Colonnes à masquer
+                    cols_to_hide = ['entretien_annuel', 'dispo']
+
+                    # Filtrer les colonnes à afficher
+                    headers_filtered = [h for h in headers if h not in cols_to_hide]
+
+                    table.setColumnCount(len(headers_filtered))
+                    table.setRowCount(len(rows))
+                    table.setHorizontalHeaderLabels(headers_filtered)
+
+                    for row_idx, row in enumerate(rows):
+                        for col_idx, header in enumerate(headers_filtered):
+                            val = row[header]
+                            if header == 'description':
+                                item = QTableWidgetItem(val)
+                            else:
+                                item = QTableWidgetItem(str(val))
+                            table.setItem(row_idx, col_idx, item)
+                    if 'description' in headers_filtered:
+                        col_index = headers_filtered.index('description')
+                        table.setColumnWidth(col_index, 450)
+        except Exception as e:
+            self.layout.addWidget(QLabel(f"Erreur lors du chargement : {e}"))
+
+
+        btn_retour = QPushButton("Retour")
+        btn_retour.clicked.connect(self.retour_menu)
+        self.layout.addWidget(btn_retour)
+
+        # Mise en place du layout dans un widget et affichage avec scroll
+        content_widget = QWidget()
+        content_widget.setLayout(self.layout)
+        scroll = QScrollArea()
+        scroll.setWidget(content_widget)
+        scroll.setWidgetResizable(True)
+        self.setCentralWidget(scroll)
 
     def recherche_de_vehicule_pour_reservation(self):
-        pass
-
-    def consulter_reservations(self):
         pass
 
     def reserver_vehicule(self):
@@ -364,9 +419,111 @@ class MainWindow(QMainWindow):
     def changer_caracteristique_compte(self):
         pass
     
-    def consulter_catalogue(self): pass
-    def consulter_user(self): pass
-    def consulter_reservations(self): pass
+    def consulter_user(self): 
+        self.clear_layout()
+        self.layout = QVBoxLayout()
+
+        title = QLabel("Liste des utilisateurs")
+        title.setAlignment(Qt.AlignCenter)
+        title.setFont(QFont("Arial", 14, QFont.Bold))
+        self.layout.addWidget(title)
+
+        table = QTableWidget()
+        self.layout.addWidget(table)
+
+        try:
+            with open(USER_FILE, mode='r', encoding='utf-8') as file:
+                reader = csv.DictReader(file)
+                rows = list(reader)
+
+                if not rows:
+                    self.layout.addWidget(QLabel("Aucun utilisateur trouvé"))
+                else:
+                    headers = reader.fieldnames
+
+                    # Colonnes à ne pas afficher
+                    cols_to_hide = ['mot_de_passe']
+                    headers_filtered = [h for h in headers if h not in cols_to_hide]
+
+                    table.setColumnCount(len(headers_filtered))
+                    table.setRowCount(len(rows))
+                    table.setHorizontalHeaderLabels(headers_filtered)
+
+                    for row_idx, row in enumerate(rows):
+                        for col_idx, header in enumerate(headers_filtered):
+                            val = row[header]
+                            item = QTableWidgetItem(str(val))
+                            table.setItem(row_idx, col_idx, item)
+
+        except Exception as e:
+            self.layout.addWidget(QLabel(f"Erreur lors du chargement des utilisateurs : {e}"))
+
+        btn_retour = QPushButton("Retour")
+        btn_retour.clicked.connect(self.retour_menu)  # Ou menu_vendeur si c'est réservé aux vendeurs
+        self.layout.addWidget(btn_retour)
+
+        content_widget = QWidget()
+        content_widget.setLayout(self.layout)
+
+        scroll = QScrollArea()
+        scroll.setWidget(content_widget)
+        scroll.setWidgetResizable(True)
+
+        self.setCentralWidget(scroll)
+
+    def consulter_reservations(self):
+
+        self.clear_layout()
+        self.layout = QVBoxLayout()
+
+        title = QLabel("Réservations à venir")
+        title.setAlignment(Qt.AlignCenter)
+        title.setFont(QFont("Arial", 14, QFont.Bold))
+        self.layout.addWidget(title)
+
+        table = QTableWidget()
+        self.layout.addWidget(table)
+
+        try:
+            with open(RESERVATIONS_FILE, mode='r', encoding='utf-8') as file:
+                reader = csv.DictReader(file)
+                rows = []
+
+                for row in reader:
+                    date_fin = f.convertir_date(row['date_fin']).date()
+                    if date_fin >= datetime.today().date():
+                        if self.utilisateur_connecte.role == "V" or row["id_user"] == self.utilisateur_connecte.id_user:
+                            rows.append(row)
+
+                if not rows:
+                    self.layout.addWidget(QLabel("Aucune réservation à venir trouvée"))
+                else:
+                    headers = ['id_resa', 'id_user', 'id_vehicule', 'date_debut', 'date_fin', 'prix_total']
+                    table.setColumnCount(len(headers))
+                    table.setRowCount(len(rows))
+                    table.setHorizontalHeaderLabels(headers)
+
+                    for row_idx, row in enumerate(rows):
+                        for col_idx, header in enumerate(headers):
+                            val = row[header]
+                            item = QTableWidgetItem(str(val))
+                            table.setItem(row_idx, col_idx, item)
+
+        except Exception as e:
+            self.layout.addWidget(QLabel(f"Erreur lors du chargement des réservations : {e}"))
+
+        btn_retour = QPushButton("Retour")
+        btn_retour.clicked.connect(self.retour_menu)
+        self.layout.addWidget(btn_retour)
+
+        content_widget = QWidget()
+        content_widget.setLayout(self.layout)
+
+        scroll = QScrollArea()
+        scroll.setWidget(content_widget)
+        scroll.setWidgetResizable(True)
+
+        self.setCentralWidget(scroll)
     def ajouter_vehicule(self): pass
     def supprimer_vehicule(self): pass
     def reserver_vehicule(self): pass
