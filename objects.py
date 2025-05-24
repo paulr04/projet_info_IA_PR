@@ -421,9 +421,11 @@ class User:
         Convertit l'objet User en dictionnaire pour une utilisation dans la base de données.
 
         Retour :
-            dict : Représentation de l'objet sous forme de dictionnaire.
+            d: Représentation de l'objet sous forme de dictionnaire.
         """
-        return self.__dict__
+        d = self.__dict__.copy()
+        d.pop('app', None)  
+        return d
 
     def __str__(self):
         """
