@@ -266,9 +266,17 @@ class MainWindow(QMainWindow):
         self.clear_layout()
         self.layout = QVBoxLayout()
 
-        title = QLabel("Analyse des ventes")
+        logo = QLabel()
+        pixmap = QPixmap("logo_cargo.png").scaledToWidth(200, Qt.SmoothTransformation)
+        logo.setPixmap(pixmap)
+        logo.setAlignment(Qt.AlignCenter)
+        self.layout.addWidget(logo)
+
+        title = QLabel(f"Analyse des ventes")
         title.setAlignment(Qt.AlignCenter)
+        title.setFont(QFont("Arial", 14, QFont.Bold))
         self.layout.addWidget(title)
+
 
         actions = [
             ("Réservations par mois", lambda: self.afficher_graphique_ventes(f.plot_reservations_par_mois)),
