@@ -994,11 +994,12 @@ def plot_reservations_par_vehicule(fichier_reservations='reservations.csv'):
     plt.title('Nombre de réservations par véhicule')
     plt.xticks(rotation=45)
     plt.tight_layout()
+    plt.show()
     #dossier_bilan = os.path.join(chemin_script, 'bilan')
     #chemin_sauvegarde = os.path.join(dossier_bilan,'reservations_par_vehicule.png')
     #plt.savefig(chemin_sauvegarde)
     #print(f"Le graphique a été enregistré dans le dossier 'bilan' sous : {chemin_sauvegarde}")
-    #plt.show()
+    
 
 def plot_reservations_histogram(csv_path='data/reservations.csv'):
     """
