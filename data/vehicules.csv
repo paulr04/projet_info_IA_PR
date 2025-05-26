@@ -50,3 +50,4 @@ RO-001-BA,ensta,rob1a,5.0,2.0,25.0,0.5,0.01,0,electrique,0.20,special,automatiqu
 BT-001-GT,batmobile,tumbler,1500.0,3200.0,350.0,800.0,1.0,2,hybride,1.4,special,automatique,2000.0,True,vehicule ultra performant pour missions speciales et courses poursuites nocturnes
 US-000-US,general dynamics,m1a1 abrams,15000.0,62000.0,67.0,1500.0,6.0,4,diesel,2.44,berline,manuelle,200000.0,True,char de combat americain de 62 tonnes equipe dune turbine a gaz agt1500 blindage composite capacite tout terrain
 SD-000-SD,mystery machine,van,85.0,2500.0,140.0,90.0,6.0,5,essence,2.1,utilitaire,manuelle,500.0,True,van mythique de la bande à scooby-doo ambiance garantie pour vos enquêtes !
+RU-000-RU,uralvagonzavod,T-72-M,5000.0,41000.0,60.0,780.0,1.0,3,diesel,2.19,militaire,manuelle,100000.0,True,char de combat principal sovietique arme d un puissant canon de 125 mm

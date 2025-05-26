@@ -447,7 +447,7 @@ class MainWindow(QMainWindow):
         entretien_input = QLineEdit()
         dispo_input = QComboBox()
         dispo_input.addItems(["True", "False"])
-        description_input = QTextEdit()
+        description_input = QLineEdit()
 
         form = QFormLayout()
         form.addRow("Plaque (AA-000-AA) :", plaque_input)
@@ -478,6 +478,44 @@ class MainWindow(QMainWindow):
         btn_fermer.hide()
         layout.addWidget(btn_fermer)
 
+        # Fonction commune pour filtrer la saisie
+        def filtrer_saisie(event, champ, numerique=False):
+            ponctuation_interdite = [',', ';', ':', '!', '?', "'", '"', '`', '´', '’', '“', '”']
+            key = event.text()
+
+            # Autoriser les touches de contrôle (Backspace, Delete, flèches, etc.)
+            if event.key() in (Qt.Key_Backspace, Qt.Key_Delete, Qt.Key_Left, Qt.Key_Right, Qt.Key_Home, Qt.Key_End):
+                QLineEdit.keyPressEvent(champ, event)
+                return
+
+            if key in ponctuation_interdite:
+                # Bloquer la ponctuation
+                return
+
+            if numerique:
+                # Autoriser chiffres et un seul point
+                if key and not (key.isdigit() or key == '.'):
+                    return
+                if key == '.' and '.' in champ.text():
+                    return
+
+            # Appeler l'event original sinon
+            QLineEdit.keyPressEvent(champ, event)
+
+        # Champs numériques à valider
+        numeriques = [prix_input, masse_input, vitesse_input, puissance_input,
+                    volume_input, places_input, hauteur_input, entretien_input]
+
+        for champ in numeriques:
+            champ.keyPressEvent = lambda event, c=champ: filtrer_saisie(event, c, numerique=True)
+
+        # Bloquer ponctuation dans les autres QLineEdit
+        autres = [plaque_input, marque_input, modele_input, description_input]
+        for champ in autres:
+            champ.keyPressEvent = lambda event, c=champ: filtrer_saisie(event, c, numerique=False)
+
+        # Note: description_input est un QTextEdit, on ne bloque pas la ponctuation dedans (libre)
+
         def on_valider():
             try:
                 id_vehicule = self.demander_plaque_ajout(plaque_input.text().strip(), VEHICULES_FILE)
@@ -495,7 +533,7 @@ class MainWindow(QMainWindow):
                 boite_vitesse = boite_input.currentText()
                 entretien_annuel = float(entretien_input.text())
                 dispo = dispo_input.currentText() == "True"
-                description = description_input.toPlainText().strip()
+                description = description_input.text().strip()
 
                 vehicule = Vehicule(
                     id_vehicule, marque, modele, prix_jour, masse, vitesse_max,
@@ -511,7 +549,8 @@ class MainWindow(QMainWindow):
                     writer.writerow(vehicule.to_dict())
 
                 confirmation.setText("Véhicule ajouté avec succès !")
-                # Clear inputs optionally:
+
+                # Clear inputs
                 plaque_input.clear()
                 marque_input.clear()
                 modele_input.clear()
@@ -532,7 +571,7 @@ class MainWindow(QMainWindow):
                 btn_fermer.show()
 
             except ValueError:
-                confirmation.setText("Erreur : un champ numérique est invalide.")
+                confirmation.setText("Erreur : Plaque invalide ou champ invalide")
             except Exception as e:
                 confirmation.setText(f"Erreur : {e}")
 
@@ -544,7 +583,7 @@ class MainWindow(QMainWindow):
 
         dialog.setLayout(layout)
         dialog.show()
-
+    
     def generer_plaque_aleatoire(self):
         lettres = string.ascii_uppercase
         chiffres = string.digits
@@ -665,6 +704,7 @@ class MainWindow(QMainWindow):
 
         layout = QVBoxLayout()
 
+        # Champs d'entrée
         nom_input = QLineEdit()
         prenom_input = QLineEdit()
         email_input = QLineEdit()
@@ -672,11 +712,26 @@ class MainWindow(QMainWindow):
         mdp_input = QLineEdit()
         mdp_input.setEchoMode(QLineEdit.Password)
 
+        # Empêche la saisie de virgules dans tous les champs
+        def bloquer_virgules(event, input_field):
+            if event.text() == ',':
+                return  # Ignore la virgule
+            QLineEdit.keyPressEvent(input_field, event)
+
+        for champ in [nom_input, prenom_input, email_input, tel_input, mdp_input]:
+            champ.keyPressEvent = lambda event, champ=champ: bloquer_virgules(event, champ)
+
+        # Validation stricte : numéro = 10 chiffres sans espace
+        phone_regex = QRegExp(r"^\d{10}$")
+        phone_validator = QRegExpValidator(phone_regex)
+        tel_input.setValidator(phone_validator)
+
+        # Formulaire
         form_layout = QFormLayout()
         form_layout.addRow("Nom :", nom_input)
         form_layout.addRow("Prénom :", prenom_input)
         form_layout.addRow("Email :", email_input)
-        form_layout.addRow("Téléphone :", tel_input)
+        form_layout.addRow("Téléphone (ex: 0102030405) :", tel_input)
         form_layout.addRow("Mot de passe :", mdp_input)
         layout.addLayout(form_layout)
 
@@ -699,6 +754,10 @@ class MainWindow(QMainWindow):
 
             if not all([nom, prenom, email, telephone, mot_de_passe]):
                 confirmation.setText("Veuillez remplir tous les champs.")
+                return
+
+            if not phone_regex.exactMatch(telephone):
+                confirmation.setText("Téléphone invalide. Format attendu : 0102030405")
                 return
 
             client_id = f.generer_id_unique(USER_FILE, 'id_user')
