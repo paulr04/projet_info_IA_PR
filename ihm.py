@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 import csv
 from facture import facture as fact
 import fonctions as f
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from datetime import datetime
 from objects import Client, Vendeur, Vehicule, Reservation_DSL
@@ -30,9 +29,6 @@ TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "c
 TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire']
 BOITES_VITESSE = ["manuelle", "automatique"]
 
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-import matplotlib.pyplot as plt
 
 class FenetreGraphiqueVentes(QDialog):
     def __init__(self, fonction_trace, parent=None):
@@ -415,12 +411,468 @@ class MainWindow(QMainWindow):
     def recherche_de_vehicule_pour_reservation(self):pass
     def reserver_vehicule(self):pass
     
-    def annuler_reservation(self):pass
-    def changer_de_mdp(self):pass
-    def changer_caracteristique_compte(self):pass
-    def changer_caracteristique_vehicule(self): pass
-    def consulter_reservations_prochaines_vehicule(self): pass
+    def annuler_reservation(self):
+        user = self.utilisateur_connecte
+
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Annuler une réservation")
+
+        layout = QVBoxLayout()
+
+        info_label = QLabel("Veuillez entrer votre mot de passe et l'ID de la réservation :")
+        layout.addWidget(info_label)
+
+        mdp_input = QLineEdit()
+        mdp_input.setEchoMode(QLineEdit.Password)
+        mdp_input.setPlaceholderText("Mot de passe")
+        layout.addWidget(mdp_input)
+
+        resa_input = QLineEdit()
+        resa_input.setPlaceholderText("ID de réservation (9 chiffres)")
+        layout.addWidget(resa_input)
+
+        result_label = QLabel("")
+        layout.addWidget(result_label)
+
+        btn_annuler_resa = QPushButton("Annuler la réservation")
+        btn_cancel = QPushButton("Fermer")
+
+        btn_layout = QHBoxLayout()
+        btn_layout.addWidget(btn_annuler_resa)
+        btn_layout.addWidget(btn_cancel)
+        layout.addLayout(btn_layout)
+
+        def on_annuler():
+            mot_de_passe = mdp_input.text().strip()
+            id_reservation = resa_input.text().strip()
+            user_id = user.id_user
+
+            if not id_reservation.isdigit() or len(id_reservation) != 9:
+                result_label.setText("ID de réservation invalide (9 chiffres attendus).")
+                return
+
+            user_verifie = self.verifier_identifiants(user_id, mot_de_passe)
+            if not user_verifie:
+                result_label.setText("Mot de passe incorrect.")
+                return
+
+            date_debut_str = f.trouver_value(RESERVATIONS_FILE, id_reservation, 'id_resa', 'date_debut')
+            if not date_debut_str:
+                result_label.setText("Réservation introuvable.")
+                return
+
+            try:
+                date_debut = f.convertir_date(date_debut_str).date()
+            except:
+                result_label.setText("Erreur de format de date.")
+                return
+
+            if date_debut < datetime.today().date():
+                result_label.setText("Impossible d'annuler une réservation passée.")
+                return
+
+            if user.role == "C":
+                id_user_resa = f.trouver_value(RESERVATIONS_FILE, id_reservation, 'id_resa', 'id_user')
+                if id_user_resa != user_id:
+                    result_label.setText("Vous ne pouvez annuler que vos propres réservations.")
+                    return
+
+            try:
+                f.supprimer_ligne_par_id(RESERVATIONS_FILE, "id_resa", id_reservation)
+                f.supprimer_facture(id_reservation)
+                result_label.setText(f"Réservation {id_reservation} annulée avec succès.")
+                dialog.accept()
+            except Exception as e:
+                result_label.setText(f"Erreur : {e}")
+
+        btn_annuler_resa.clicked.connect(on_annuler)
+        btn_cancel.clicked.connect(dialog.reject)
+
+        dialog.setLayout(layout)
+        dialog.exec_()
+
+
+    def changer_de_mdp(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Changer de mot de passe")
+
+        layout = QVBoxLayout()
+
+        layout.addWidget(QLabel("Entrez votre mot de passe actuel :"))
+        mdp_actuel_input = QLineEdit()
+        mdp_actuel_input.setEchoMode(QLineEdit.Password)
+        layout.addWidget(mdp_actuel_input)
+
+        layout.addWidget(QLabel("Nouveau mot de passe :"))
+        nouv_mdp_input = QLineEdit()
+        nouv_mdp_input.setEchoMode(QLineEdit.Password)
+        layout.addWidget(nouv_mdp_input)
+
+        layout.addWidget(QLabel("Confirmation du mot de passe :"))
+        conf_mdp_input = QLineEdit()
+        conf_mdp_input.setEchoMode(QLineEdit.Password)
+        layout.addWidget(conf_mdp_input)
+
+        result_label = QLabel("")
+        layout.addWidget(result_label)
+
+        btn_confirmer = QPushButton("Changer le mot de passe")
+        btn_annuler = QPushButton("Annuler")
+
+        btn_layout = QHBoxLayout()
+        btn_layout.addWidget(btn_confirmer)
+        btn_layout.addWidget(btn_annuler)
+        layout.addLayout(btn_layout)
+
+        def filtrer_saisie(event, champ, numerique=False):
+            ponctuation_interdite = [' ',',', ';', ':', '!', '?', "'", '"', '`', '´', '’', '“', '”']
+            key = event.text()
+
+            if event.key() in (Qt.Key_Backspace, Qt.Key_Delete, Qt.Key_Left, Qt.Key_Right, Qt.Key_Home, Qt.Key_End):
+                QLineEdit.keyPressEvent(champ, event)
+                return
+
+            if key in ponctuation_interdite:
+                return
+
+            if numerique:
+                if key and not (key.isdigit() or key == '.'):
+                    return
+                if key == '.' and '.' in champ.text():
+                    return
+
+            QLineEdit.keyPressEvent(champ, event)
+        for champ in [mdp_actuel_input, nouv_mdp_input, conf_mdp_input]:
+            champ.keyPressEvent = lambda event, c=champ: filtrer_saisie(event, c, numerique=False)
+
+        def on_changer_mdp():
+            ancien_mdp = mdp_actuel_input.text().strip()
+            nouv_mdp = nouv_mdp_input.text().strip()
+            conf_mdp = conf_mdp_input.text().strip()
+
+            user_id = self.utilisateur_connecte.id_user
+            user = self.verifier_identifiants(user_id, ancien_mdp)
+
+            if not user:
+                result_label.setText("Mot de passe actuel incorrect.")
+                return
+
+            if nouv_mdp != conf_mdp:
+                result_label.setText("Les nouveaux mots de passe ne correspondent pas.")
+                return
+
+            try:
+                f.modifier_champ_csv_par_id(USER_FILE, user_id, "id_user", "mot_de_passe", nouv_mdp)
+                result_label.setText("Mot de passe changé avec succès.")
+                dialog.accept()
+            except Exception as e:
+                result_label.setText(f"Erreur : {e}")
+
+        btn_confirmer.clicked.connect(on_changer_mdp)
+        btn_annuler.clicked.connect(dialog.reject)
+
+        dialog.setLayout(layout)
+        dialog.exec_()
     
+    def changer_caracteristique_compte(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Modifier une caractéristique du compte")
+
+        layout = QVBoxLayout()
+
+        label_info = QLabel("Veuillez entrer votre mot de passe pour confirmer :")
+        layout.addWidget(label_info)
+
+        mdp_input = QLineEdit()
+        mdp_input.setEchoMode(QLineEdit.Password)
+        layout.addWidget(mdp_input)
+
+        label_error = QLabel("")
+        layout.addWidget(label_error)
+
+        champs_modifiables = ['nom', 'prenom', 'email', 'telephone']  # Exemple
+        inputs = {}
+
+        for champ in champs_modifiables:
+            lbl = QLabel(f"{champ.capitalize()} :")
+            inp = QLineEdit()
+            layout.addWidget(lbl)
+            layout.addWidget(inp)
+            inputs[champ] = inp
+
+        btn_valider = QPushButton("Valider")
+        btn_annuler = QPushButton("Annuler")
+
+        btn_layout = QHBoxLayout()
+        btn_layout.addWidget(btn_valider)
+        btn_layout.addWidget(btn_annuler)
+        layout.addLayout(btn_layout)
+
+        # Fonction interne pour filtrer la saisie (bloque ponctuation)
+        def filtrer_saisie(event, champ, numerique=False):
+            ponctuation_interdite = [' ', ',', ';', ':', '!', '?', "'", '"', '`', '´', '’', '“', '”']
+            key = event.text()
+
+            if event.key() in (Qt.Key_Backspace, Qt.Key_Delete, Qt.Key_Left, Qt.Key_Right, Qt.Key_Home, Qt.Key_End):
+                QLineEdit.keyPressEvent(champ, event)
+                return
+
+            if key in ponctuation_interdite:
+                return
+
+            if numerique:
+                if key and not (key.isdigit() or key == '.'):
+                    return
+                if key == '.' and '.' in champ.text():
+                    return
+
+            QLineEdit.keyPressEvent(champ, event)
+
+        # On applique le filtre sur tous les champs sauf email (qui peut contenir @ etc)
+        for champ_nom, champ_widget in inputs.items():
+            if champ_nom == 'telephone':
+                # Pour téléphone, on filtre uniquement chiffres et pas plus de 10 caractères
+                def keypress_tel(event, c=champ_widget):
+                    # On autorise uniquement chiffres, backspace, suppr, flèches
+                    if event.key() in (Qt.Key_Backspace, Qt.Key_Delete, Qt.Key_Left, Qt.Key_Right, Qt.Key_Home, Qt.Key_End):
+                        QLineEdit.keyPressEvent(c, event)
+                        return
+                    key_text = event.text()
+                    if not key_text.isdigit():
+                        return
+                    if len(c.text()) >= 10:
+                        return
+                    QLineEdit.keyPressEvent(c, event)
+
+                champ_widget.keyPressEvent = keypress_tel
+            else:
+                # Pour les autres champs, on bloque ponctuation
+                champ_widget.keyPressEvent = lambda event, c=champ_widget: filtrer_saisie(event, c, numerique=False)
+
+        def valider():
+            mot_de_passe = mdp_input.text().strip()
+            user_id = self.utilisateur_connecte.id_user
+            user = self.verifier_identifiants(user_id, mot_de_passe)
+            if not user:
+                label_error.setText("Mot de passe incorrect.")
+                return
+
+            # Validation spécifique téléphone
+            tel = inputs['telephone'].text().strip()
+            if tel and (not tel.isdigit() or len(tel) != 10):
+                label_error.setText("Le numéro de téléphone doit contenir exactement 10 chiffres.")
+                return
+
+            for champ, widget in inputs.items():
+                nouvelle_valeur = widget.text().strip()
+                if nouvelle_valeur:
+                    f.modifier_champ_csv_par_id(USER_FILE, user_id, "id_user", champ, nouvelle_valeur)
+
+            label_error.setText("Caractéristiques modifiées avec succès.")
+            dialog.accept()
+
+        btn_valider.clicked.connect(valider)
+        btn_annuler.clicked.connect(dialog.reject)
+
+        dialog.setLayout(layout)
+        dialog.exec_()
+    
+    def changer_caracteristique_vehicule(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Modifier une caractéristique d'un véhicule")
+        layout = QVBoxLayout()
+
+        def filtrer_saisie(event, champ, numerique=False):
+            ponctuation_interdite = [',', ';', ':', '!', '?', "'", '"', '`', '´', '’', '“', '”']
+            key = event.text()
+
+            if event.key() in (Qt.Key_Backspace, Qt.Key_Delete, Qt.Key_Left, Qt.Key_Right, Qt.Key_Home, Qt.Key_End):
+                QLineEdit.keyPressEvent(champ, event)
+                return
+
+            if key in ponctuation_interdite:
+                return
+
+            if numerique:
+                if key and not (key.isdigit() or key == '.'):
+                    return
+                if key == '.' and '.' in champ.text():
+                    return
+
+            QLineEdit.keyPressEvent(champ, event)
+
+        label_mdp = QLabel("Entrez votre mot de passe :")
+        mdp_input = QLineEdit()
+        mdp_input.setEchoMode(QLineEdit.Password)
+        layout.addWidget(label_mdp)
+        layout.addWidget(mdp_input)
+
+        label_plaque = QLabel("Plaque du véhicule (format AA-000-AA) :")
+        plaque_input = QLineEdit()
+        layout.addWidget(label_plaque)
+        layout.addWidget(plaque_input)
+        plaque_input.keyPressEvent = lambda event: filtrer_saisie(event, plaque_input)
+
+        champs_modifiables = [
+            "marque", "modele", "prix_jour", "masse", "vitesse_max", "puissance",
+            "volume_utile", "nb_places", "type_moteur", "hauteur", "type_vehicule",
+            "boite_vitesse", "entretien_annuel", "dispo", "description"
+        ]
+        label_champ = QLabel("Choisissez la caractéristique à modifier :")
+        champ_combo = QComboBox()
+        champ_combo.addItems(champs_modifiables)
+        layout.addWidget(label_champ)
+        layout.addWidget(champ_combo)
+
+        label_nouvelle_valeur = QLabel("Nouvelle valeur :")
+        nouvelle_valeur_input = QLineEdit()
+        layout.addWidget(label_nouvelle_valeur)
+        layout.addWidget(nouvelle_valeur_input)
+
+        def maj_filtre_saisie():
+            champ = champ_combo.currentText()
+            numerique = champ in ["prix_jour", "masse", "vitesse_max", "puissance", "volume_utile", "hauteur", "entretien_annuel"]
+            nouvelle_valeur_input.keyPressEvent = lambda event: filtrer_saisie(event, nouvelle_valeur_input, numerique=numerique)
+        champ_combo.currentTextChanged.connect(maj_filtre_saisie)
+        maj_filtre_saisie()
+
+        btn_valider = QPushButton("Valider la modification")
+        btn_annuler = QPushButton("Annuler")
+        btn_layout = QHBoxLayout()
+        btn_layout.addWidget(btn_valider)
+        btn_layout.addWidget(btn_annuler)
+        layout.addLayout(btn_layout)
+
+        label_message = QLabel("")
+        layout.addWidget(label_message)
+
+        def valider():
+            user_id = self.utilisateur_connecte.id_user
+            mdp = mdp_input.text().strip()
+            if not self.verifier_identifiants(user_id, mdp):
+                label_message.setText("Mot de passe incorrect.")
+                return
+
+            plaque = plaque_input.text().strip().upper()
+            import re
+            if not re.match(r"^[A-Z]{2}-\d{3}-[A-Z]{2}$", plaque):
+                label_message.setText("Plaque invalide (format attendu AA-000-AA).")
+                return
+
+            champ = champ_combo.currentText()
+            nouvelle_valeur = nouvelle_valeur_input.text().strip()
+
+            if champ in ["marque", "modele", "description"]:
+                nouvelle_valeur = nouvelle_valeur.lower().replace("'", "").replace(",", "").replace("’", "").replace("‘", "").replace("`", "")
+
+            if champ in ["prix_jour", "masse", "vitesse_max", "puissance", "volume_utile", "nb_places", "hauteur", "entretien_annuel"]:
+                try:
+                    nouvelle_valeur = int(nouvelle_valeur) if champ == "nb_places" else float(nouvelle_valeur)
+                except ValueError:
+                    label_message.setText(f"Le champ {champ} doit être un nombre valide.")
+                    return
+
+            elif champ == "dispo":
+                if nouvelle_valeur.lower() in ("true", "1", "oui"):
+                    nouvelle_valeur = True
+                elif nouvelle_valeur.lower() in ("false", "0", "non"):
+                    nouvelle_valeur = False
+                else:
+                    label_message.setText("Le champ 'dispo' doit être True/False.")
+                    return
+
+            elif champ == "type_moteur":
+                if nouvelle_valeur.lower() not in [m.lower() for m in TYPES_MOTEUR]:
+                    label_message.setText(f"Type de moteur invalide.\nChoix possibles : {', '.join(TYPES_MOTEUR)}")
+                    return
+                nouvelle_valeur = nouvelle_valeur.lower()
+
+            elif champ == "type_vehicule":
+                if nouvelle_valeur.lower() not in [v.lower() for v in TYPES_VEHICULE]:
+                    label_message.setText(f"Type de véhicule invalide.\nChoix possibles : {', '.join(TYPES_VEHICULE)}")
+                    return
+                nouvelle_valeur = nouvelle_valeur.lower()
+
+            elif champ == "boite_vitesse":
+                if nouvelle_valeur.lower() not in [b.lower() for b in BOITES_VITESSE]:
+                    label_message.setText(f"Boîte de vitesse invalide.\nChoix possibles : {', '.join(BOITES_VITESSE)}")
+                    return
+                nouvelle_valeur = nouvelle_valeur.lower()
+
+            try:
+                f.modifier_champ_csv_par_id(VEHICULES_FILE, plaque, "id_vehicule", champ, nouvelle_valeur)
+                label_message.setText("Modification réussie !")
+            except Exception as e:
+                label_message.setText(f"Erreur lors de la modification : {e}")
+
+        btn_valider.clicked.connect(valider)
+        btn_annuler.clicked.connect(dialog.reject)
+
+        dialog.setLayout(layout)
+        dialog.exec_()
+    
+    def consulter_reservations_prochaines_vehicule(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Réservations à venir pour un véhicule")
+
+        layout = QVBoxLayout()
+
+        # Label d'instruction
+        label_instruction = QLabel("Plaque d'immatriculation (format AA-000-AA) :")
+        layout.addWidget(label_instruction)
+
+        # Champ de saisie pour la plaque
+        champ_plaque = QLineEdit()
+        layout.addWidget(champ_plaque)
+
+        # Zone d'affichage des résultats
+        zone_resultats = QTextEdit()
+        zone_resultats.setReadOnly(True)
+        layout.addWidget(zone_resultats)
+
+        # Boutons
+        bouton_valider = QPushButton("Rechercher")
+        bouton_fermer = QPushButton("Fermer")
+        layout.addWidget(bouton_valider)
+        layout.addWidget(bouton_fermer)
+
+        dialog.setLayout(layout)
+
+        def rechercher():
+            zone_resultats.clear()
+            plaque = champ_plaque.text().strip().upper()
+
+            # Validation format
+            if not re.match(r"^[A-Z]{2}-\d{3}-[A-Z]{2}$", plaque):
+                zone_resultats.setText("Plaque invalide. Format attendu : AA-000-AA")
+                return
+
+            trouve = False
+            try:
+                with open(RESERVATIONS_FILE, mode='r', newline='') as fichier:
+                    lecteur = csv.DictReader(fichier)
+                    for ligne in lecteur:
+                        if ligne['id_vehicule'] == plaque and f.convertir_date(ligne['date_fin']).date() >= datetime.today().date():
+                            info = (
+                                f"Réservation : {ligne['id_resa']}\n"
+                                f"Client : {ligne['id_user']}\n"
+                                f"Début : {ligne['date_debut']}\n"
+                                f"Fin : {ligne['date_fin']}\n"
+                                f"Prix : {ligne['prix_total']} €\n"
+                                "----------------------------\n"
+                            )
+                            zone_resultats.append(info)
+                            trouve = True
+
+                if not trouve:
+                    zone_resultats.setText("Aucune réservation à venir pour ce véhicule ou véhicule introuvable.")
+            except Exception as e:
+                zone_resultats.setText(f"Erreur : {e}")
+
+        bouton_valider.clicked.connect(rechercher)
+        bouton_fermer.clicked.connect(dialog.close)
+
+        dialog.exec_()
     
     def ajouter_vehicule(self):
         dialog = QDialog(self)
@@ -478,31 +930,27 @@ class MainWindow(QMainWindow):
         btn_fermer.hide()
         layout.addWidget(btn_fermer)
 
-        # Fonction commune pour filtrer la saisie
         def filtrer_saisie(event, champ, numerique=False):
             ponctuation_interdite = [',', ';', ':', '!', '?', "'", '"', '`', '´', '’', '“', '”']
             key = event.text()
 
-            # Autoriser les touches de contrôle (Backspace, Delete, flèches, etc.)
             if event.key() in (Qt.Key_Backspace, Qt.Key_Delete, Qt.Key_Left, Qt.Key_Right, Qt.Key_Home, Qt.Key_End):
                 QLineEdit.keyPressEvent(champ, event)
                 return
 
             if key in ponctuation_interdite:
-                # Bloquer la ponctuation
+    
                 return
 
             if numerique:
-                # Autoriser chiffres et un seul point
+   
                 if key and not (key.isdigit() or key == '.'):
                     return
                 if key == '.' and '.' in champ.text():
                     return
 
-            # Appeler l'event original sinon
             QLineEdit.keyPressEvent(champ, event)
 
-        # Champs numériques à valider
         numeriques = [prix_input, masse_input, vitesse_input, puissance_input,
                     volume_input, places_input, hauteur_input, entretien_input]
 
@@ -744,6 +1192,30 @@ class MainWindow(QMainWindow):
         btn_fermer = QPushButton("Fermer")
         btn_fermer.hide()
         layout.addWidget(btn_fermer)
+        
+        def filtrer_saisie(event, champ, numerique=False):
+            ponctuation_interdite = [' ',',', ';', ':', '!', '?', "'", '"', '`', '´', '’', '“', '”']
+            key = event.text()
+
+            if event.key() in (Qt.Key_Backspace, Qt.Key_Delete, Qt.Key_Left, Qt.Key_Right, Qt.Key_Home, Qt.Key_End):
+                QLineEdit.keyPressEvent(champ, event)
+                return
+
+            if key in ponctuation_interdite:
+    
+                return
+
+            if numerique:
+   
+                if key and not (key.isdigit() or key == '.'):
+                    return
+                if key == '.' and '.' in champ.text():
+                    return
+
+            QLineEdit.keyPressEvent(champ, event)
+        autres = [nom_input, prenom_input, email_input, tel_input, mdp_input]
+        for champ in autres:
+            champ.keyPressEvent = lambda event, c=champ: filtrer_saisie(event, c, numerique=False)
 
         def on_valider():
             nom = nom_input.text().strip()
