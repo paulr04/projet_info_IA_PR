@@ -13,26 +13,41 @@ BOITES_VITESSE = ["manuelle", "automatique"]
 
 
 class TestUser(unittest.TestCase):
+    """
+    
+    Classe de test pour la classe User et ses sous-classes (héritage) Vendeur et Client.
+    
+    """
     def test_user_creation_valide(self):
+        """Tester la création d'un utilisateur avec des valeurs valides."""
         u = User("123456789", "Durand", "Paul", "paul@gmail.com", "0612345678", "C", "motdepasse", app=None)
         self.assertEqual(u.nom, "Durand")
     
     def test_role_vendeur(self):
+        """Teste l'erreur si un utilisateur avec le rôle 'V' est créé en tant que Client."""
         with self.assertRaises(ValueError):
             Vendeur("123456789", "Durand", "Paul", "paul@gmail.com", "0612345678", "C", "motdepasse", app=None)
     
     def test_role_client(self):
+        """Teste l'erreur si un utilisateur avec le rôle 'C' est créé en tant que Vendeur."""
         with self.assertRaises(ValueError):
             Client("123456789", "Durand", "Paul", "paul@gmail.com", "0612345678", "V", "motdepasse", app=None)
 
 class Testfonctions(unittest.TestCase):
+    """
+
+    Classe de test pour les fonctions de chargement des données.
+    
+    """
     def test_load_vehicule_POO(self):
+        """Tester le chargement des véhicules depuis un fichier CSV."""
         vehicules = f.load_vehicules(VEHICULES_FILE)
         self.assertIsInstance(vehicules, list)
         for vehicule in vehicules:
             self.assertIsInstance(vehicule, Vehicule)
     
     def test_load_users_POO(self):
+        """Tester le chargement des utilisateurs depuis un fichier CSV."""
         users = f.load_users_POO(USER_FILE)
         self.assertIsInstance(users, list)
         for user in users:
@@ -44,6 +59,11 @@ class Testfonctions(unittest.TestCase):
                 self.assertIsInstance(user, Client)
 
 class TestReservationDSL(unittest.TestCase):
+    """
+
+    Classe de test pour la classe Reservation_DSL.
+
+    """
     def test_parsing_valide(self):
         dsl = "RESERVATION 578878064 CLIENT 000000230 VEHICULE FR-416-FR DU 08-08-2025 AU 08-09-2025 JOURS 2 PRIX 120.0 SURCLASSEMENT False"
         resa_dsl = Reservation_DSL.from_dsl(dsl)

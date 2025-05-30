@@ -1,28 +1,26 @@
 import sys
 import os
-
+import csv
 import re
 import random
-import string 
+import string
+import matplotlib.pyplot as plt 
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from datetime import datetime
 
-from PyQt5.QtWidgets import (
-    QDateEdit,QComboBox, QFormLayout, QHBoxLayout, QApplication, QTableWidgetItem, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QScrollArea, QTextEdit, QTableWidget, QMessageBox, QDialog, QLineEdit, QInputDialog
-)
+from PyQt5.QtWidgets import QDateEdit,QComboBox, QFormLayout, QHBoxLayout, QApplication, QTableWidgetItem, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QScrollArea, QTextEdit, QTableWidget, QMessageBox, QDialog, QLineEdit, QInputDialog
 from PyQt5.QtGui import QPixmap, QFont, QRegExpValidator
 from PyQt5.QtCore import Qt, QRegExp, QDate
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-import matplotlib.pyplot as plt
-import csv
+
 from facture import facture as fact
 import fonctions as f
-from matplotlib.figure import Figure
-from datetime import datetime
 from objects import Client, Vendeur, Vehicule, Reservation_DSL
 
-# from facture import facture as fact
+# Chemins des fichiers de données
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
+
 CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'type_moteur', 'type_vehicule', 'boite_vitesse']
 NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special"]
 TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
@@ -31,6 +29,7 @@ BOITES_VITESSE = ["manuelle", "automatique"]
 
 
 class FenetreGraphiqueVentes(QDialog):
+    """Fenêtre pour afficher les graphiques d'analyse des ventes."""
     def __init__(self, fonction_trace, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Analyse des ventes")
@@ -53,6 +52,45 @@ class FenetreGraphiqueVentes(QDialog):
 
 
 class MainWindow(QMainWindow):
+    """Fenêtre principale de l'application CarGo.
+    
+    Gère les menus, la connexion des utilisateurs et l'affichage des différentes fonctionnalités.
+
+    Méthodes principales :
+        - clear_layout: Vide le layout principal pour changer de "page".
+        - creer_compte_client: Ouvre une boîte de dialogue pour créer un compte client.
+        - verifier_identifiants: Vérifie les identifiants de l'utilisateur dans le fichier CSV.
+        - retour_menu: Retourne au menu précédent selon le rôle de l'utilisateur connecté.
+        - menu_initial: Affiche le menu initial de l'application.
+        - se_connecter: Ouvre une boîte de dialogue pour la connexion.
+        - verifier_connexion: Vérifie les identifiants et connecte l'utilisateur.
+        - menu_vendeur: Affiche le menu pour les vendeurs.
+        - menu_client: Affiche le menu pour les clients.
+        - menu_analyse_ventes: Affiche les options d'analyse des ventes.
+        - afficher_benefice_annee: Affiche le bénéfice pour une année donnée.
+        - afficher_benefice_total: Affiche le bénéfice total.
+        - afficher_reservations_par_vehicule_par_annee: Affiche les réservations par véhicule pour une année donnée.
+        - afficher_resultat_texte: Affiche un texte dans une boîte de dialogue.
+        - afficher_graphique_ventes: Affiche un graphique d'analyse des ventes.
+        - consulter_catalogue: Affiche le catalogue des véhicules.
+        - surclassement: Gère le surclassement d'un véhicule.
+        - recherche_de_vehicule_pour_reservation: Ouvre une boîte de dialogue pour rechercher un véhicule à réserver.
+        - demander_criteres_recherche: Ouvre une boîte de dialogue pour demander les critères de recherche.
+        - reserver_vehicule: Gère la réservation d'un véhicule.
+        - trouver_vehicule_disponible: Trouve les véhicules disponibles pour une période donnée.
+        - annuler_reservation: Gère l'annulation d'une réservation.
+        - supprimer_compte_client: Supprime le compte client de l'utilisateur connecté.
+        - changer_de_mdp: Permet à l'utilisateur de changer son mot de passe.
+        - changer_caracteristique_vehicule: Permet au vendeur de modifier les caractéristiques d'un véhicule.
+        - changer_caracteristique_compte: Permet à l'utilisateur de modifier ses informations de compte.
+        - consulter_reservations: Affiche les réservations de l'utilisateur connecté.
+        - consulter_reservations_prochaines_vehicule: Affiche les réservations prochaines d'un véhicule.
+        - consulter_vehicule: Affiche les détails d'un véhicule spécifique.
+        - consulter_user: Affiche les informations des utilisateurs.
+        - ajouter_vehicule: Permet au vendeur d'ajouter un nouveau véhicule.
+        - supprimer_vehicule: Permet au vendeur de supprimer un véhicule.
+    
+    """
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Location de Véhicules - CarGo")
@@ -69,7 +107,7 @@ class MainWindow(QMainWindow):
         self.menu_initial()
 
     def clear_layout(self):
-        # Supprime tous les widgets du layout principal pour changer de "page"
+        """Supprime tous les widgets du layout principal pour changer de "page"."""
         while self.layout.count():
             item = self.layout.takeAt(0)
             widget = item.widget()
@@ -77,6 +115,7 @@ class MainWindow(QMainWindow):
                 widget.deleteLater()
 
     def retour_menu(self):
+        """Retourne au menu précédent selon le rôle de l'utilisateur connecté."""
         if self.utilisateur_connecte and self.utilisateur_connecte.role == "C":
             self.menu_client()
         elif self.utilisateur_connecte and self.utilisateur_connecte.role == "V":
@@ -85,6 +124,7 @@ class MainWindow(QMainWindow):
             self.menu_initial()
     
     def menu_initial(self):
+        """Affiche le menu initial de l'application."""
         self.clear_layout()
         logo = QLabel()
         pixmap = QPixmap("logo_cargo.png").scaledToWidth(200, Qt.SmoothTransformation)
@@ -110,6 +150,7 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(btn_quitter)
 
     def se_connecter(self):
+        """Ouvre une boîte de dialogue pour la connexion de l'utilisateur."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Connexion")
         dialog.setFixedSize(300, 200)
@@ -139,6 +180,7 @@ class MainWindow(QMainWindow):
         dialog.exec_()
 
     def verifier_identifiants(self, user_id, mot_de_passe):
+        """Vérifie les identifiants de l'utilisateur dans le fichier CSV."""
         try:
             with open(USER_FILE, mode='r', newline='', encoding='utf-8') as file:
                 reader = csv.DictReader(file)
@@ -161,6 +203,7 @@ class MainWindow(QMainWindow):
             return None
 
     def verifier_connexion(self, id_user, mdp, dialog):
+        """Vérifie les identifiants et connecte l'utilisateur."""
         if not id_user or not mdp:
             QMessageBox.warning(self, "Erreur", "Veuillez remplir tous les champs.")
             return
@@ -183,6 +226,7 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Échec de connexion", "ID ou mot de passe incorrect.")
 
     def menu_vendeur(self):
+        """Affiche le menu pour les vendeurs."""
         self.clear_layout()
         self.layout = QVBoxLayout()
 
@@ -233,6 +277,7 @@ class MainWindow(QMainWindow):
     
     
     def menu_client(self):
+        """Affiche le menu pour les clients."""
         self.clear_layout()
         self.layout = QVBoxLayout()
 
@@ -274,6 +319,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(scroll)
 
     def menu_analyse_ventes(self):
+        """Affiche les options d'analyse des ventes."""
         self.clear_layout()
         self.layout = QVBoxLayout()
 
@@ -316,21 +362,25 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(scroll)
 
     def afficher_benefice_annee(self):
+        """Affiche le bénéfice pour une année donnée."""
         annee, ok = QInputDialog.getInt(self, "Bénéfice annuel", "Entrez l'année :",min=2000,max=2100)
         if ok:
             benefice = f.benefice_pour_annee(annee)
             self.afficher_resultat_texte(f"Bénéfice pour {annee} : {benefice} €")
 
     def afficher_benefice_total(self):
+        """Affiche le bénéfice total."""
         benefice = f.afficher_benefice_total()
         self.afficher_resultat_texte(f"Bénéfice total : {round(benefice, 2)} €")
 
     def afficher_reservations_par_vehicule_par_annee(self):
+        """Affiche les réservations par véhicule pour une année donnée."""
         annee, ok = QInputDialog.getInt(self, "Réservations par véhicule", "Entrez l'année :")
         if ok:
             self.afficher_graphique_ventes(lambda :f.reservations_par_vehicule_par_an(annee))
 
     def afficher_resultat_texte(self, texte):
+        """Affiche un texte dans une boîte de dialogue."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Résultat")
 
@@ -347,10 +397,12 @@ class MainWindow(QMainWindow):
         dialog.exec_()
 
     def afficher_graphique_ventes(self, fonction_trace):
+        """Affiche un graphique d'analyse des ventes."""
         fenetre = FenetreGraphiqueVentes(fonction_trace, self)
         fenetre.exec_()
 
     def consulter_catalogue(self):
+        """Affiche le catalogue des véhicules."""
         self.clear_layout()  
         self.layout = QVBoxLayout()
         title = QLabel("Catalogue des véhicules")
@@ -405,6 +457,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(scroll)
     
     def surclassement(self, Vehicule, vehicules_disponibles, date_debut, date_fin, id_user, jours, prix, type_vehicule, surclassement_choix):
+        """Gère le surclassement d'un véhicule."""
         if Vehicule.type_vehicule in NO_SURCLASSEMENT_TYPES:
             QMessageBox.warning(self, "Fin", "Impossible de surclasser le type de véhicule sélectionné.")
             self.criteres_resa = None
@@ -458,6 +511,7 @@ class MainWindow(QMainWindow):
 
 
     def recherche_de_vehicule_pour_reservation(self):
+        """Ouvre une boîte de dialogue pour rechercher un véhicule à réserver."""
         # Chargement des véhicules
         vehicules_search = f.load_vehicules(VEHICULES_FILE)
 
@@ -522,6 +576,7 @@ class MainWindow(QMainWindow):
         dialog.setLayout(layout)
 
         def lancer_recherche():
+            """Lance la recherche de véhicules selon les critères spécifiés."""
             zone_resultats.clear()
             crit = []
             type_vehicule = box_type_vehicule.currentText().strip()
@@ -564,6 +619,7 @@ class MainWindow(QMainWindow):
                 zone_resultats.setText("Aucun véhicule trouvé avec les critères spécifiés.")
 
         def reserver():
+            """Gère la réservation d'un véhicule après une recherche."""
             reply = QMessageBox.question(dialog, "Réservation", "Souhaitez-vous réserver un véhicule ?", QMessageBox.Yes | QMessageBox.No)
             if reply == QMessageBox.Yes:
                 dialog.close()
@@ -576,6 +632,7 @@ class MainWindow(QMainWindow):
         dialog.exec_()
     
     def demander_criteres_recherche(self):
+        """"Ouvre une boîte de dialogue pour demander les critères de recherche."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Critères de recherche")
         dialog.resize(600, 400)
@@ -595,6 +652,7 @@ class MainWindow(QMainWindow):
         criteres_widgets = []
 
         def add_critere():
+            """Ajoute un critère de recherche dynamique."""
             champ_cb = QComboBox()
             champ_cb.addItems(champs_recherche)
             op_cb = QComboBox()
@@ -626,6 +684,7 @@ class MainWindow(QMainWindow):
         result = []
 
         def valider():
+            """Valide les critères de recherche et ferme la boîte de dialogue."""
             nonlocal result
             result = [("type_vehicule", "=", box_type_vehicule.currentText().strip())]
             for champ_cb, op_cb, val_le in criteres_widgets:
@@ -648,6 +707,7 @@ class MainWindow(QMainWindow):
         return result
 
     def reserver_vehicule(self):
+        """ Ouvre une boîte de dialogue pour réserver un véhicule."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Formulaire de réservation")
         form_layout = QFormLayout()
@@ -745,6 +805,7 @@ class MainWindow(QMainWindow):
 
 
     def trouver_vehicule_disponible(self, date_debut, date_fin):
+        """Trouve les véhicules disponibles pour les dates spécifiées."""
         vehicules_disponibles = []
         with open(VEHICULES_FILE, mode='r') as file:
             reader = csv.DictReader(file)
@@ -755,6 +816,7 @@ class MainWindow(QMainWindow):
         return vehicules_disponibles
         
     def annuler_reservation(self):
+        """Ouvre une boîte de dialogue pour annuler une réservation."""
         user = self.utilisateur_connecte
 
         dialog = QDialog(self)
@@ -786,6 +848,7 @@ class MainWindow(QMainWindow):
         layout.addLayout(btn_layout)
 
         def on_annuler():
+            """Gère l'annulation de la réservation."""
             mot_de_passe = mdp_input.text().strip()
             id_reservation = resa_input.text().strip()
             user_id = user.id_user
@@ -836,6 +899,7 @@ class MainWindow(QMainWindow):
 
 
     def changer_de_mdp(self):
+        """Ouvre une boîte de dialogue pour changer le mot de passe."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Changer de mot de passe")
 
@@ -868,6 +932,7 @@ class MainWindow(QMainWindow):
         layout.addLayout(btn_layout)
 
         def filtrer_saisie(event, champ, numerique=False):
+            """Filtre la saisie pour interdire certaines ponctuations et gérer les champs numériques."""
             ponctuation_interdite = [' ',',', ';', ':', '!', '?', "'", '"', '`', '´', '’', '“', '”']
             key = event.text()
 
@@ -889,6 +954,7 @@ class MainWindow(QMainWindow):
             champ.keyPressEvent = lambda event, c=champ: filtrer_saisie(event, c, numerique=False)
 
         def on_changer_mdp():
+            """Gère le changement de mot de passe."""
             ancien_mdp = mdp_actuel_input.text().strip()
             nouv_mdp = nouv_mdp_input.text().strip()
             conf_mdp = conf_mdp_input.text().strip()
@@ -918,6 +984,7 @@ class MainWindow(QMainWindow):
         dialog.exec_()
     
     def changer_caracteristique_compte(self):
+        """Ouvre une boîte de dialogue pour modifier les caractéristiques du compte utilisateur."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Modifier une caractéristique du compte")
 
@@ -993,6 +1060,7 @@ class MainWindow(QMainWindow):
                 champ_widget.keyPressEvent = lambda event, c=champ_widget: filtrer_saisie(event, c, numerique=False)
 
         def valider():
+            """Valide les modifications et enregistre les changements."""
             mot_de_passe = mdp_input.text().strip()
             user_id = self.utilisateur_connecte.id_user
             user = self.verifier_identifiants(user_id, mot_de_passe)
@@ -1021,6 +1089,7 @@ class MainWindow(QMainWindow):
         dialog.exec_()
     
     def changer_caracteristique_vehicule(self):
+        """Ouvre une boîte de dialogue pour modifier les caractéristiques d'un véhicule."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Modifier une caractéristique d'un véhicule")
         layout = QVBoxLayout()
@@ -1073,6 +1142,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(nouvelle_valeur_input)
 
         def maj_filtre_saisie():
+            """filtre les valeurs numériques ou non selon le champ sélectionné."""
             champ = champ_combo.currentText()
             numerique = champ in ["prix_jour", "masse", "vitesse_max", "puissance", "volume_utile", "hauteur", "entretien_annuel"]
             nouvelle_valeur_input.keyPressEvent = lambda event: filtrer_saisie(event, nouvelle_valeur_input, numerique=numerique)
@@ -1090,6 +1160,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(label_message)
 
         def valider():
+            """Valide les entrées et modifie la caractéristique du véhicule."""
             user_id = self.utilisateur_connecte.id_user
             mdp = mdp_input.text().strip()
             if not self.verifier_identifiants(user_id, mdp):
@@ -1155,6 +1226,7 @@ class MainWindow(QMainWindow):
         dialog.exec_()
     
     def consulter_reservations_prochaines_vehicule(self):
+        """Ouvre une boîte de dialogue pour consulter les réservations à venir d'un véhicule."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Réservations à venir pour un véhicule")
 
@@ -1218,6 +1290,7 @@ class MainWindow(QMainWindow):
         dialog.exec_()
     
     def ajouter_vehicule(self):
+        """Ouvre une boîte de dialogue pour ajouter un nouveau véhicule."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Ajouter un véhicule")
 
@@ -1274,6 +1347,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(btn_fermer)
 
         def filtrer_saisie(event, champ, numerique=False):
+            """Filtre la saisie pour interdire certaines ponctuations et gérer les champs numériques."""
             ponctuation_interdite = [',', ';', ':', '!', '?', "'", '"', '`', '´', '’', '“', '”']
             key = event.text()
 
@@ -1308,6 +1382,7 @@ class MainWindow(QMainWindow):
         # Note: description_input est un QTextEdit, on ne bloque pas la ponctuation dedans (libre)
 
         def on_valider():
+            """Valide les entrées et ajoute le véhicule."""
             try:
                 id_vehicule = self.demander_plaque_ajout(plaque_input.text().strip(), VEHICULES_FILE)
                 marque = marque_input.text().strip()
@@ -1367,6 +1442,7 @@ class MainWindow(QMainWindow):
                 confirmation.setText(f"Erreur : {e}")
 
         def on_fermer():
+            """Ferme la boîte de dialogue."""
             dialog.accept()
 
         btn_valider.clicked.connect(on_valider)
@@ -1376,6 +1452,7 @@ class MainWindow(QMainWindow):
         dialog.show()
     
     def generer_plaque_aleatoire(self):
+        """Génère une plaque d'immatriculation aléatoire au format AA-123-AA."""
         lettres = string.ascii_uppercase
         chiffres = string.digits
         # Format AA-123-AA
@@ -1386,6 +1463,7 @@ class MainWindow(QMainWindow):
         )
 
     def demander_plaque_ajout(self, plaque, fichier):
+        """Demande une plaque d'immatriculation et vérifie son unicité."""
         pattern = r"^[A-Z]{2}-\d{3}-[A-Z]{2}$"
         plaque = plaque.upper()
         if not re.match(pattern, plaque):
@@ -1412,6 +1490,7 @@ class MainWindow(QMainWindow):
 
         return plaque
     def supprimer_vehicule(self):
+        """Ouvre une boîte de dialogue pour supprimer un véhicule."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Supprimer un véhicule")
 
@@ -1443,6 +1522,7 @@ class MainWindow(QMainWindow):
         layout.addLayout(btn_layout)
 
         def on_supprimer():
+            """Gère la suppression du véhicule."""
             mot_de_passe = mdp_input.text().strip()
             user_id = self.utilisateur_connecte.id_user  # Id de l'utilisateur connecté
 
@@ -1481,6 +1561,7 @@ class MainWindow(QMainWindow):
                 confirmation_label.setText(f"Erreur lors de la suppression : {e}")
 
         def on_annuler():
+            """Annule la suppression et ferme la boîte de dialogue."""
             dialog.reject()
 
         btn_supprimer.clicked.connect(on_supprimer)
@@ -1490,12 +1571,12 @@ class MainWindow(QMainWindow):
         dialog.exec_()
 
     def creer_compte_client(self):
+        """Ouvre une boîte de dialogue pour créer un compte client."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Créer un compte client")
 
         layout = QVBoxLayout()
 
-        # Champs d'entrée
         nom_input = QLineEdit()
         prenom_input = QLineEdit()
         email_input = QLineEdit()
@@ -1503,21 +1584,19 @@ class MainWindow(QMainWindow):
         mdp_input = QLineEdit()
         mdp_input.setEchoMode(QLineEdit.Password)
 
-        # Empêche la saisie de virgules dans tous les champs
         def bloquer_virgules(event, input_field):
+            """Bloque la saisie de virgules dans les champs d'entrée."""
             if event.text() == ',':
-                return  # Ignore la virgule
+                return 
             QLineEdit.keyPressEvent(input_field, event)
 
         for champ in [nom_input, prenom_input, email_input, tel_input, mdp_input]:
             champ.keyPressEvent = lambda event, champ=champ: bloquer_virgules(event, champ)
 
-        # Validation stricte : numéro = 10 chiffres sans espace
         phone_regex = QRegExp(r"^\d{10}$")
         phone_validator = QRegExpValidator(phone_regex)
         tel_input.setValidator(phone_validator)
 
-        # Formulaire
         form_layout = QFormLayout()
         form_layout.addRow("Nom :", nom_input)
         form_layout.addRow("Prénom :", prenom_input)
@@ -1537,6 +1616,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(btn_fermer)
         
         def filtrer_saisie(event, champ, numerique=False):
+            """Filtre la saisie pour interdire certaines ponctuations et gérer les champs numériques."""
             ponctuation_interdite = [' ',',', ';', ':', '!', '?', "'", '"', '`', '´', '’', '“', '”']
             key = event.text()
 
@@ -1561,6 +1641,7 @@ class MainWindow(QMainWindow):
             champ.keyPressEvent = lambda event, c=champ: filtrer_saisie(event, c, numerique=False)
 
         def on_valider():
+            """Valide les entrées et crée le compte client."""
             nom = nom_input.text().strip()
             prenom = prenom_input.text().strip()
             email = email_input.text().strip()
@@ -1601,6 +1682,7 @@ class MainWindow(QMainWindow):
                 confirmation.setText(f"Erreur : {e}")
 
         def on_fermer():
+            """Ferme la boîte de dialogue."""
             dialog.accept()
 
         btn_valider.clicked.connect(on_valider)
@@ -1610,6 +1692,7 @@ class MainWindow(QMainWindow):
         dialog.exec_()
 
     def supprimer_compte_client(self):
+        """Ouvre une boîte de dialogue pour supprimer un compte client."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Supprimer un compte client")
 
@@ -1634,6 +1717,7 @@ class MainWindow(QMainWindow):
         layout.addLayout(btn_layout)
 
         def on_supprimer():
+            """Gère la suppression du compte client."""
             mot_de_passe = mdp_input.text().strip()
             user_id = self.utilisateur_connecte.id_user
             user = self.verifier_identifiants(user_id, mot_de_passe)
@@ -1670,12 +1754,12 @@ class MainWindow(QMainWindow):
                     id_dialog.setLayout(id_layout)
 
                     def supprimer_client():
+                        """Supprime le client avec l'ID entré."""
                         id_supp = id_input.text().strip()
                         if not id_supp:
                             id_confirmation.setText("Veuillez entrer un ID.")
                             return
-
-                        # Vérification : l'utilisateur à supprimer existe et est bien un client
+                        
                         user_trouve = None
                         with open(USER_FILE, newline='', encoding="utf-8") as file:
                             reader = csv.DictReader(file)
@@ -1711,6 +1795,7 @@ class MainWindow(QMainWindow):
                 confirmation_label.setText("Mot de passe incorrect.")
 
         def on_annuler():
+            """Annule la suppression et ferme la boîte de dialogue."""
             dialog.reject()
 
         btn_supprimer.clicked.connect(on_supprimer)
@@ -1720,18 +1805,18 @@ class MainWindow(QMainWindow):
         dialog.exec_()
     
     def trouver_vehicule_disponible(self, date_debut, date_fin):
-        # Recherche des véhicules disponibles dans le fichier des véhicules
+        """Recherche les véhicules disponibles entre deux dates."""
         vehicules_disponibles = []
         with open(VEHICULES_FILE, mode='r') as file:
             reader = csv.DictReader(file)
             for row in reader:
                 if row['dispo'] == 'True' and not f.verifier_reservation(date_debut, date_fin, row['id_vehicule']):
-                    # Vérification de la disponibilité du véhicule
                     vehicule = f.load_vehicule_POO(row)
                     vehicules_disponibles.append(vehicule)
         return vehicules_disponibles
 
     def consulter_vehicule(self):
+        """Ouvre une boîte de dialogue pour consulter les informations d'un véhicule."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Consulter un véhicule")
 
@@ -1762,6 +1847,7 @@ class MainWindow(QMainWindow):
         dialog.setLayout(layout)
 
         def on_valider():
+            """Valide la plaque et affiche les informations du véhicule."""
             id_vehicule = input_line.text()
             if not regex.exactMatch(id_vehicule):
                 error_label.setText("Format invalide. Utilise AA-000-AA.")
@@ -1796,6 +1882,7 @@ class MainWindow(QMainWindow):
         dialog.exec_()
 
     def consulter_user(self): 
+        """Ouvre une boîte de dialogue pour consulter la liste des utilisateurs."""
         self.clear_layout()
         self.layout = QVBoxLayout()
 
@@ -1848,6 +1935,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(scroll)
 
     def rechercher_vehicule_par_id(self, vehicule_id):
+        """Recherche un véhicule par son ID dans le fichier des véhicules."""
         # Recherche du véhicule par ID dans le fichier des véhicules
         with open(VEHICULES_FILE, mode='r') as file:
             reader = csv.DictReader(file)
@@ -1857,7 +1945,10 @@ class MainWindow(QMainWindow):
         return None
 
     def consulter_reservations(self):
-
+        """
+        Ouvre une boîte de dialogue pour consulter les réservations à venir.
+        Affiche les réservations à venir dans une table.
+        """
         self.clear_layout()
         self.layout = QVBoxLayout()
 
