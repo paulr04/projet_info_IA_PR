@@ -1,16 +1,47 @@
 import unittest
+import fonctions as f
+from objects import Vehicule, User, Reservation_DSL, Vendeur, Client
 
-from objects import Vehicule, Reservation, User, Reservation_DSL
+USER_FILE = 'data/users.csv'
+VEHICULES_FILE = 'data/vehicules.csv'
+RESERVATIONS_FILE = 'data/reservations.csv'
+CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'type_moteur', 'type_vehicule', 'boite_vitesse']
+NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special"]
+TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
+TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire']
+BOITES_VITESSE = ["manuelle", "automatique"]
+
 
 class TestUser(unittest.TestCase):
     def test_user_creation_valide(self):
-        u = User("123456789", "Durand", "Paul", "paul@gmail.com", "0612345678", "C", "motdepasse")
+        u = User("123456789", "Durand", "Paul", "paul@gmail.com", "0612345678", "C", "motdepasse", app=None)
         self.assertEqual(u.nom, "Durand")
+    
+    def test_role_vendeur(self):
+        with self.assertRaises(ValueError):
+            Vendeur("123456789", "Durand", "Paul", "paul@gmail.com", "0612345678", "C", "motdepasse", app=None)
+    
+    def test_role_client(self):
+        with self.assertRaises(ValueError):
+            Client("123456789", "Durand", "Paul", "paul@gmail.com", "0612345678", "V", "motdepasse", app=None)
 
-    #def test_user_id_invalide(self):
-        #with self.assertRaises(ValueError):
-            #User("abc123", "Durand", "Paul", "paul@gmail.com", "0612345678", "C", "motdepasse")
-
+class Testfonctions(unittest.TestCase):
+    def test_load_vehicule_POO(self):
+        vehicules = f.load_vehicules(VEHICULES_FILE)
+        self.assertIsInstance(vehicules, list)
+        for vehicule in vehicules:
+            self.assertIsInstance(vehicule, Vehicule)
+    
+    def test_load_users_POO(self):
+        users = f.load_users_POO(USER_FILE)
+        self.assertIsInstance(users, list)
+        for user in users:
+            self.assertIsInstance(user, User)
+        for user in users:
+            if user.role == 'V':
+                self.assertIsInstance(user, Vendeur)
+            elif user.role == 'C':
+                self.assertIsInstance(user, Client)
 
 class TestReservationDSL(unittest.TestCase):
     def test_parsing_valide(self):

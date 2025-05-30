@@ -2,8 +2,6 @@ import re
 import os
 import csv
 
-from fonctions import *
-
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
@@ -421,46 +419,6 @@ class User:
         self.role = role
         self.mot_de_passe = mot_de_passe
         self.app = app
-    def to_dict(self):
-        """
-        Convertit l'objet User en dictionnaire pour une utilisation dans la base de données.
-
-        Retour :
-            d: Représentation de l'objet sous forme de dictionnaire.
-        """
-        d = self.__dict__.copy()
-        d.pop('app', None)  
-        return d
-
-    def __str__(self):
-        """
-        Retourne une chaîne de caractères représentant l'utilisateur'.
-
-        Retour :
-            str : Prénom, Nom et rôle de l'utilisateur.
-        """
-        return f"{self.prenom} {self.nom} - {self.role}"
-
-class Client(User):
-    """
-    Auteur : Paul Renaud
-
-    Représente un client de l'application de gestion de location de véhicules.
-
-    Attributs :
-        id_user (int)     : Identifiant unique de l'utilisateur.
-        nom (str)           : Nom de l'utilisateur.
-        prenom (str)        : Prénom de l'utilisateur.
-        email (str)         : Adresse e-mail.
-        telephone (str)     : Numéro de téléphone.
-        mot_de_passe (str)  : Mot de passe (stocké en clair dans le CSV).
-        role (str)          : Rôle de l'utilisateur ('C' pour client, 'V' pour vendeur).
-    """
-    import fonctions
-    import facture
-    def __init__(self, id_user, nom, prenom, email, telephone, role, mot_de_passe, app):
-        super().__init__(id_user, nom, prenom, email, telephone, "C", mot_de_passe, app)
-        # Validation des attributs sur l'initialisation
         try:
             if not re.match(r"^\d{9}$", id_user) or not isinstance(id_user, str):
                 raise ValueError("L'ID de l'utilisateur doit être au format '123456789' et en str.")
@@ -497,6 +455,50 @@ class Client(User):
         except ValueError as e:
             print(f"Erreur lors de l'initialisation du client : {e}")
             raise
+    def to_dict(self):
+        """
+        Convertit l'objet User en dictionnaire pour une utilisation dans la base de données.
+
+        Retour :
+            d: Représentation de l'objet sous forme de dictionnaire.
+        """
+        d = self.__dict__.copy()
+        d.pop('app', None)  
+        return d
+
+    def __str__(self):
+        """
+        Retourne une chaîne de caractères représentant l'utilisateur'.
+
+        Retour :
+            str : Prénom, Nom et rôle de l'utilisateur.
+        """
+        return f"{self.prenom} {self.nom} - {self.role}"
+
+class Client(User):
+    """
+    Auteur : Paul Renaud
+
+    Représente un client de l'application de gestion de location de véhicules.
+
+    Attributs :
+        id_user (int)     : Identifiant unique de l'utilisateur.
+        nom (str)           : Nom de l'utilisateur.
+        prenom (str)        : Prénom de l'utilisateur.
+        email (str)         : Adresse e-mail.
+        telephone (str)     : Numéro de téléphone.
+        mot_de_passe (str)  : Mot de passe (stocké en clair dans le CSV).
+        role (str)          : Rôle de l'utilisateur ('C' pour client, 'V' pour vendeur).
+    """
+    def __init__(self, id_user, nom, prenom, email, telephone, role, mot_de_passe, app):
+        super().__init__(id_user, nom, prenom, email, telephone, "C", mot_de_passe, app)
+         # Vérification que le rôle est 'C' pour client
+        try:
+            if role != "C":
+                raise ValueError("Le rôle doit être 'C' pour client.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation du vendeur : {e}")
+            raise 
     def menu(self):
         while True:
             print("\nMenu Client :")
@@ -549,50 +551,16 @@ class Vendeur(User):
         mot_de_passe (str)  : Mot de passe (stocké en clair dans le CSV).
         role (str)          : Rôle de l'utilisateur ('C' pour client, 'V' pour vendeur).
     """
-
-    import fonctions
-    import facture
     def __init__(self, id_user, nom, prenom, email, telephone, role, mot_de_passe, app):
-        
         super().__init__(id_user, nom, prenom, email, telephone, "V", mot_de_passe, app)
-        # Validation des attributs sur l'initialisation
+        # Vérification que le rôle est 'V' pour vendeur
         try:
-            if not re.match(r"^\d{9}$", id_user) or not isinstance(id_user, str):
-                raise ValueError("L'ID de l'utilisateur doit être au format '123456789' et en str.")
+            if role != "V":
+                raise ValueError("Le rôle doit être 'V' pour vendeur.")
         except ValueError as e:
             print(f"Erreur lors de l'initialisation du vendeur : {e}")
-            raise
-        try:
-            if not isinstance(nom, str):
-                raise ValueError("Le nom doit être une chaîne de caractères.")
-        except ValueError as e:
-            print(f"Erreur lors de l'initialisation du vendeur : {e}")
-            raise
-        try:
-            if not isinstance(prenom, str):
-                raise ValueError("Le prénom doit être une chaîne de caractères.")
-        except ValueError as e:
-            print(f"Erreur lors de l'initialisation du vendeur : {e}")
-            raise
-        try:
-            if not isinstance(email, str):
-                raise ValueError("L'email doit être une chaîne de caractères.")
-        except ValueError as e:
-            print(f"Erreur lors de l'initialisation du vendeur : {e}")
-            raise
-        try:
-            if not re.match(r"^\d{10}$", telephone) or not isinstance(telephone, str):
-                raise ValueError("Le téléphone doit être au format '0123456789' et en str.")
-        except ValueError as e:
-            print(f"Erreur lors de l'initialisation du vendeur : {e}")
-            raise
-        try:
-            if not isinstance(mot_de_passe, str):
-                raise ValueError("Le mot de passe doit être une chaîne de caractères.")
-        except ValueError as e:
-            print(f"Erreur lors de l'initialisation du vendeur : {e}")
-            raise
- 
+            raise 
+
     def menu(self):
         while True:
             print("\nMenu Vendeur :")
