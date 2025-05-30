@@ -16,7 +16,7 @@ GG-222-GG,fiat,500,32.0,1000.0,150.0,70.0,0.2,4,essence,1.38,citadine,manuelle,2
 HH-333-HH,cessna,skyhawk,1200.0,800.0,230.0,160.0,1.0,4,essence,2.60,avion,manuelle,8000.0,True,petit avion pour vols de tourisme et formation.
 II-444-II,bayliner,vr5,300.0,2700.0,80.0,220.0,2.5,7,essence,3.10,bateau,manuelle,1500.0,True,bateau de plaisance ideal pour les sports nautiques.
 JJ-555-JJ,jeep,cherokee,95.0,1900.0,180.0,200.0,0.8,5,diesel,1.75,SUV,automatique,700.0,True,suv robuste ideal pour les routes difficiles.
-KK-666-KK,dassault,rafale,60000.0,10000.0,2222.0,5800.0,2.0,1,kerosene,5.10,special,automatique,150000.0,True,chasseur multirôle de génération 4.5.
+KK-666-KK,dassault,rafale,60000.0,10000.0,2222.0,5800.0,2.0,1,kerosene,5.10,avion,automatique,150000.0,True,chasseur multirôle de génération 4.5.
 LL-777-LL,iveco,eurcargo,200.0,7000.0,130.0,250.0,8.0,3,diesel,3.20,camion,manuelle,1000.0,True,petit camion pour transport regional.
 MM-888-MM,mercedes,sprinter,130.0,3500.0,160.0,190.0,4.5,3,essence,2.50,utilitaire,automatique,800.0,True,utilitaire haut de gamme spacieux et rapide.
 NN-999-NN,naval group,barracuda,200000.0,50000.0,50.0,10000.0,20.0,12,nucleaire,10.0,militaire,automatique,2000000.0,True,sous-marin nucleaire d'attaque.
@@ -51,18 +51,18 @@ BT-001-GT,batmobile,tumbler,1500.0,3200.0,350.0,800.0,1.0,2,hybride,1.4,special,
 US-000-US,general dynamics,m1a1 abrams,15000.0,62000.0,67.0,1500.0,6.0,4,diesel,2.44,berline,manuelle,200000.0,True,char de combat americain de 62 tonnes equipe dune turbine a gaz agt1500 blindage composite capacite tout terrain
 SD-000-SD,mystery machine,van,85.0,2500.0,140.0,90.0,6.0,5,essence,2.1,utilitaire,manuelle,500.0,True,van mythique de la bande à scooby-doo ambiance garantie pour vos enquêtes !
 RU-000-RU,uralvagonzavod,T-72-M,5000.0,41000.0,60.0,780.0,1.0,3,diesel,2.19,militaire,manuelle,100000.0,True,char de combat principal sovietique arme d un puissant canon de 125 mm
-FR-001-FR,renault,ft17,350.0,7400.0,7.0,40.0,12.0,2,diesel,2.14,militaire,manuelle,2500.0,true,char leger francais de la premiere guerre mondiale
-US-101-US,general motors,m1 abrams,1200.0,62000.0,67.0,1500.0,15.0,4,nucleaire,2.44,militaire,automatique,15000.0,true,char principal de combat americain moderne
-IT-789-IT,cantieri navali di carrara,freccia,800.0,28000.0,90.0,700.0,8.0,8,diesel,2.35,militaire,automatique,9000.0,true,vehicule blinde de transport italien
-FR-045-FR,nexter,vab,650.0,14000.0,90.0,260.0,6.0,10,diesel,2.49,militaire,manuelle,8000.0,true,vehicule blinde de transport francais
-FR-112-FR,renault,vbr,550.0,10000.0,80.0,220.0,5.0,6,diesel,2.20,militaire,manuelle,7000.0,true,vehicule blinde utilise pour reconnaissance et soutien
-US-202-US,fording motor company,hmmwv,400.0,5400.0,113.0,190.0,3.5,4,diesel,1.85,militaire,automatique,4000.0,true,vehicule utilitaire leger tout terrain americain
-IT-321-IT,iveco,lfv,700.0,12000.0,100.0,285.0,7.5,8,diesel,2.10,militaire,manuelle,7500.0,true,vehicule blinde de transport italien
-R-333-FR,nexter,leclerc,1100.0,57000.0,72.0,1500.0,14.0,4,diesel,2.50,militaire,automatique,14000.0,true,char principal de combat francais moderne
-US-404-US,boeing,avenger,900.0,16000.0,370.0,1100.0,0.0,1,kerosene,3.20,avion,automatique,12000.0,true,avion dattaque americain a voilure tournante
-FR-404-FR,renault,vehicule blindé de combat infanterie,650.0,28000.0,70.0,720.0,8.0,3,diesel,2.30,militaire,automatique,8500.0,true,vehicule blindé transporte troupes et arme
-US-505-US,gmc,c3500,450.0,5800.0,120.0,190.0,5.5,5,diesel,1.90,militaire,manuelle,3500.0,true,camion militaire tout terrain americain
-IT-606-IT,puma,vbr,600.0,22000.0,90.0,350.0,7.0,6,diesel,2.15,militaire,automatique,8000.0,true,vehicule blindé utilise pour reconnaissance rapide
-US-808-US,lockheed martin,f35 lightning ii,1200.0,13000.0,1930.0,16000.0,1.0,1,kerosene,3.40,avion,automatique,30000.0,true,chasseur bombardier americain de 5e generation
-FR-909-FR,renault,gbc,480.0,13000.0,110.0,210.0,6.5,3,diesel,2.70,camion,manuelle,5500.0,true,camion militaire tout terrain utilise pour transport de troupes et materiel
-FR-808-FR,renault,gbcoptere,850.0,9000.0,140.0,300.0,4.0,5,diesel,3.20,militaire,automatique,12000.0,true,vehicule militaire hybride combine camion tout terrain et helicoptere pour transport et appui aerien
+FR-001-FR,renault,ft17,350.0,7400.0,7.0,40.0,12.0,2,diesel,2.14,militaire,manuelle,2500.0,True,char leger francais de la premiere guerre mondiale
+US-101-US,general motors,m1 abrams,1200.0,62000.0,67.0,1500.0,15.0,4,nucleaire,2.44,militaire,automatique,15000.0,True,char principal de combat americain moderne
+IT-789-IT,cantieri navali di carrara,freccia,800.0,28000.0,90.0,700.0,8.0,8,diesel,2.35,militaire,automatique,9000.0,True,vehicule blinde de transport italien
+FR-045-FR,nexter,vab,650.0,14000.0,90.0,260.0,6.0,10,diesel,2.49,militaire,manuelle,8000.0,True,vehicule blinde de transport francais
+FR-112-FR,renault,vbr,550.0,10000.0,80.0,220.0,5.0,6,diesel,2.20,militaire,manuelle,7000.0,True,vehicule blinde utilise pour reconnaissance et soutien
+US-202-US,fording motor company,hmmwv,400.0,5400.0,113.0,190.0,3.5,4,diesel,1.85,militaire,automatique,4000.0,True,vehicule utilitaire leger tout terrain americain
+IT-321-IT,iveco,lfv,700.0,12000.0,100.0,285.0,7.5,8,diesel,2.10,militaire,manuelle,7500.0,True,vehicule blinde de transport italien
+FR-333-FR,nexter,leclerc,1100.0,57000.0,72.0,1500.0,14.0,4,diesel,2.50,militaire,automatique,14000.0,True,char principal de combat francais moderne
+US-404-US,boeing,avenger,900.0,16000.0,370.0,1100.0,0.0,1,kerosene,3.20,avion,automatique,12000.0,True,avion dattaque americain a voilure tournante
+FR-404-FR,renault,vehicule blindé de combat infanterie,650.0,28000.0,70.0,720.0,8.0,3,diesel,2.30,militaire,automatique,8500.0,True,vehicule blindé transporte troupes et arme
+US-505-US,gmc,c3500,450.0,5800.0,120.0,190.0,5.5,5,diesel,1.90,militaire,manuelle,3500.0,True,camion militaire tout terrain americain
+IT-606-IT,puma,vbr,600.0,22000.0,90.0,350.0,7.0,6,diesel,2.15,militaire,automatique,8000.0,True,vehicule blindé utilise pour reconnaissance rapide
+US-808-US,lockheed martin,f35 lightning ii,1200.0,13000.0,1930.0,16000.0,1.0,1,kerosene,3.40,avion,automatique,30000.0,True,chasseur bombardier americain de 5e generation
+FR-909-FR,renault,gbc,480.0,13000.0,110.0,210.0,6.5,3,diesel,2.70,militaire,manuelle,5500.0,True,camion militaire tout terrain utilise pour transport de troupes et materiel
+FR-808-FR,renault,gbcoptere,850.0,9000.0,140.0,300.0,4.0,5,diesel,3.20,militaire,automatique,12000.0,True,vehicule militaire hybride combine camion tout terrain et helicoptere pour transport et appui aerien

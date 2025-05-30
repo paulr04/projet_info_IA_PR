@@ -4,6 +4,11 @@ import csv
 
 from fonctions import *
 
+USER_FILE = 'data/users.csv'
+VEHICULES_FILE = 'data/vehicules.csv'
+RESERVATIONS_FILE = 'data/reservations.csv'
+CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'type_moteur', 'type_vehicule', 'boite_vitesse']
+NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special"]
 TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
 TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire']
 BOITES_VITESSE = ["manuelle", "automatique"]

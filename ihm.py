@@ -6,10 +6,10 @@ import random
 import string 
 
 from PyQt5.QtWidgets import (
-    QComboBox, QFormLayout, QHBoxLayout, QApplication, QTableWidgetItem, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QScrollArea, QTextEdit, QTableWidget, QMessageBox, QDialog, QLineEdit, QInputDialog
+    QDateEdit,QComboBox, QFormLayout, QHBoxLayout, QApplication, QTableWidgetItem, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton, QScrollArea, QTextEdit, QTableWidget, QMessageBox, QDialog, QLineEdit, QInputDialog
 )
 from PyQt5.QtGui import QPixmap, QFont, QRegExpValidator
-from PyQt5.QtCore import Qt, QRegExp
+from PyQt5.QtCore import Qt, QRegExp, QDate
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 import csv
@@ -110,7 +110,6 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(btn_quitter)
 
     def se_connecter(self):
-        self.clear_layout()
         dialog = QDialog(self)
         dialog.setWindowTitle("Connexion")
         dialog.setFixedSize(300, 200)
@@ -405,12 +404,356 @@ class MainWindow(QMainWindow):
         scroll.setWidgetResizable(True)
         self.setCentralWidget(scroll)
     
-    def surclassement(self): pass
-    def criteres(self): pass
-    def recherche(self): pass
-    def recherche_de_vehicule_pour_reservation(self):pass
-    def reserver_vehicule(self):pass
+    def surclassement(self, Vehicule, vehicules_disponibles, date_debut, date_fin, id_user, jours, prix, type_vehicule, surclassement_choix):
+        if Vehicule.type_vehicule in NO_SURCLASSEMENT_TYPES:
+            QMessageBox.warning(self, "Fin", "Impossible de surclasser le type de véhicule sélectionné.")
+            self.criteres_resa = None
+            return
+        if not self.criteres_resa:
+            QMessageBox.information(self, "Info", "Le type de véhicule n'est pas pris en compte dans la recherche suivante.")
+            self.criteres_resa = self.demander_criteres_recherche()
+
+        if not surclassement_choix:
+            QMessageBox.warning(self, "Fin", "Surclassement annulé.")
+            self.criteres_resa = None
+            return
+
+        self.criteres_resa = [c for c in self.criteres_resa if c[0] != 'prix_jour' and c[0] != 'type_vehicule']
+        self.criteres_resa.append(("type_vehicule", "=", type_vehicule))
+
+        for v in vehicules_disponibles:
+            if v.prix_jour >= Vehicule.prix_jour:
+                v.prix_jour = Vehicule.prix_jour
+
+        resultats = f.recherche(vehicules_disponibles, self.criteres_resa)
+
+        if resultats:
+            plaques = [f"{v.id_vehicule} - {v.marque} {v.modele}" for v in resultats]
+            choix, ok = QInputDialog.getItem(self, "Surclassement", "Choisissez un véhicule :", plaques, 0, False)
+            if ok:
+                id_choisi = choix.split(" - ")[0]
+                obj = f.info_vehicule(id_choisi)
+                id_resa = f.generer_id_unique(RESERVATIONS_FILE, 'id_resa')
+                surcl = obj.prix_jour >= Vehicule.prix_jour
+                obj.prix_jour = Vehicule.prix_jour  # Assurer que le prix est celui du véhicule non disponible (le client est roi)
+                prix = obj.prix_jour * jours
+                string = f"RESERVATION {id_resa} CLIENT {id_user} VEHICULE {obj.id_vehicule} DU {date_debut} AU {date_fin} JOURS {jours} PRIX {prix} SURCLASSEMENT {surcl}"
+                resa = Reservation_DSL.from_dsl(string)
+                Reservation_DSL.enregistrer(resa, RESERVATIONS_FILE)
+                fact(resa, f.info_user(id_user), obj)
+                QMessageBox.information(self, "Réservation réussie", f"Réservation {id_resa} enregistrée.")
+                self.criteres_resa = None
+            else:
+                QMessageBox.information(self, "Annulé", "Surclassement annulé.")
+                self.criteres_resa = None
+        else:
+            retry = QMessageBox.question(self, "Aucun résultat", "Voulez-vous un autre type de véhicule ?", QMessageBox.Yes | QMessageBox.No)
+            if retry == QMessageBox.Yes:
+                type_vehicule_failed, ok = QInputDialog.getItem(self, "Type", "Nouveau type de véhicule :", TYPES_VEHICULE, 0, False)
+                if ok:
+                    self.surclassement(Vehicule, vehicules_disponibles, date_debut, date_fin, id_user, jours, prix, type_vehicule_failed, True)
+            else:
+                QMessageBox.information(self, "Annulé", "Réservation annulée.")
+                self.criteres_resa = None
+
+
+    def recherche_de_vehicule_pour_reservation(self):
+        # Chargement des véhicules
+        vehicules_search = f.load_vehicules(VEHICULES_FILE)
+
+        # Création de la boîte de dialogue
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Recherche de véhicule")
+        layout = QVBoxLayout()
+        dialog.resize(800, 600)
+        champs_recherche = [
+            "marque", "modele", "prix_jour", "masse", "vitesse_max", "puissance",
+            "volume_utile", "nb_places", "type_moteur", "hauteur", "boite_vitesse"
+        ]
+
+        OPERATEURS = ["=", "<", ">", "<=", ">="]
+
+        form = QFormLayout()
+
+        # Champ obligatoire : type_vehicule
+        box_type_vehicule = QComboBox()
+        box_type_vehicule.addItems(TYPES_VEHICULE)
+        form.addRow("Type de véhicule (obligatoire)", box_type_vehicule)
+
+        # Critères supplémentaires dynamiques
+        criteres_widgets = []
+
+        def add_critere():
+            champ_cb = QComboBox()
+            champ_cb.addItems(champs_recherche)
+            op_cb = QComboBox()
+            op_cb.addItems(OPERATEURS)
+            val_le = QLineEdit()
+            hl = QHBoxLayout()
+            hl.addWidget(champ_cb)
+            hl.addWidget(op_cb)
+            hl.addWidget(val_le)
+            layout.addLayout(hl)
+            criteres_widgets.append((champ_cb, op_cb, val_le))
+
+        btn_add_crit = QPushButton("Ajouter un critère")
+        btn_add_crit.clicked.connect(add_critere)
+
+        # Zone résultat
+        zone_resultats = QTextEdit()
+        zone_resultats.setReadOnly(True)
+
+        # Bouton recherche
+        btn_search = QPushButton("Lancer la recherche")
+
+        # Réserver ?
+        btn_reserver = QPushButton("Réserver un véhicule")
+        btn_reserver.setEnabled(False)
+
+        # Fermeture
+        btn_close = QPushButton("Fermer")
+
+        layout.addLayout(form)
+        layout.addWidget(btn_add_crit)
+        layout.addWidget(btn_search)
+        layout.addWidget(zone_resultats)
+        layout.addWidget(btn_reserver)
+        layout.addWidget(btn_close)
+        dialog.setLayout(layout)
+
+        def lancer_recherche():
+            zone_resultats.clear()
+            crit = []
+            type_vehicule = box_type_vehicule.currentText().strip()
+            crit.append(("type_vehicule", "=", type_vehicule))
+            print("pas self", crit)
+            for champ_cb, op_cb, val_le in criteres_widgets:
+                champ = champ_cb.currentText()
+                op = op_cb.currentText()
+                val = val_le.text().strip().lower()
+
+                if not val:
+                    continue
+                # Protection : éviter opérateurs invalides sur texte
+                if op in [">", "<", ">=", "<="] and champ in ["marque", "modele", "type_moteur", "type_vehicule", "boite_vitesse"]:
+                    QMessageBox.warning(dialog, "Erreur", f"Opérateur '{op}' invalide pour le champ texte '{champ}'.")
+                    return
+                crit.append((champ, op, val))
+
+            resultats = f.recherche(vehicules_search, crit)
+            self.criteres_resa = crit
+            print("crit self", self.criteres_resa)
+            if resultats:
+                btn_reserver.setEnabled(True)
+                texte = f"{len(resultats)} véhicule(s) trouvé(s) :\n\n"
+                for v in resultats:
+                    infos = [
+                        f"ID : {v.id_vehicule}\n",
+                        f"Prix/jour : {v.prix_jour} €\n",
+                        f"Type : {v.type_vehicule}\n",
+                        f"Marque : {v.marque}\n",
+                        f"Modèle : {v.modele}\n",
+                        f"{v.description}\n"   
+                    ]
+                    for champ, _, _ in crit:
+                        if champ not in ['prix_jour', 'marque', 'modele', 'description', 'type_vehicule']:
+                            infos.append(f"{champ}: {getattr(v, champ)}")
+                    texte += "- ".join(infos) + "\n\n"
+                zone_resultats.setText(texte)
+            else:
+                zone_resultats.setText("Aucun véhicule trouvé avec les critères spécifiés.")
+
+        def reserver():
+            reply = QMessageBox.question(dialog, "Réservation", "Souhaitez-vous réserver un véhicule ?", QMessageBox.Yes | QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                dialog.close()
+                self.reserver_vehicule()
+
+        btn_search.clicked.connect(lancer_recherche)
+        btn_reserver.clicked.connect(reserver)
+        btn_close.clicked.connect(dialog.close)
+
+        dialog.exec_()
     
+    def demander_criteres_recherche(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Critères de recherche")
+        dialog.resize(600, 400)
+        layout = QVBoxLayout()
+
+        champs_recherche = [
+            "marque", "modele", "prix_jour", "masse", "vitesse_max", "puissance",
+            "volume_utile", "nb_places", "type_moteur", "hauteur", "boite_vitesse"
+        ]
+        OPERATEURS = ["=", "<", ">", "<=", ">="]
+
+        form = QFormLayout()
+        box_type_vehicule = QComboBox()
+        box_type_vehicule.addItems(TYPES_VEHICULE)
+        form.addRow("Type de véhicule (obligatoire)", box_type_vehicule)
+
+        criteres_widgets = []
+
+        def add_critere():
+            champ_cb = QComboBox()
+            champ_cb.addItems(champs_recherche)
+            op_cb = QComboBox()
+            op_cb.addItems(OPERATEURS)
+            val_le = QLineEdit()
+            hl = QHBoxLayout()
+            hl.addWidget(champ_cb)
+            hl.addWidget(op_cb)
+            hl.addWidget(val_le)
+            layout.addLayout(hl)
+            criteres_widgets.append((champ_cb, op_cb, val_le))
+
+        btn_add = QPushButton("Ajouter un critère")
+        btn_add.clicked.connect(add_critere)
+
+        btn_ok = QPushButton("Valider")
+        btn_cancel = QPushButton("Annuler")
+
+        btns = QHBoxLayout()
+        btns.addWidget(btn_ok)
+        btns.addWidget(btn_cancel)
+
+        layout.addLayout(form)
+        layout.addWidget(btn_add)
+        layout.addLayout(btns)
+
+        dialog.setLayout(layout)
+
+        result = []
+
+        def valider():
+            nonlocal result
+            result = [("type_vehicule", "=", box_type_vehicule.currentText().strip())]
+            for champ_cb, op_cb, val_le in criteres_widgets:
+                champ = champ_cb.currentText()
+                op = op_cb.currentText()
+                val = val_le.text().strip().lower()
+                if not val:
+                    continue
+                if op in [">", "<", ">=", "<="] and champ in ["marque", "modele", "type_moteur", "type_vehicule", "boite_vitesse"]:
+                    QMessageBox.warning(dialog, "Erreur", f"Opérateur '{op}' invalide pour le champ '{champ}'.")
+                    result = None
+                    return
+                result.append((champ, op, val))
+            dialog.accept()
+
+        btn_ok.clicked.connect(valider)
+        btn_cancel.clicked.connect(dialog.reject)
+
+        dialog.exec_()
+        return result
+
+    def reserver_vehicule(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Formulaire de réservation")
+        form_layout = QFormLayout()
+        id_user = self.utilisateur_connecte.id_user
+        user_combo = None
+        if self.utilisateur_connecte.__class__.__name__ == "Vendeur":
+            users = f.load_users_POO(USER_FILE)
+            user_combo = QComboBox()
+            for user in users:
+                user_combo.addItem(f"{user.nom} {user.prenom} ({user.id_user})", user.id_user)
+            form_layout.addRow("Client :", user_combo)
+
+        # Champs habituels
+        plaque_input = QLineEdit()
+        date_debut_input = QDateEdit()
+        date_debut_input.setCalendarPopup(True)
+        date_debut_input.setDate(QDate.currentDate())
+
+        date_fin_input = QDateEdit()
+        date_fin_input.setCalendarPopup(True)
+        date_fin_input.setDate(QDate.currentDate().addDays(1))
+
+        form_layout.addRow("Plaque du véhicule (AA-123-AA) :", plaque_input)
+        form_layout.addRow("Date de début :", date_debut_input)
+        form_layout.addRow("Date de fin :", date_fin_input)
+
+        bouton_confirmer = QPushButton("Réserver")
+        bouton_confirmer.clicked.connect(dialog.accept)
+
+        layout = QVBoxLayout()
+        layout.addLayout(form_layout)
+        layout.addWidget(bouton_confirmer)
+        dialog.setLayout(layout)
+
+        if dialog.exec_() == QDialog.Accepted:
+            # Récupération de l'ID client selon le rôle
+            if user_combo:
+                id_user = user_combo.currentData()
+            else:
+                id_user = self.utilisateur_connecte.id_user
+
+            id_vehicule = plaque_input.text().strip().upper()
+
+            if not re.match(r"^[A-Z]{2}-\d{3}-[A-Z]{2}$", id_vehicule):
+                QMessageBox.warning(self, "Erreur", "Format de plaque invalide. Format attendu : AA-123-AA.")
+                return
+
+            date_debut_qdate = date_debut_input.date()
+            date_fin_qdate = date_fin_input.date()
+            auj = QDate.currentDate()
+
+            if date_debut_qdate < auj:
+                QMessageBox.warning(self, "Erreur", "La date de début ne peut pas être dans le passé.")
+                return
+            if date_fin_qdate < date_debut_qdate:
+                QMessageBox.warning(self, "Erreur", "La date de fin ne peut pas être antérieure à la date de début.")
+                return
+
+            date_debut = date_debut_qdate.toString("MM-dd-yyyy")
+            date_fin = date_fin_qdate.toString("MM-dd-yyyy")
+
+            # Recherche du véhicule
+            vehicule = self.rechercher_vehicule_par_id(id_vehicule)
+            if not vehicule:
+                QMessageBox.warning(self, "Erreur", "Véhicule introuvable ou indisponible.")
+                return
+
+            try:
+                f.verifier_dates(date_debut, date_fin)
+                jours_res = f.calculer_jours_reservation(date_debut, date_fin)
+            except Exception as e:
+                QMessageBox.warning(self, "Erreur", str(e))
+                return
+
+            indispo = f.verifier_reservation(date_debut, date_fin, id_vehicule)
+
+            if indispo:
+                reply = QMessageBox.question(self, "Véhicule Indisponible", "Souhaitez-vous surclasser ?", QMessageBox.Yes | QMessageBox.No)
+                if reply == QMessageBox.Yes:
+                    type_v = vehicule.type_vehicule
+                    vehicules_dispos = self.trouver_vehicule_disponible(date_debut, date_fin)
+                    self.criteres_resa = None
+                    self.surclassement(
+                        vehicule, vehicules_dispos, date_debut, date_fin,
+                        id_user, jours_res, vehicule.prix_jour * jours_res,
+                        type_v, True
+                    )
+            else:
+                id_resa = f.generer_id_unique(RESERVATIONS_FILE, 'id_resa')
+                string = f"RESERVATION {id_resa} CLIENT {id_user} VEHICULE {id_vehicule} DU {date_debut} AU {date_fin} JOURS {jours_res} PRIX {vehicule.prix_jour * jours_res:.2f} SURCLASSEMENT False"
+                reservation = Reservation_DSL.from_dsl(string)
+                Reservation_DSL.enregistrer(reservation, RESERVATIONS_FILE)
+                fact(reservation, f.info_user(id_user), vehicule)
+                QMessageBox.information(self, "Succès", f"Réservation confirmée pour {vehicule.marque} {vehicule.modele}.")
+
+
+    def trouver_vehicule_disponible(self, date_debut, date_fin):
+        vehicules_disponibles = []
+        with open(VEHICULES_FILE, mode='r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                if row['dispo'] == 'True' and not f.verifier_reservation(date_debut, date_fin, row['id_vehicule']):
+                    vehicule = f.load_vehicule_POO(row)
+                    vehicules_disponibles.append(vehicule)
+        return vehicules_disponibles
+        
     def annuler_reservation(self):
         user = self.utilisateur_connecte
 
