@@ -649,12 +649,12 @@ def load_vehicules(fichier_csv):
             vehicules.append(load_vehicule_POO(ligne))
     return vehicules
 
-def criteres(fichier_csv):
+def criteres():
     """
     Demande à l'utilisateur de spécifier des critères de recherche pour les véhicules.
     
     input:
-        fichier_csv : str : Chemin vers le fichier CSV contenant les données des véhicules. 
+        None
     output:
         list : Liste de tuples contenant les critères de recherche (champ, opérateur, valeur).
     """

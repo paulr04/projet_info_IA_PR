@@ -213,7 +213,7 @@ class Application:
             pass
         else:
             print("le type de véhicule n'est pas pris en compte dans la recherche suivante :\n")
-            self.criteres_resa = criteres(VEHICULES_FILE)
+            self.criteres_resa = criteres()
 
         if surclassement_choix and self.criteres_resa:
             if Vehicule.type_vehicule not in NO_SURCLASSEMENT_TYPES:
@@ -455,7 +455,7 @@ class Application:
     def recherche_de_véhicule_pour_reservation(self):
         vehicules_search = load_vehicules(VEHICULES_FILE)
         print("\nRecherche de véhicule :\n")
-        crit = criteres(VEHICULES_FILE)
+        crit = criteres()
         resultats = recherche(vehicules_search, crit)
         self.criteres_resa = crit
         if resultats:
