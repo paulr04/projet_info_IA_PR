@@ -5,9 +5,10 @@ import csv
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
+
 CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'type_moteur', 'type_vehicule', 'boite_vitesse']
 NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special"]
-TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
+TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up", "vélo", "moto", "quad", "trottinette", "camionette", "bus", "minibus", "cabriolet", "roadster", "coupé", "break", "limousine", "formule 1", "rally", "helicoptere", "chantier"]
 TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire']
 BOITES_VITESSE = ["manuelle", "automatique"]
 
@@ -703,6 +704,15 @@ class Admin(User):
     def reduction_coef(self):
         return 0  # Coefficient de réduction pour les administrateurs
 
+    def menu(self):
+        """
+        Affiche le menu de l'administrateur et gère les actions.
+        
+        Le rôle d'administrateur n'existait pas initialement dans l'application console, 
+        mais il est ajouté pour la gestion des utilisateurs (vendeurs) et des véhicules.
+        le menu est donc vide car l'application texte est obsolète et elle n'est plus utilisée.
+        """
+        pass
 class Reservation_DSL:
     """
     Auteur : Paul Renaud

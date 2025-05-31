@@ -41,7 +41,7 @@
         - plot_reservations_par_vehicule : génère un histogramme du nombre de réservations par véhicule.
         - plot_reservations_histogramme : Affiche un histogramme comparant les réservations classiques et les surclassements pour chaque véhicule à partir d'un fichier CSV.
         - plot_rentabilite_depuis_csv : Génère un graphique comparant les revenus et les coûts d'entretien annuels des véhicules, calculés à partir de deux fichiers CSV, et affiche un indice de rentabilité pour chaque véhicule.
-
+        - load_users_POO : charge les utilisateurs à partir d'un fichier CSV et convertit les champs en types appropriés.
     '''
 
 from datetime import *
@@ -55,13 +55,14 @@ import pandas as pd
 import numpy as np
 from collections import defaultdict
 from collections import Counter
-from collections import Counter
 
 
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
-TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
+CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'type_moteur', 'type_vehicule', 'boite_vitesse']
+NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special"]
+TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up", "vélo", "moto", "quad", "trottinette", "camionette", "bus", "minibus", "cabriolet", "roadster", "coupé", "break", "limousine", "formule 1", "rally", "helicoptere", "chantier"]
 TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire']
 BOITES_VITESSE = ["manuelle", "automatique"]
 
@@ -330,9 +331,12 @@ def demander_id(message,FILE,id_name):
 def supprimer_ligne_par_id(fichier_csv, key, id_recherche):
     """
     Supprime une ligne d'un fichier CSV en fonction d'un ID donné.
-    param fichier_csv: Chemin du fichier CSV
-    param key: Nom de la colonne contenant l'ID
-    param id_recherche: ID à rechercher
+    input:
+        fichier_csv : str : Chemin du fichier CSV à modifier
+        key : str : Nom de la colonne contenant l'ID
+        id_recherche : str : ID de la ligne à supprimer
+    output:
+        None
     """
     temp_file = "temp.csv"
     ligne_supprimee = False

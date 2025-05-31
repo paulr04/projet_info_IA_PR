@@ -23,10 +23,9 @@ RESERVATIONS_FILE = 'data/reservations.csv'
 
 CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'type_moteur', 'type_vehicule', 'boite_vitesse']
 NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special"]
-TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
+TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up", "vélo", "moto", "quad", "trottinette", "camionette", "bus", "minibus", "cabriolet", "roadster", "coupé", "break", "limousine", "formule 1", "rally", "helicoptere", "chantier"]
 TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire']
 BOITES_VITESSE = ["manuelle", "automatique"]
-
 
 class FenetreGraphiqueVentes(QDialog):
     """Fenêtre pour afficher les graphiques d'analyse des ventes."""
@@ -52,7 +51,10 @@ class FenetreGraphiqueVentes(QDialog):
 
 
 class AppIHM(QMainWindow):
-    """Fenêtre principale de l'application CarGo.
+    """
+    Auteurs : Paul RENAUD et Ilyann ARAGON
+
+    Application CarGo.
     
     Gère les menus, la connexion des utilisateurs et l'affichage des différentes fonctionnalités.
 
@@ -92,6 +94,7 @@ class AppIHM(QMainWindow):
     
     """
     def __init__(self):
+        """Initialise l'application CarGo."""
         super().__init__()
         self.setWindowTitle("Location de Véhicules - CarGo")
         self.setGeometry(100, 100, 600, 700)

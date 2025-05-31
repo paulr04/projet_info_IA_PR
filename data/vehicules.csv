@@ -66,3 +66,9 @@ IT-606-IT,puma,vbr,600.0,22000.0,90.0,350.0,7.0,6,diesel,2.15,militaire,automati
 US-808-US,lockheed martin,f35 lightning ii,1200.0,13000.0,1930.0,16000.0,1.0,1,kerosene,3.40,avion,automatique,30000.0,True,chasseur bombardier americain de 5e generation
 FR-909-FR,renault,gbc,480.0,13000.0,110.0,210.0,6.5,3,diesel,2.70,militaire,manuelle,5500.0,True,camion militaire tout terrain utilise pour transport de troupes et materiel
 FR-808-FR,renault,gbcoptere,850.0,9000.0,140.0,300.0,4.0,5,diesel,3.20,militaire,automatique,12000.0,True,vehicule militaire hybride combine camion tout terrain et helicoptere pour transport et appui aerien
+QQ-123-QQ,nissan,leaf,48.0,1450.0,150.0,110.0,0.4,5,electrique,1.50,berline,automatique,350.0,True,citadine electrique sobre et fonctionnelle
+RR-234-RR,ford,ranger,90.0,2100.0,175.0,200.0,1.5,5,diesel,1.85,pick-up,manuelle,800.0,True,pick-up robuste adapte aux chantiers et loisirs
+SS-345-SS,ducati,monster,70.0,180.0,220.0,110.0,0.05,2,essence,1.10,moto,manuelle,250.0,True,moto sportive nerveuse et maniable
+TT-456-TT,renault,master,110.0,3500.0,130.0,160.0,6.0,3,essence,2.50,utilitaire,manuelle,1000.0,True,utilitaire spacieux pour demenagements ou livraisons
+UU-567-UU,volkswagen,passat,75.0,1600.0,210.0,180.0,0.5,5,diesel,1.45,berline,automatique,600.0,True,berline confortable pour longs trajets professionnels
+VV-678-VV,toyota,hilux,85.0,1900.0,165.0,145.0,1.2,5,diesel,1.75,pick-up,manuelle,750.0,True,vehicule tout terrain robuste utilise dans des conditions extremes
