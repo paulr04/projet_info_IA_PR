@@ -22,9 +22,9 @@ VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
 
 CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'type_moteur', 'type_vehicule', 'boite_vitesse']
-NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special"]
-TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up", "vélo", "moto", "quad", "trottinette", "camionette", "bus", "minibus", "cabriolet", "roadster", "coupé", "break", "limousine", "formule 1", "rally", "helicoptere", "chantier"]
-TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire']
+NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special",'autre', 'chantier', 'helicoptere', 'formule 1', 'rally']
+TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up", "vélo", "moto", "quad", "trottinette", "camionette", "bus", "minibus", "cabriolet", "roadster", "coupé", "break", "limousine", "formule 1", "rally", "helicoptere", "chantier",'autre']
+TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire', 'gaz', 'propergol', 'autre']
 BOITES_VITESSE = ["manuelle", "automatique"]
 
 class FenetreGraphiqueVentes(QDialog):
@@ -185,7 +185,15 @@ class AppIHM(QMainWindow):
         dialog.exec_()
 
     def verifier_identifiants(self, user_id, mot_de_passe):
-        """Vérifie les identifiants de l'utilisateur dans le fichier CSV."""
+        """
+        Vérifie les identifiants de l'utilisateur dans le fichier CSV.
+        
+        Input:
+            user_id: ID de l'utilisateur (9 chiffres).
+            mot_de_passe: Mot de passe de l'utilisateur.
+        Output:
+            Utilisateur connecté (Client, Vendeur ou Admin) si les identifiants sont valides, sinon None.
+        """
         try:
             with open(USER_FILE, mode='r', newline='', encoding='utf-8') as file:
                 reader = csv.DictReader(file)
@@ -210,7 +218,15 @@ class AppIHM(QMainWindow):
             return None
 
     def verifier_connexion(self, id_user, mdp, dialog):
-        """Vérifie les identifiants et connecte l'utilisateur."""
+        """
+        Vérifie les identifiants et connecte l'utilisateur.
+        
+        Input:
+            id_user: ID de l'utilisateur (9 chiffres).
+            mdp: Mot de passe de l'utilisateur.
+        Output:
+            None: La méthode affiche un message de succès ou d'erreur selon le résultat de la vérification.
+        """
         if not id_user or not mdp:
             QMessageBox.warning(self, "Erreur", "Veuillez remplir tous les champs.")
             return
@@ -441,7 +457,13 @@ class AppIHM(QMainWindow):
             self.afficher_graphique_ventes(lambda :f.reservations_par_vehicule_par_an(annee))
 
     def afficher_resultat_texte(self, texte):
-        """Affiche un texte dans une boîte de dialogue."""
+        """
+        Affiche un texte dans une boîte de dialogue.
+        Input:
+            texte: Le texte à afficher dans la boîte de dialogue.
+        Output:
+            None: La méthode affiche une boîte de dialogue avec le texte.
+        """
         dialog = QDialog(self)
         dialog.setWindowTitle("Résultat")
 
@@ -518,7 +540,22 @@ class AppIHM(QMainWindow):
         self.setCentralWidget(scroll)
     
     def surclassement(self, Vehicule, vehicules_disponibles, date_debut, date_fin, id_user, jours, prix, type_vehicule, surclassement_choix):
-        """Gère le surclassement d'un véhicule."""
+        """
+        Gère le surclassement d'un véhicule.
+
+        Input:
+            Vehicule: Classe du véhicule à surclasser.
+            vehicules_disponibles: Liste des véhicules disponibles.
+            date_debut: Date de début de la réservation.
+            date_fin: Date de fin de la réservation.
+            id_user: ID de l'utilisateur qui effectue la réservation.
+            jours: Nombre de jours de la réservation.
+            prix: Prix du véhicule non disponible.
+            type_vehicule: Type de véhicule pour le surclassement.
+            surclassement_choix: Booléen indiquant si le surclassement est choisi.
+        Output:
+            None: La méthode modifie les réservations et affiche des messages.
+        """
         if Vehicule.type_vehicule in NO_SURCLASSEMENT_TYPES:
             QMessageBox.warning(self, "Fin", "Impossible de surclasser le type de véhicule sélectionné.")
             self.criteres_resa = None
@@ -1528,7 +1565,18 @@ class AppIHM(QMainWindow):
         )
 
     def demander_plaque_ajout(self, plaque, fichier):
-        """Demande une plaque d'immatriculation et vérifie son unicité."""
+        """
+        Demande une plaque d'immatriculation et vérifie son unicité.
+
+        Input:
+            plaque (str): La plaque à vérifier.
+            fichier (str): Le chemin du fichier CSV contenant les véhicules.
+        Output:
+            plaque (str): La plaque validée ou générée.
+        Raises:
+            ValueError: Si le format de la plaque est invalide.
+            RuntimeError: Si une plaque unique ne peut pas être générée après 1000 tentatives.
+        """
         pattern = r"^[A-Z]{2}-\d{3}-[A-Z]{2}$"
         plaque = plaque.upper()
         if not re.match(pattern, plaque):
