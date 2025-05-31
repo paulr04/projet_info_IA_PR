@@ -33,7 +33,7 @@ class Vehicule:
     - type_vehicule : str type de véhicule (berline, citadine, SUV, etc.)
     - boite_vitesse : str type de boîte de vitesse (manuelle, automatique)
     - entretien_annuel : float coût d'entretien annuel en euros
-    - dispo : bool disponibilité du véhicule (True ou False) en cas de maintenance
+    - dispo : bool disponibilité True ou False) en cas de maintenance
     - description : str description du véhicule
     ---
     méthodes :
@@ -488,7 +488,7 @@ class Client(User):
         email (str)         : Adresse e-mail.
         telephone (str)     : Numéro de téléphone.
         mot_de_passe (str)  : Mot de passe (stocké en clair dans le CSV).
-        role (str)          : Rôle de l'utilisateur ('C' pour client, 'V' pour vendeur).
+        role (str)          : Rôle de l'utilisateur ('C' pour client, 'V' pour vendeur, 'A' pour admin).
     """
     def __init__(self, id_user, nom, prenom, email, telephone, role, mot_de_passe, app):
         super().__init__(id_user, nom, prenom, email, telephone, "C", mot_de_passe, app)
@@ -535,6 +535,9 @@ class Client(User):
                 break
             else:
                 print("Choix invalide. Veuillez réessayer.")
+    @property
+    def reduction_coef(self):
+        return 1.0 # Coefficient de réduction pour les clients, pas de réduction
 
 class Vendeur(User):
     """
@@ -549,7 +552,7 @@ class Vendeur(User):
         email (str)         : Adresse e-mail.
         telephone (str)     : Numéro de téléphone.
         mot_de_passe (str)  : Mot de passe (stocké en clair dans le CSV).
-        role (str)          : Rôle de l'utilisateur ('C' pour client, 'V' pour vendeur).
+        role (str)          : Rôle de l'utilisateur ('C' pour client, 'V' pour vendeur, 'A' pour admin).
     """
     def __init__(self, id_user, nom, prenom, email, telephone, role, mot_de_passe, app):
         super().__init__(id_user, nom, prenom, email, telephone, "V", mot_de_passe, app)
@@ -668,8 +671,37 @@ class Vendeur(User):
                 break
             else:
                 print("Choix invalide. Veuillez réessayer.")
-        
+    @property
+    def reduction_coef(self):
+        return 0.8  # Coefficient de réduction pour les vendeurs   
+    
+class Admin(User):
+    """
+    Auteur : Paul Renaud
 
+    Représente un administrateur de l'application de gestion de location de véhicules.
+
+    Attributs :
+        id_user (int)     : Identifiant unique de l'utilisateur.
+        nom (str)           : Nom de l'utilisateur.
+        prenom (str)        : Prénom de l'utilisateur.
+        email (str)         : Adresse e-mail.
+        telephone (str)     : Numéro de téléphone.
+        mot_de_passe (str)  : Mot de passe (stocké en clair dans le CSV).
+        role (str)          : Rôle de l'utilisateur ('C' pour client, 'V' pour vendeur, 'A' pour admin).
+    """
+    def __init__(self, id_user, nom, prenom, email, telephone, role, mot_de_passe, app):
+        super().__init__(id_user, nom, prenom, email, telephone, "A", mot_de_passe, app)
+         # Vérification que le rôle est 'A' pour admin
+        try:
+            if role != "A":
+                raise ValueError("Le rôle doit être 'A' pour admin.")
+        except ValueError as e:
+            print(f"Erreur lors de l'initialisation de l'administrateur : {e}")
+            raise
+    @property
+    def reduction_coef(self):
+        return 0  # Coefficient de réduction pour les administrateurs
 
 class Reservation_DSL:
     """
@@ -738,7 +770,7 @@ class Reservation_DSL:
             print(f"Erreur lors de l'initialisation de la réservation : {e}")
             raise
         try:
-            if not isinstance(prix_total, (float, int)) or prix_total <= 0:
+            if not isinstance(prix_total, (float, int)) or prix_total < 0:
                 raise ValueError("Le prix total doit être un nombre positif.")
         except ValueError as e:
             print(f"Erreur lors de l'initialisation de la réservation : {e}")
@@ -806,7 +838,7 @@ class Reservation_DSL:
                     print(f"Erreur lors de l'initialisation de la réservation : {e}")
                     raise
                 try:
-                    if not isinstance(prix_total, (float, int)) or prix_total <= 0:
+                    if not isinstance(prix_total, (float, int)) or prix_total < 0:
                         raise ValueError("Le prix total doit être un nombre positif.")
                 except ValueError as e:
                     print(f"Erreur lors de l'initialisation de la réservation : {e}")

@@ -14,7 +14,7 @@ from PyQt5.QtCore import Qt, QRegExp, QDate
 
 from facture import facture as fact
 import fonctions as f
-from objects import Client, Vendeur, Vehicule, Reservation_DSL
+from objects import Client, Vendeur, Vehicule, Reservation_DSL, Admin
 
 # Chemins des fichiers de données
 USER_FILE = 'data/users.csv'
@@ -120,6 +120,8 @@ class MainWindow(QMainWindow):
             self.menu_client()
         elif self.utilisateur_connecte and self.utilisateur_connecte.role == "V":
             self.menu_vendeur()
+        elif self.utilisateur_connecte and self.utilisateur_connecte.role == "A":
+            self.menu_admin()
         else:
             self.menu_initial()
     
@@ -196,7 +198,9 @@ class MainWindow(QMainWindow):
                         if role == "V":
                             return Vendeur(user_id, nom, prenom, email, telephone, role, mot_de_passe, app=self)  
                         if role == "C":
-                            return Client(user_id, nom, prenom, email, telephone, role, mot_de_passe, app=self)  
+                            return Client(user_id, nom, prenom, email, telephone, role, mot_de_passe, app=self)
+                        if role == "A":
+                            return Admin(user_id, nom, prenom, email, telephone, role, mot_de_passe, app=self)  
             return None
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Erreur lecture fichier utilisateurs : {e}")
@@ -220,11 +224,65 @@ class MainWindow(QMainWindow):
                 self.menu_client()
             elif self.utilisateur_connecte.role == "V":
                 self.menu_vendeur()
+            elif self.utilisateur_connecte.role == "A":
+                self.menu_admin()
             else:
                 QMessageBox.critical(self, "Erreur", "Rôle inconnu.")
         else:
             QMessageBox.critical(self, "Échec de connexion", "ID ou mot de passe incorrect.")
 
+    def menu_admin(self):
+        """Affiche le menu pour les admin."""
+        self.clear_layout()
+        self.layout = QVBoxLayout()
+
+        logo = QLabel()
+        pixmap = QPixmap("logo_cargo.png").scaledToWidth(200, Qt.SmoothTransformation)
+        logo.setPixmap(pixmap)
+        logo.setAlignment(Qt.AlignCenter)
+        self.layout.addWidget(logo)
+
+        title = QLabel(f"Bienvenue {self.utilisateur_connecte.prenom}, dans votre espace administrateur")
+        title.setAlignment(Qt.AlignCenter)
+        title.setFont(QFont("Arial", 14, QFont.Bold))
+        self.layout.addWidget(title)
+
+        # Liste des actions et méthodes associées
+        actions = [
+            ("Consulter le catalogue de véhicules", self.consulter_catalogue),
+            ("Faire une recherche de véhicule et le réserver", self.recherche_de_vehicule_pour_reservation),
+            ("Consulter les utilisateurs", self.consulter_user),
+            ("Consulter les réservations", self.consulter_reservations),
+            ("Ajouter un véhicule", self.ajouter_vehicule),
+            ("Supprimer un véhicule", self.supprimer_vehicule),
+            ("Faire une réservation", self.reserver_vehicule),
+            ("Annuler une réservation", self.annuler_reservation),
+            ("Créer un compte client", self.creer_compte_client),
+            ("Créer un compte vendeur", self.creer_compte_vendeur),  
+            ("Supprimer un compte", self.supprimer_compte_client),
+            ("Changer de mot de passe", self.changer_de_mdp),
+            ("Analyse des ventes", self.menu_analyse_ventes),
+            ("Modifier une caractéristique sur un véhicule", self.changer_caracteristique_vehicule),
+            ("Modifier une caractéristique sur votre compte", self.changer_caracteristique_compte),
+            ("Consulter les réservations prochaines d'un véhicule", self.consulter_reservations_prochaines_vehicule),
+            ("Consulter un véhicule", self.consulter_vehicule),
+            ("Quitter", self.menu_initial)
+        ]
+
+        for label, method in actions:
+            btn = QPushButton(label)
+            btn.clicked.connect(method)
+            self.layout.addWidget(btn)
+
+        content_widget = QWidget()
+        content_widget.setLayout(self.layout)
+
+        scroll = QScrollArea()
+        scroll.setWidget(content_widget)
+        scroll.setWidgetResizable(True)
+
+        self.setCentralWidget(scroll)
+    
     def menu_vendeur(self):
         """Affiche le menu pour les vendeurs."""
         self.clear_layout()
@@ -244,6 +302,7 @@ class MainWindow(QMainWindow):
         # Liste des actions et méthodes associées
         actions = [
             ("Consulter le catalogue de véhicules", self.consulter_catalogue),
+            ("Faire une recherche de véhicule et le réserver", self.recherche_de_vehicule_pour_reservation),
             ("Consulter les utilisateurs", self.consulter_user),
             ("Consulter les réservations", self.consulter_reservations),
             ("Ajouter un véhicule", self.ajouter_vehicule),
@@ -274,7 +333,6 @@ class MainWindow(QMainWindow):
         scroll.setWidgetResizable(True)
 
         self.setCentralWidget(scroll)
-    
     
     def menu_client(self):
         """Affiche le menu pour les clients."""
@@ -489,8 +547,10 @@ class MainWindow(QMainWindow):
                 id_resa = f.generer_id_unique(RESERVATIONS_FILE, 'id_resa')
                 surcl = obj.prix_jour >= Vehicule.prix_jour
                 obj.prix_jour = Vehicule.prix_jour  # Assurer que le prix est celui du véhicule non disponible (le client est roi)
-                prix = obj.prix_jour * jours
-                string = f"RESERVATION {id_resa} CLIENT {id_user} VEHICULE {obj.id_vehicule} DU {date_debut} AU {date_fin} JOURS {jours} PRIX {prix} SURCLASSEMENT {surcl}"
+                prix = float(obj.prix_jour * jours)
+                reduction = f.info_user(id_user).reduction_coef
+                print(reduction)
+                string = f"RESERVATION {id_resa} CLIENT {id_user} VEHICULE {obj.id_vehicule} DU {date_debut} AU {date_fin} JOURS {jours} PRIX {prix* reduction:.1f} SURCLASSEMENT {surcl}"
                 resa = Reservation_DSL.from_dsl(string)
                 Reservation_DSL.enregistrer(resa, RESERVATIONS_FILE)
                 fact(resa, f.info_user(id_user), obj)
@@ -713,7 +773,7 @@ class MainWindow(QMainWindow):
         form_layout = QFormLayout()
         id_user = self.utilisateur_connecte.id_user
         user_combo = None
-        if self.utilisateur_connecte.__class__.__name__ == "Vendeur":
+        if self.utilisateur_connecte.__class__.__name__ == "Vendeur" or self.utilisateur_connecte.__class__.__name__ == "Admin":
             users = f.load_users_POO(USER_FILE)
             user_combo = QComboBox()
             for user in users:
@@ -797,7 +857,9 @@ class MainWindow(QMainWindow):
                     )
             else:
                 id_resa = f.generer_id_unique(RESERVATIONS_FILE, 'id_resa')
-                string = f"RESERVATION {id_resa} CLIENT {id_user} VEHICULE {id_vehicule} DU {date_debut} AU {date_fin} JOURS {jours_res} PRIX {vehicule.prix_jour * jours_res:.2f} SURCLASSEMENT False"
+                reduction = f.info_user(id_user).reduction_coef
+                print(reduction)
+                string = f"RESERVATION {id_resa} CLIENT {id_user} VEHICULE {id_vehicule} DU {date_debut} AU {date_fin} JOURS {jours_res} PRIX {float(vehicule.prix_jour * jours_res) *  reduction:.2f} SURCLASSEMENT False"
                 reservation = Reservation_DSL.from_dsl(string)
                 Reservation_DSL.enregistrer(reservation, RESERVATIONS_FILE)
                 fact(reservation, f.info_user(id_user), vehicule)
@@ -809,7 +871,7 @@ class MainWindow(QMainWindow):
         vehicules_disponibles = []
         with open(VEHICULES_FILE, mode='r') as file:
             reader = csv.DictReader(file)
-            for row in reader:
+            for row in reader: 
                 if row['dispo'] == 'True' and not f.verifier_reservation(date_debut, date_fin, row['id_vehicule']):
                     vehicule = f.load_vehicule_POO(row)
                     vehicules_disponibles.append(vehicule)
@@ -1690,9 +1752,130 @@ class MainWindow(QMainWindow):
 
         dialog.setLayout(layout)
         dialog.exec_()
+    
+    def creer_compte_vendeur(self):
+        """Ouvre une boîte de dialogue pour créer un compte vendeur."""
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Créer un compte vendeur")
 
+        layout = QVBoxLayout()
+
+        nom_input = QLineEdit()
+        prenom_input = QLineEdit()
+        email_input = QLineEdit()
+        tel_input = QLineEdit()
+        mdp_input = QLineEdit()
+        mdp_input.setEchoMode(QLineEdit.Password)
+
+        def bloquer_virgules(event, input_field):
+            """Bloque la saisie de virgules dans les champs d'entrée."""
+            if event.text() == ',':
+                return 
+            QLineEdit.keyPressEvent(input_field, event)
+
+        for champ in [nom_input, prenom_input, email_input, tel_input, mdp_input]:
+            champ.keyPressEvent = lambda event, champ=champ: bloquer_virgules(event, champ)
+
+        phone_regex = QRegExp(r"^\d{10}$")
+        phone_validator = QRegExpValidator(phone_regex)
+        tel_input.setValidator(phone_validator)
+
+        form_layout = QFormLayout()
+        form_layout.addRow("Nom :", nom_input)
+        form_layout.addRow("Prénom :", prenom_input)
+        form_layout.addRow("Email :", email_input)
+        form_layout.addRow("Téléphone (ex: 0102030405) :", tel_input)
+        form_layout.addRow("Mot de passe :", mdp_input)
+        layout.addLayout(form_layout)
+
+        btn_valider = QPushButton("Créer le compte")
+        layout.addWidget(btn_valider)
+
+        confirmation = QLabel("")
+        layout.addWidget(confirmation)
+
+        btn_fermer = QPushButton("Fermer")
+        btn_fermer.hide()
+        layout.addWidget(btn_fermer)
+        
+        def filtrer_saisie(event, champ, numerique=False):
+            """Filtre la saisie pour interdire certaines ponctuations et gérer les champs numériques."""
+            ponctuation_interdite = [' ',',', ';', ':', '!', '?', "'", '"', '`', '´', '’', '“', '”']
+            key = event.text()
+
+            if event.key() in (Qt.Key_Backspace, Qt.Key_Delete, Qt.Key_Left, Qt.Key_Right, Qt.Key_Home, Qt.Key_End):
+                QLineEdit.keyPressEvent(champ, event)
+                return
+
+            if key in ponctuation_interdite:
+    
+                return
+
+            if numerique:
+   
+                if key and not (key.isdigit() or key == '.'):
+                    return
+                if key == '.' and '.' in champ.text():
+                    return
+
+            QLineEdit.keyPressEvent(champ, event)
+        autres = [nom_input, prenom_input, email_input, tel_input, mdp_input]
+        for champ in autres:
+            champ.keyPressEvent = lambda event, c=champ: filtrer_saisie(event, c, numerique=False)
+
+        def on_valider():
+            """Valide les entrées et crée le compte vendeur."""
+            nom = nom_input.text().strip()
+            prenom = prenom_input.text().strip()
+            email = email_input.text().strip()
+            telephone = tel_input.text().strip()
+            mot_de_passe = mdp_input.text()
+
+            if not all([nom, prenom, email, telephone, mot_de_passe]):
+                confirmation.setText("Veuillez remplir tous les champs.")
+                return
+
+            if not phone_regex.exactMatch(telephone):
+                confirmation.setText("Téléphone invalide. Format attendu : 0102030405")
+                return
+
+            client_id = f.generer_id_unique(USER_FILE, 'id_user')
+            role = 'V'
+            user = Vendeur(client_id, nom, prenom, email, telephone, role, mot_de_passe, app=self)
+
+            try:
+                user_dict = {k: v for k, v in user.__dict__.items() if k != 'app'}
+
+                file_exists = os.path.exists(USER_FILE)
+                with open(USER_FILE, mode='a', newline="", encoding="utf-8") as file:
+                    writer = csv.DictWriter(file, fieldnames=user_dict.keys())
+                    if not file_exists:
+                        writer.writeheader()
+                    writer.writerow(user_dict)
+
+                confirmation.setText(f"Compte créé ! ID : {client_id}")
+                nom_input.clear()
+                prenom_input.clear()
+                email_input.clear()
+                tel_input.clear()
+                mdp_input.clear()
+                btn_fermer.show()
+
+            except Exception as e:
+                confirmation.setText(f"Erreur : {e}")
+
+        def on_fermer():
+            """Ferme la boîte de dialogue."""
+            dialog.accept()
+
+        btn_valider.clicked.connect(on_valider)
+        btn_fermer.clicked.connect(on_fermer)
+
+        dialog.setLayout(layout)
+        dialog.exec_()
+    
     def supprimer_compte_client(self):
-        """Ouvre une boîte de dialogue pour supprimer un compte client."""
+        """Ouvre une boîte de dialogue pour supprimer un compte client (ou vendeur)."""
         dialog = QDialog(self)
         dialog.setWindowTitle("Supprimer un compte client")
 
@@ -1730,7 +1913,7 @@ class MainWindow(QMainWindow):
                     dialog.accept()
                     self.menu_initial()
 
-                elif user.role == "V":
+                elif user.role == "V" or user.role == "A":
                     # Boîte pour entrer un ID
                     id_dialog = QDialog(dialog)
                     id_dialog.setWindowTitle("ID du client à supprimer")
@@ -1771,10 +1954,12 @@ class MainWindow(QMainWindow):
                         if user_trouve is None:
                             id_confirmation.setText("ID introuvable.")
                             return
-                        elif user_trouve.get('role') != 'C':
+                        elif user_trouve.get('role') != 'C' and self.utilisateur_connecte.role != 'A':
                             id_confirmation.setText("Vous ne pouvez supprimer que des clients.")
                             return
-
+                        elif user_trouve.get('role') == 'A':
+                            id_confirmation.setText("Vous ne pouvez pas supprimer un administrateur.")
+                            return
                         try:
                             f.supprimer_ligne_par_id(USER_FILE, "id_user", id_supp)
                             id_confirmation.setText(f"Client {id_supp} supprimé.")
@@ -1968,7 +2153,7 @@ class MainWindow(QMainWindow):
                 for row in reader:
                     date_fin = f.convertir_date(row['date_fin']).date()
                     if date_fin >= datetime.today().date():
-                        if self.utilisateur_connecte.role == "V" or row["id_user"] == self.utilisateur_connecte.id_user:
+                        if self.utilisateur_connecte.role == "V" or self.utilisateur_connecte.role == 'A' or row["id_user"] == self.utilisateur_connecte.id_user:
                             rows.append(row)
 
                 if not rows:

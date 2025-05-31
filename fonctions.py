@@ -49,7 +49,7 @@ import re
 import csv
 import os
 import random
-from objects import Client,Vehicule,Vendeur,User
+from objects import Client, Vehicule, Vendeur, User, Admin
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -454,6 +454,8 @@ def info_user(id_user):
                     return Client(user_id, nom, prenom, email, telephone, role, mot_de_passe, app=app)
                 if role == 'V':
                     return Vendeur(user_id, nom, prenom, email, telephone, role, mot_de_passe, app=app)
+                if role == 'A':
+                    return Admin(user_id, nom, prenom, email, telephone, role, mot_de_passe, app=app)
             else:
                 pass
 def info_vehicule(id_vehicule):
@@ -563,6 +565,11 @@ def load_users_POO(file):
                 ))
             elif ligne['role'] == 'V':
                 users.append(Vendeur(
+                    ligne['id_user'], ligne['nom'], ligne['prenom'], ligne['email'],
+                    ligne['telephone'], ligne['role'], ligne['mot_de_passe'], app=None
+                ))
+            elif ligne['role'] == 'A':
+                users.append(Admin(
                     ligne['id_user'], ligne['nom'], ligne['prenom'], ligne['email'],
                     ligne['telephone'], ligne['role'], ligne['mot_de_passe'], app=None
                 ))

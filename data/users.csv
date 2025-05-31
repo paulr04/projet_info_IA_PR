@@ -5,3 +5,5 @@ id_user,nom,prenom,email,telephone,role,mot_de_passe
 706410595,RENAUD,Paul,paul@mail.com,0203010405,C,mdp_paul
 199986759,Aragon,Ilyann,ilyann@mail.com,0908070605,C,mdp_ilyann
 296059102,Jeff,Bezos,jeffbezos@mail.com,0203065485,C,mdp_amazon
+444444444,RENAUD,Paul,paul@mail.com,0203010405,A,mdp_paul
+363818237,Argaon,Ilyann,ilyann@mail.com,0102030504,V,mdp_vendeur
