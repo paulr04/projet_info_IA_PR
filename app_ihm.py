@@ -51,7 +51,7 @@ class FenetreGraphiqueVentes(QDialog):
         layout.addWidget(btn_fermer)
 
 
-class MainWindow(QMainWindow):
+class AppIHM(QMainWindow):
     """Fenêtre principale de l'application CarGo.
     
     Gère les menus, la connexion des utilisateurs et l'affichage des différentes fonctionnalités.
@@ -2189,6 +2189,6 @@ class MainWindow(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    fen = MainWindow()
+    fen = AppIHM()
     fen.show()
     sys.exit(app.exec_())

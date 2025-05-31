@@ -1,6 +1,6 @@
 import unittest
 import fonctions as f
-from objects import Vehicule, User, Reservation_DSL, Vendeur, Client
+from objects import Vehicule, User, Reservation_DSL, Vendeur, Client, Admin
 
 USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
@@ -32,6 +32,21 @@ class TestUser(unittest.TestCase):
         """Teste l'erreur si un utilisateur avec le rôle 'C' est créé en tant que Vendeur."""
         with self.assertRaises(ValueError):
             Client("123456789", "Durand", "Paul", "paul@gmail.com", "0612345678", "V", "motdepasse", app=None)
+    
+    def test_reduction_role(self):
+        """Tester la réduction du rôle d'un utilisateur."""
+        client = Client("123456789", "Durand", "Paul", "paul@gmail.com", "0612345678", "C", "motdepasse", app=None)
+        vendeur = Vendeur("123456789", "Durand", "Paul", "paul@gmail.com", "0612345678", "V", "motdepasse", app=None)
+        admin = Admin("123456789", "Durand", "Paul", "paul@gmail.com", "0612345678", "A", "motdepasse", app=None)
+        self.assertEqual(client.role, "C")
+        self.assertEqual(vendeur.role, "V")
+        self.assertEqual(admin.role, "A")
+        self.assertIsInstance(client, Client)
+        self.assertIsInstance(vendeur, Vendeur)
+        self.assertIsInstance(admin, Admin)
+        self.assertEqual(client.reduction_coef, 1)
+        self.assertEqual(vendeur.reduction_coef, 0.8)
+        self.assertEqual(admin.reduction_coef, 0)
 
 class Testfonctions(unittest.TestCase):
     """
@@ -57,6 +72,10 @@ class Testfonctions(unittest.TestCase):
                 self.assertIsInstance(user, Vendeur)
             elif user.role == 'C':
                 self.assertIsInstance(user, Client)
+            elif user.role == 'A':
+                self.assertIsInstance(user, Admin)
+            else:
+                self.fail(f"Rôle inconnu pour l'utilisateur {user.id_user}: {user.role}")
 
 class TestReservationDSL(unittest.TestCase):
     """
