@@ -6,11 +6,11 @@ USER_FILE = 'data/users.csv'
 VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
 CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'type_moteur', 'type_vehicule', 'boite_vitesse']
-NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special"]
-TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up"]
-TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire']
+CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'type_moteur', 'type_vehicule', 'boite_vitesse']
+NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special",'autre', 'chantier', 'helicoptere', 'formule 1', 'rally']
+TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up", "velo", "moto", "quad", "trottinette", "camionette", "bus", "minibus", "cabriolet", "roadster", "coupe", "break", "limousine", "formule 1", "rally", "helicoptere", "chantier",'autre']
+TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire', 'gaz', 'propergol', 'autre']
 BOITES_VITESSE = ["manuelle", "automatique"]
-
 
 class TestUser(unittest.TestCase):
     """
@@ -191,7 +191,7 @@ class TestVehicule(unittest.TestCase):
             boite_vitesse="manuelle", entretien_annuel=200.0, dispo=True, description="voiture familiale"
         )
         with self.assertRaises(ValueError):
-            vehicule.set_valeur("type_moteur","gaz")   # Ce type de moteur n'est pas valide.
+            vehicule.set_valeur("type_moteur","eau")   # Ce type de moteur n'est pas valide.
 
     def test_set_type_vehicule_invalide(self):
         """Tester le setter du type de véhicule avec une valeur invalide."""
