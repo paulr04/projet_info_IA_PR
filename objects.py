@@ -718,7 +718,7 @@ class Reservation_DSL:
     """
     Auteur : Paul Renaud
 
-    Représente une réservation de véhicule effectuée par un client.
+    Représente une réservation de véhicule effectuée par un client. Cette classe utilise le DSL.
 
     Attributs :
         id_resa (str)         : Identifiant unique de la réservation (9 chiffres entre 1 et 9).
