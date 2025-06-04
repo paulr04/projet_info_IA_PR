@@ -12,3 +12,4 @@ id_user,nom,prenom,email,telephone,role,mot_de_passe
 356834481,duchateau,jaques,jaques@mail.com,0105040221,C,mdp_jaques
 954644716,kenobi,obi-wan,obi-wan@mail.com,0550161525,V,mdp_obi-wan
 625113378,gomila,gustave,gustave@mail.com,0405098052,C,mdp_gustave
+568317091,haquet,alexandre,alexandre@mail.com,0455205252,C,msp_alexandre
