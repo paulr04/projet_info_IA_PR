@@ -72,3 +72,24 @@ SS-345-SS,ducati,monster,70.0,180.0,220.0,110.0,0.05,2,essence,1.10,moto,manuell
 TT-456-TT,renault,master,110.0,3500.0,130.0,160.0,6.0,3,essence,2.50,utilitaire,manuelle,1000.0,True,utilitaire spacieux pour demenagements ou livraisons
 UU-567-UU,volkswagen,passat,75.0,1600.0,210.0,180.0,0.5,5,diesel,1.45,berline,automatique,600.0,True,berline confortable pour longs trajets professionnels
 VV-678-VV,toyota,hilux,85.0,1900.0,165.0,145.0,1.2,5,diesel,1.75,pick-up,manuelle,750.0,True,vehicule tout terrain robuste utilise dans des conditions extremes
+JG-111-XZ,uralvagonzavod,t-90,1300.0,46000.0,60.0,1125.0,9.0,4,diesel,2.0,militaire,automatique,100000.0,True,char de combat russe reconnu pour sa puissance et sa resistance
+RR-942-QT,bugatti,centodieci,1500.0,1975.0,380.0,1600.0,0.1,2,essence,1.2,supercar,automatique,5000.0,True,edition limitee ultra performante pour les passionnes de vitesse
+GG-215-LZ,renault,twingo,45.0,950.0,150.0,70.0,0.25,4,electrique,1.4,citadine,automatique,400.0,True,voiture compacte ideale pour la ville et les petits trajets
+TT-087-KK,dacia,duster,70.0,1300.0,170.0,115.0,0.9,5,diesel,1.65,SUV,manuelle,600.0,True,vehicule abordable adapte aux routes et sentiers escarpees
+FX-621-JB,ferrari,purosangue,1250.0,2030.0,310.0,715.0,0.4,4,essence,1.5,break,automatique,3000.0,True,break sportif alliant luxe et performances elevees
+WS-764-DR,ducati,monster,55.0,210.0,240.0,112.0,0.1,2,essence,0.9,moto,manuelle,350.0,True,moto puissante et agile pour amateurs de sensations fortes
+HP-134-MN,bell,uh-1,500.0,2600.0,230.0,900.0,2.0,12,kerosene,3.0,helicoptere,automatique,10000.0,True,helicoptere militaire polyvalent utilise depuis des decennies
+CL-928-GX,iveco,eurorider,290.0,12000.0,140.0,310.0,10.0,55,fioul,3.2,bus,manuelle,3000.0,True,bus de tourisme grand confort pour longs trajets
+MK-345-BY,tesla,semi,280.0,8000.0,130.0,1000.0,15.0,2,electrique,2.9,camion,automatique,1800.0,True,camion electrique futuriste a grande autonomie
+AX-701-CE,kawasaki,brute force,65.0,320.0,120.0,45.0,0.5,1,essence,1.3,quad,manuelle,500.0,True,quad tout terrain ideal pour loisirs et travail agricole
+ZP-490-LS,citroen,ami,25.0,485.0,60.0,12.0,0.15,2,electrique,1.3,citadine,automatique,200.0,True,micro voiture urbaine sans permis pour petits deplacements
+JV-387-XD,yamaha,tmax,60.0,220.0,160.0,90.0,0.2,2,essence,0.95,moto,automatique,400.0,True,scooter haut de gamme alliant confort et performance
+RU-113-FR,jeep,gladiator,110.0,2400.0,180.0,185.0,1.3,5,diesel,1.85,pick-up,manuelle,850.0,True,pick up robuste concu pour affronter les terrains extremes
+DL-864-PQ,bmw,i8,275.0,1650.0,250.0,374.0,0.3,2,hybride,1.4,coupe,automatique,2200.0,True,sportive hybride au design futuriste et consommation reduite
+MF-732-VG,mercedes,vito,80.0,2200.0,160.0,136.0,5.0,3,essence,1.9,utilitaire,manuelle,600.0,True,vehicule pratique pour artisans et petites entreprises
+UY-519-BA,toyota,yaris,48.0,1120.0,165.0,110.0,0.3,5,hybride,1.6,citadine,automatique,400.0,True,vehicule hybride ideal pour une conduite economique en ville
+XN-096-CM,can-am,maverick,95.0,800.0,140.0,120.0,0.4,2,essence,1.6,special,manuelle,750.0,True,buggy tout terrain haute performance pour loisirs extremes
+WP-318-LU,ford,f-150 raptor,120.0,2650.0,190.0,450.0,1.5,5,essence,2.0,pick-up,automatique,950.0,True,pick up americain puissant et confortable
+EZ-683-VN,nissan,leaf,52.0,1480.0,144.0,150.0,0.35,5,electrique,1.7,berline,automatique,500.0,True,berline compacte electrique pour la vie urbaine
+BH-247-JY,mercedes,sprinter,75.0,2800.0,150.0,160.0,13.0,3,diesel,2.2,camionette,manuelle,650.0,True,vehicule utilitaire ideal pour le transport de materiel
+YO-430-QE,porsche,911 turbo s,1420.0,1650.0,330.0,650.0,0.2,2,essence,1.3,coupe,automatique,3200.0,True,sportive de luxe associee a une technologie de pointe
