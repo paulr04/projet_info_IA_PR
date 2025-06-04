@@ -7,3 +7,6 @@ id_user,nom,prenom,email,telephone,role,mot_de_passe
 444444444,RENAUD,Paul,paul@mail.com,0203010405,A,mdp_paul
 363818237,Argaon,Ilyann,ilyann@mail.com,0102030504,A,mdp_ilyann
 720800503,Vasseur,Martin,martin@mail.com,0102030405,V,mdp_martin
+220336319,Oudin,Victor,victor@mail.com,0904526325,C,mdp_victor
+225490574,dupont,jean,jean@mail.com,0102050888,C,mdp_jean
+356834481,duchateau,jaques,jaques@mail.com,0105040221,C,mdp_jaques

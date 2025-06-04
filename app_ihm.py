@@ -1790,7 +1790,7 @@ class AppIHM(QMainWindow):
                 tel_input.clear()
                 mdp_input.clear()
                 btn_fermer.show()
-
+                QMessageBox.information(self, "Création réussie", f" Création réussie ! ID : {client_id} ")
             except Exception as e:
                 confirmation.setText(f"Erreur : {e}")
 
@@ -1911,7 +1911,7 @@ class AppIHM(QMainWindow):
                 tel_input.clear()
                 mdp_input.clear()
                 btn_fermer.show()
-
+                QMessageBox.information(self, "Création réussie", f" Création réussie ! ID : {client_id} ")
             except Exception as e:
                 confirmation.setText(f"Erreur : {e}")
 
