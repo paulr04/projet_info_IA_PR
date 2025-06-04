@@ -10,9 +10,10 @@ VEHICULES_FILE = 'data/vehicules.csv'
 RESERVATIONS_FILE = 'data/reservations.csv'
 CHAMPS_INTERDITS = ['id_user', 'id_resa', 'id_vehicule', 'role', 'mot_de_passe', 'type_moteur', 'type_vehicule', 'boite_vitesse']
 NO_SURCLASSEMENT_TYPES = ["avion", "bateau", "militaire", "special",'autre', 'chantier', 'helicoptere', 'formule 1', 'rally']
-TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up", "vélo", "moto", "quad", "trottinette", "camionette", "bus", "minibus", "cabriolet", "roadster", "coupé", "break", "limousine", "formule 1", "rally", "helicoptere", "chantier",'autre']
+TYPES_VEHICULE = ["berline", "citadine", "avion", "bateau", "SUV", "special", "camion", "utilitaire", "militaire", "4x4", "supercar", "monospace", "pick-up", "velo", "moto", "quad", "trottinette", "camionette", "bus", "minibus", "cabriolet", "roadster", "coupe", "break", "limousine", "formule 1", "rallye", "helicoptere", "chantier",'autre']
 TYPES_MOTEUR = ["essence", "diesel", "electrique", "hybride", 'kerosene', 'hydrogene', 'fioul', 'nucleaire', 'gaz', 'propergol', 'autre']
 BOITES_VITESSE = ["manuelle", "automatique"]
+
 
 class Application:
     '''
