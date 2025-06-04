@@ -21,7 +21,7 @@ LL-777-LL,iveco,eurcargo,200.0,7000.0,130.0,250.0,8.0,3,diesel,3.20,camion,manue
 MM-888-MM,mercedes,sprinter,130.0,3500.0,160.0,190.0,4.5,3,essence,2.50,utilitaire,automatique,800.0,True,utilitaire haut de gamme spacieux et rapide.
 NN-999-NN,naval group,barracuda,200000.0,50000.0,50.0,10000.0,20.0,12,nucleaire,10.0,militaire,automatique,2000000.0,True,sous-marin nucleaire d attaque. 
 OO-111-OO,toyota,hilux,85.0,1900.0,175.0,190.0,1.2,5,diesel,1.85,pick-up,manuelle,650.0,True,pick-up tout-terrain robuste et fiable.
-PP-222-PP,knds,leclerc,25000.0,57000.0,72.0,1500.0,12.0,3,diesel,3.00,militaire,automatique,120000.0,True,char de combat principal français de 3e generation puissant et blinde.
+PP-222-PP,knds,leclerc,25000.0,57000.0,72.0,1500.0,12.0,3,diesel,3.00,militaire,automatique,120000.0,True,char de combat principal francais de 3e generation puissant et blinde.
 WW-999-WW,dassault,guardian 2,12000.0,9000.0,450.0,1200.0,2.0,6,kerosene,4.30,avion,automatique,20000.0,True,hydravion de surveillance maritime a decollage court.
 XX-111-XX,cmacgm,jules verne,50000.0,300000.0,40.0,100000.0,3000.0,25,fioul,25.0,special,automatique,500000.0,True,porte-conteneurs geant de 396 metres de long.
 YY-222-YY,ferrari,812 superfast,2500.0,1525.0,340.0,800.0,0.2,2,essence,1.28,supercar,automatique,10000.0,True,coupe V12 puissant et emblematique de Maranello.
@@ -30,7 +30,7 @@ AA-999-AA,bugatti,chironsport,4500.0,1995.0,420.0,1500.0,0.2,2,essence,1.21,supe
 BB-999-BB,mclaren,p1,4000.0,1490.0,350.0,903.0,0.2,2,hybride,1.18,supercar,automatique,20000.0,True,supercar hybride ultra performante au design futuriste.
 CC-888-CC,koenigsegg,jesko,5500.0,1420.0,482.0,1600.0,0.3,2,essence,1.22,supercar,automatique,30000.0,True,hypercar suedoise taillee pour la vitesse maximale.
 DD-777-DD,pagani,huayra,4200.0,1350.0,370.0,750.0,0.2,2,essence,1.15,supercar,automatique,22000.0,True,oeuvre d art mecanique alliant performance et artisanat italien.
-EE-666-EE,land rover,defender 110,600.0,2150.0,200.0,400.0,1.8,5,diesel,1.97,4x4,automatique,1500.0,True,4x4 moderne et robuste conçu pour tous les terrains.
+EE-666-EE,land rover,defender 110,600.0,2150.0,200.0,400.0,1.8,5,diesel,1.97,4x4,automatique,1500.0,True,4x4 moderne et robuste concu pour tous les terrains.
 FF-555-FF,toyota,land cruiser,500.0,2350.0,180.0,250.0,2.1,7,essence,1.90,4x4,manuelle,1300.0,True,legende du tout-terrain fiable et endurant.
 GG-444-GG,jeep,wrangler rubicon,550.0,2100.0,190.0,285.0,1.5,5,essence,1.85,4x4,manuelle,1400.0,True,baroudeur iconique pret pour l aventure hors-piste. 
 HH-333-HH,mercedes,classe G 500,1500.0,2450.0,210.0,422.0,1.8,5,essence,1.96,4x4,automatique,5000.0,True,Tout-terrain de luxe a la silhouette indemodable.
