@@ -11,3 +11,4 @@ id_user,nom,prenom,email,telephone,role,mot_de_passe
 225490574,dupont,jean,jean@mail.com,0102050888,C,mdp_jean
 356834481,duchateau,jaques,jaques@mail.com,0105040221,C,mdp_jaques
 954644716,kenobi,obi-wan,obi-wan@mail.com,0550161525,V,mdp_obi-wan
+625113378,gomila,gustave,gustave@mail.com,0405098052,C,mdp_gustave
