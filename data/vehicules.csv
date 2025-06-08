@@ -98,4 +98,4 @@ KV-001-KV,kliment-vorochilov,kv-1,850.0,47000.0,35.0,600.0,5.0,5,essence,2.71,mi
 KV-002-KV,kliment-vorochilov,kv-2,1500.0,52000.0,27.0,600.0,9.0,6,diesel,3.25,militaire,manuelle,20000.0,True,char lourd sovietique equipe dun obusier de 152 mm pour detruire les fortifications ennemies
 FT-001-IT,fiat,multiplat,55.0,1300.0,160.0,103.0,3.0,6,essence,1.7,monospace,manuelle,950.0,True,monospace compact au design controverse avec 3 places avant et un interieur modulable ideal pour les familles nombreuses
 LD-888-RL,lancia,delta-integrale,120.0,1270.0,210.0,210.0,5.0,2,essence,1.4,rallye,manuelle,2500.0,True,voiture de rallye legende des annees 90 puissance elevee et maniabilite exceptionnelle ideale pour les passionnes de course
-FF-000-FF,mercedes,amg-f1-w12,4500.0,752.0,370.0,1125.0,0.5,1,hybride,0.95,berline,automatique,15000.0,True,voiture de course formule 1 hautes performances
+FF-000-FF,mercedes,amg-f1-w12,4500.0,752.0,370.0,1125.0,0.5,1,hybride,0.95,formule 1,automatique,15000.0,True,voiture de course formule 1 hautes performances

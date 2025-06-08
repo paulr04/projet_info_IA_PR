@@ -586,7 +586,7 @@ class AppIHM(QMainWindow):
                 obj = f.info_vehicule(id_choisi)
                 id_resa = f.generer_id_unique(RESERVATIONS_FILE, 'id_resa')
                 surcl = obj.prix_jour >= Vehicule.prix_jour
-                obj.prix_jour = Vehicule.prix_jour  # Assurer que le prix est celui du véhicule non disponible (le client est roi)
+                obj.prix_jour = Vehicule.prix_jour if Vehicule.prix_jour <= obj.prix_jour else obj.prix_jour  # Assurer que le prix est celui du véhicule non disponible (le client est roi)
                 prix = float(obj.prix_jour * jours)
                 reduction = f.info_user(id_user).reduction_coef
                 print(reduction)
