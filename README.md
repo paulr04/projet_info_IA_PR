@@ -43,6 +43,14 @@ import csv
 import re
 import random
 import string
+import pandas as pd
+import numpy as np
+from collections import defaultdict
+from collections import Counter
+import unittest
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from datetime import datetime
